@@ -6,12 +6,11 @@ import { CourseService } from '../../../core/services/course.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { Course, Category, PageResponse } from '../../../core/models';
 import { PaginationComponent, StarRatingComponent } from '../../../shared/components';
-import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 
 @Component({
   selector: 'app-course-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PaginationComponent, StarRatingComponent, TruncatePipe],
+  imports: [CommonModule, RouterModule, FormsModule, PaginationComponent, StarRatingComponent],
   template: `
     <div class="container mx-auto px-4 py-8">
       <!-- Header -->
