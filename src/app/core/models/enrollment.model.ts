@@ -5,8 +5,8 @@ export interface Enrollment {
   courseTitle: string;
   courseThumbnail?: string;
   instructorName: string;
+  progress: number;
   enrolledAt: string;
-  progressPercentage?: number;
 }
 
 export interface Progress {

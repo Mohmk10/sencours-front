@@ -4,84 +4,128 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Course, PageResponse } from '../../../core/models';
-import { PaginationComponent } from '../../../shared/components';
 import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-course-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PaginationComponent],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-8">Gestion des cours</h1>
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-[#1C1D1F]">Gestion des cours</h1>
+      </div>
 
-      <div class="bg-white rounded-lg shadow p-4 mb-6">
-        <div class="flex flex-col md:flex-row gap-4">
-          <div class="flex-1">
-            <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="loadCourses()" placeholder="Rechercher par titre..."
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-          </div>
-          <div class="md:w-48">
-            <select [(ngModel)]="selectedStatus" (change)="onStatusChange()"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-              <option value="">Tous les statuts</option>
-              <option value="DRAFT">Brouillon</option>
-              <option value="PUBLISHED">Publié</option>
-              <option value="ARCHIVED">Archivé</option>
-            </select>
-          </div>
-          <button (click)="loadCourses()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Rechercher</button>
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-4 mb-6">
+        <div class="flex-1 min-w-[200px]">
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="loadCourses()"
+            class="input"
+            placeholder="Rechercher par titre...">
         </div>
+        <select [(ngModel)]="selectedStatus" (change)="onStatusChange()" class="input w-48">
+          <option value="">Tous les statuts</option>
+          <option value="DRAFT">Brouillon</option>
+          <option value="PUBLISHED">Publié</option>
+          <option value="ARCHIVED">Archivé</option>
+        </select>
       </div>
 
       @if (isLoading) {
-        <div class="flex justify-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div class="space-y-3">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="flex items-center gap-4 p-4">
+              <div class="skeleton w-16 h-10 rounded flex-shrink-0"></div>
+              <div class="flex-1 space-y-2">
+                <div class="skeleton h-4 w-1/2"></div>
+                <div class="skeleton h-3 w-1/4"></div>
+              </div>
+              <div class="skeleton h-6 w-20"></div>
+            </div>
+          }
         </div>
-      }
-
-      @if (!isLoading && pageResponse) {
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+      } @else if (!pageResponse?.content?.length) {
+        <div class="empty-state">
+          <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+          <h3 class="empty-state-title">Aucun cours trouvé</h3>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cours</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Instructeur</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prix</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Étudiants</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th>Cours</th>
+                <th>Instructeur</th>
+                <th>Statut</th>
+                <th>Prix</th>
+                <th>Étudiants</th>
+                <th class="text-right">Actions</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              @for (course of pageResponse.content; track course.id) {
-                <tr class="hover:bg-gray-50">
-                  <td class="px-6 py-4">
+            <tbody>
+              @for (course of pageResponse?.content; track course.id) {
+                <tr>
+                  <td>
                     <div>
-                      <p class="font-medium text-gray-900">{{ course.title }}</p>
-                      <p class="text-sm text-gray-500">{{ course.categoryName }}</p>
+                      <p class="font-medium text-[#1C1D1F] truncate max-w-xs">{{ course.title }}</p>
+                      <p class="text-xs text-[#6A6F73]">{{ course.categoryName }}</p>
                     </div>
                   </td>
-                  <td class="px-6 py-4 text-gray-500">{{ course.instructorName }}</td>
-                  <td class="px-6 py-4">
-                    <select [value]="course.status" (change)="updateStatus(course, $event)" class="px-2 py-1 text-sm border rounded">
+                  <td class="text-[#6A6F73]">{{ course.instructorName }}</td>
+                  <td>
+                    <select
+                      [value]="course.status"
+                      (change)="updateStatus(course, $event)"
+                      class="text-sm border border-[#E4E8EB] rounded px-2 py-1 bg-white text-[#1C1D1F] focus:outline-none focus:border-[#5624D0]">
                       <option value="DRAFT">Brouillon</option>
                       <option value="PUBLISHED">Publié</option>
                       <option value="ARCHIVED">Archivé</option>
                     </select>
                   </td>
-                  <td class="px-6 py-4 text-gray-900">{{ course.price === 0 ? 'Gratuit' : (course.price | number:'1.0-0') + ' FCFA' }}</td>
-                  <td class="px-6 py-4 text-gray-900">{{ course.totalEnrollments || 0 }}</td>
-                  <td class="px-6 py-4 text-right">
-                    <a [routerLink]="['/courses', course.id]" class="text-blue-600 hover:text-blue-800 mr-3">Voir</a>
-                    <button (click)="deleteCourse(course)" class="text-red-600 hover:text-red-800">Supprimer</button>
+                  <td>
+                    @if (course.price === 0) {
+                      <span class="text-[#1E6B55] font-medium">Gratuit</span>
+                    } @else {
+                      {{ course.price | number:'1.0-0' }} FCFA
+                    }
+                  </td>
+                  <td>{{ course.totalEnrollments || 0 }}</td>
+                  <td>
+                    <div class="flex items-center justify-end gap-2">
+                      <a [routerLink]="['/courses', course.id]" class="btn btn-ghost btn-sm" title="Voir">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                      </a>
+                      <button (click)="deleteCourse(course)" class="btn btn-ghost btn-sm text-[#C4302B]" title="Supprimer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               }
             </tbody>
           </table>
         </div>
-        <app-pagination [pageData]="pageResponse" (pageChange)="onPageChange($event)" />
+
+        <!-- Pagination -->
+        @if (pageResponse && pageResponse.totalPages > 1) {
+          <div class="flex justify-center mt-6">
+            <div class="flex items-center gap-1">
+              <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-ghost btn-sm">Précédent</button>
+              <span class="px-4 text-sm text-[#6A6F73]">Page {{ currentPage + 1 }} sur {{ pageResponse.totalPages }}</span>
+              <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage >= pageResponse.totalPages - 1" class="btn btn-ghost btn-sm">Suivant</button>
+            </div>
+          </div>
+        }
       }
     </div>
   `
@@ -100,32 +144,31 @@ export class CourseManagementComponent implements OnInit {
   loadCourses() {
     this.isLoading = true;
     let params = new HttpParams().set('page', this.currentPage).set('size', 10);
-    let url = this.selectedStatus
+    const url = this.selectedStatus
       ? `${environment.apiUrl}/courses/status/${this.selectedStatus}/paginated`
       : `${environment.apiUrl}/courses/paginated`;
 
     this.http.get<PageResponse<Course>>(url, { params }).subscribe({
       next: (response) => { this.pageResponse = response; this.isLoading = false; },
-      error: (err) => { console.error('Error loading courses', err); this.isLoading = false; }
+      error: () => this.isLoading = false
     });
   }
 
   onStatusChange() { this.currentPage = 0; this.loadCourses(); }
+
   onPageChange(page: number) { this.currentPage = page; this.loadCourses(); }
 
   updateStatus(course: Course, event: Event) {
     const newStatus = (event.target as HTMLSelectElement).value;
     this.http.put<Course>(`${environment.apiUrl}/courses/${course.id}`, { status: newStatus }).subscribe({
-      next: () => { course.status = newStatus as Course['status']; },
-      error: (err) => console.error('Error updating status', err)
+      next: () => { course.status = newStatus as Course['status']; }
     });
   }
 
   deleteCourse(course: Course) {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer "${course.title}" ?`)) return;
+    if (!confirm(`Supprimer "${course.title}" ?`)) return;
     this.http.delete(`${environment.apiUrl}/courses/${course.id}`).subscribe({
-      next: () => this.loadCourses(),
-      error: (err) => console.error('Error deleting course', err)
+      next: () => this.loadCourses()
     });
   }
 }

@@ -3,74 +3,125 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../core/services/user.service';
 import { User, PageResponse } from '../../../core/models';
-import { PaginationComponent } from '../../../shared/components';
 
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, PaginationComponent],
+  imports: [CommonModule, FormsModule],
   template: `
-    <div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-8">Gestion des utilisateurs</h1>
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-[#1C1D1F]">Gestion des utilisateurs</h1>
+      </div>
 
-      <div class="bg-white rounded-lg shadow p-4 mb-6">
-        <div class="flex flex-col md:flex-row gap-4">
-          <div class="flex-1">
-            <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Rechercher par nom ou email..."
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-          </div>
-          <div class="md:w-48">
-            <select [(ngModel)]="selectedRole" (change)="onRoleChange()"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-              <option value="">Tous les rôles</option>
-              <option value="ETUDIANT">Étudiants</option>
-              <option value="INSTRUCTEUR">Instructeurs</option>
-              <option value="ADMIN">Administrateurs</option>
-            </select>
-          </div>
-          <button (click)="onSearch()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Rechercher</button>
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-4 mb-6">
+        <div class="flex-1 min-w-[200px]">
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="search()"
+            class="input"
+            placeholder="Rechercher par nom ou email...">
         </div>
+        <select [(ngModel)]="roleFilter" (change)="loadUsers()" class="input w-48">
+          <option value="">Tous les rôles</option>
+          <option value="ETUDIANT">Étudiants</option>
+          <option value="INSTRUCTEUR">Instructeurs</option>
+          <option value="ADMIN">Admins</option>
+        </select>
       </div>
 
       @if (isLoading) {
-        <div class="flex justify-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div class="space-y-3">
+          @for (i of [1,2,3,4,5]; track i) {
+            <div class="flex items-center gap-4 p-4">
+              <div class="skeleton w-10 h-10 rounded-full"></div>
+              <div class="flex-1 space-y-2">
+                <div class="skeleton h-4 w-1/3"></div>
+                <div class="skeleton h-3 w-1/4"></div>
+              </div>
+            </div>
+          }
         </div>
-      }
-
-      @if (!isLoading && pageResponse) {
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+      } @else if (!pageResponse?.content?.length) {
+        <div class="empty-state">
+          <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <h3 class="empty-state-title">Aucun utilisateur trouvé</h3>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utilisateur</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rôle</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Inscrit le</th>
+                <th>Utilisateur</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Statut</th>
+                <th>Inscrit le</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              @for (user of pageResponse.content; track user.id) {
-                <tr class="hover:bg-gray-50">
-                  <td class="px-6 py-4">
-                    <div class="flex items-center">
-                      <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold mr-3">
-                        {{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}
+            <tbody>
+              @for (user of pageResponse?.content; track user.id) {
+                <tr>
+                  <td>
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-full flex items-center justify-center font-semibold text-sm text-white"
+                           [style.background-color]="getAvatarColor(user.role)">
+                        {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}
                       </div>
-                      <span class="font-medium">{{ user.firstName }} {{ user.lastName }}</span>
+                      <span class="font-medium text-[#1C1D1F]">{{ user.firstName }} {{ user.lastName }}</span>
                     </div>
                   </td>
-                  <td class="px-6 py-4 text-gray-500">{{ user.email }}</td>
-                  <td class="px-6 py-4"><span [class]="getRoleClass(user.role)">{{ getRoleLabel(user.role) }}</span></td>
-                  <td class="px-6 py-4"><span [class]="user.isActive ? 'text-green-600' : 'text-red-600'">{{ user.isActive ? 'Actif' : 'Inactif' }}</span></td>
-                  <td class="px-6 py-4 text-gray-500">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+                  <td class="text-[#6A6F73]">{{ user.email }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="{
+                      'badge-neutral': user.role === 'ETUDIANT',
+                      'badge-primary': user.role === 'INSTRUCTEUR',
+                      'badge-warning': user.role === 'ADMIN',
+                      'badge-error': user.role === 'SUPER_ADMIN'
+                    }">
+                      {{ getRoleLabel(user.role) }}
+                    </span>
+                  </td>
+                  <td>
+                    @if (user.isActive) {
+                      <span class="inline-flex items-center gap-1 text-sm text-[#1E6B55]">
+                        <span class="w-2 h-2 bg-[#1E6B55] rounded-full"></span>
+                        Actif
+                      </span>
+                    } @else {
+                      <span class="inline-flex items-center gap-1 text-sm text-[#6A6F73]">
+                        <span class="w-2 h-2 bg-[#6A6F73] rounded-full"></span>
+                        Inactif
+                      </span>
+                    }
+                  </td>
+                  <td class="text-[#6A6F73] text-sm">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
                 </tr>
               }
             </tbody>
           </table>
         </div>
-        <app-pagination [pageData]="pageResponse" (pageChange)="onPageChange($event)" />
+
+        <!-- Pagination -->
+        @if (pageResponse && pageResponse.totalPages > 1) {
+          <div class="flex justify-center mt-6">
+            <div class="flex items-center gap-1">
+              <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-ghost btn-sm">
+                Précédent
+              </button>
+              <span class="px-4 text-sm text-[#6A6F73]">
+                Page {{ currentPage + 1 }} sur {{ pageResponse.totalPages }}
+              </span>
+              <button (click)="changePage(currentPage + 1)" [disabled]="currentPage >= pageResponse.totalPages - 1" class="btn btn-ghost btn-sm">
+                Suivant
+              </button>
+            </div>
+          </div>
+        }
       }
     </div>
   `
@@ -81,41 +132,57 @@ export class UserManagementComponent implements OnInit {
   pageResponse: PageResponse<User> | null = null;
   isLoading = true;
   searchQuery = '';
-  selectedRole = '';
+  roleFilter = '';
   currentPage = 0;
 
-  ngOnInit() { this.loadUsers(); }
+  ngOnInit() {
+    this.loadUsers();
+  }
 
   loadUsers() {
     this.isLoading = true;
-    let request$ = this.searchQuery.trim()
-      ? this.userService.searchUsers(this.searchQuery, this.currentPage)
-      : this.selectedRole
-        ? this.userService.getUsersByRole(this.selectedRole, this.currentPage)
-        : this.userService.getAllUsers(this.currentPage);
 
-    request$.subscribe({
-      next: (response) => { this.pageResponse = response; this.isLoading = false; },
-      error: (err) => { console.error('Error loading users', err); this.isLoading = false; }
+    let observable;
+    if (this.searchQuery) {
+      observable = this.userService.searchUsers(this.searchQuery, this.currentPage, 20);
+    } else if (this.roleFilter) {
+      observable = this.userService.getUsersByRole(this.roleFilter, this.currentPage, 20);
+    } else {
+      observable = this.userService.getAllUsers(this.currentPage, 20);
+    }
+
+    observable.subscribe({
+      next: (res) => {
+        this.pageResponse = res;
+        this.isLoading = false;
+      },
+      error: () => this.isLoading = false
     });
   }
 
-  onSearch() { this.currentPage = 0; this.selectedRole = ''; this.loadUsers(); }
-  onRoleChange() { this.currentPage = 0; this.searchQuery = ''; this.loadUsers(); }
-  onPageChange(page: number) { this.currentPage = page; this.loadUsers(); }
+  search() {
+    this.currentPage = 0;
+    this.loadUsers();
+  }
 
-  getRoleClass(role: string): string {
-    const base = 'px-2 py-1 text-xs font-medium rounded-full';
+  changePage(page: number) {
+    this.currentPage = page;
+    this.loadUsers();
+  }
+
+  getAvatarColor(role: string): string {
     switch (role) {
-      case 'ADMIN': return `${base} bg-red-100 text-red-800`;
-      case 'INSTRUCTEUR': return `${base} bg-purple-100 text-purple-800`;
-      case 'ETUDIANT': return `${base} bg-blue-100 text-blue-800`;
-      default: return base;
+      case 'ETUDIANT': return '#5624D0';
+      case 'INSTRUCTEUR': return '#1E6B55';
+      case 'ADMIN': return '#B4690E';
+      case 'SUPER_ADMIN': return '#C4302B';
+      default: return '#6A6F73';
     }
   }
 
   getRoleLabel(role: string): string {
     switch (role) {
+      case 'SUPER_ADMIN': return 'Super Admin';
       case 'ADMIN': return 'Admin';
       case 'INSTRUCTEUR': return 'Instructeur';
       case 'ETUDIANT': return 'Étudiant';

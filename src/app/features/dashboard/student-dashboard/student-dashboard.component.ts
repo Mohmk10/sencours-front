@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { EnrollmentService } from '../../../core/services/enrollment.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { EnrollmentService } from '../../../core/services/enrollment.service';
 import { Enrollment } from '../../../core/models';
 
 @Component({
@@ -10,113 +10,111 @@ import { Enrollment } from '../../../core/models';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="bg-[#F7F9FA] min-h-screen">
+    <div class="min-h-screen bg-[#F7F9FA]">
       <!-- Header -->
-      <div class="bg-[#1C1D1F] text-white">
-        <div class="container-custom py-10">
-          <h1 class="text-2xl font-bold">Bonjour, {{ userName }}</h1>
-          <p class="text-gray-400 text-sm mt-1">Continuez votre parcours d'apprentissage</p>
+      <div class="bg-[#1C1D1F] py-10">
+        <div class="container-app">
+          <h1 class="text-2xl font-bold text-white">Bonjour, {{ currentUser?.firstName }}</h1>
+          <p class="mt-1 text-[#A1A1A1]">Continuez votre parcours d'apprentissage</p>
         </div>
       </div>
 
-      <div class="container-custom py-8">
-        <!-- Loading skeleton -->
+      <div class="container-app py-8">
+        <!-- Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div class="card stat-card">
+            <p class="stat-card-label">Cours inscrits</p>
+            <p class="stat-card-value">{{ enrollments.length }}</p>
+            <div class="stat-card-accent bg-[#5624D0]"></div>
+          </div>
+          <div class="card stat-card">
+            <p class="stat-card-label">Terminés</p>
+            <p class="stat-card-value text-[#1E6B55]">{{ completedCount }}</p>
+            <div class="stat-card-accent bg-[#1E6B55]"></div>
+          </div>
+          <div class="card stat-card">
+            <p class="stat-card-label">En cours</p>
+            <p class="stat-card-value text-[#B4690E]">{{ inProgressCount }}</p>
+            <div class="stat-card-accent bg-[#B4690E]"></div>
+          </div>
+        </div>
+
+        <!-- Section title -->
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-[#1C1D1F]">Mes cours</h2>
+          <a routerLink="/courses" class="link text-sm flex items-center gap-1">
+            Explorer le catalogue
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
         @if (isLoading) {
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @for (i of [1,2,3]; track i) {
-              <div class="bg-white border border-[#D1D7DC] p-6">
-                <div class="skeleton h-3 w-24 mb-3"></div>
-                <div class="skeleton h-7 w-12"></div>
+              <div class="card overflow-hidden">
+                <div class="flex">
+                  <div class="skeleton w-32 h-24 flex-shrink-0"></div>
+                  <div class="flex-1 p-4 space-y-2">
+                    <div class="skeleton h-4 w-3/4"></div>
+                    <div class="skeleton h-3 w-1/2"></div>
+                    <div class="skeleton h-2 w-full mt-4"></div>
+                  </div>
+                </div>
               </div>
             }
           </div>
-        }
-
-        @if (!isLoading) {
-          <!-- Stats -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-            <div class="bg-white border border-[#D1D7DC] p-6">
-              <p class="text-xs font-semibold text-[#6A6F73] uppercase tracking-wide mb-2">Cours inscrits</p>
-              <p class="text-3xl font-bold text-[#1C1D1F]">{{ enrollments.length }}</p>
-              <div class="mt-3 w-8 h-0.5 bg-[#5624D0]"></div>
-            </div>
-            <div class="bg-white border border-[#D1D7DC] p-6">
-              <p class="text-xs font-semibold text-[#6A6F73] uppercase tracking-wide mb-2">Terminés</p>
-              <p class="text-3xl font-bold text-[#1E6B55]">{{ completedCourses }}</p>
-              <div class="mt-3 w-8 h-0.5 bg-[#1E6B55]"></div>
-            </div>
-            <div class="bg-white border border-[#D1D7DC] p-6">
-              <p class="text-xs font-semibold text-[#6A6F73] uppercase tracking-wide mb-2">En cours</p>
-              <p class="text-3xl font-bold text-[#F69C08]">{{ inProgressCourses }}</p>
-              <div class="mt-3 w-8 h-0.5 bg-[#F69C08]"></div>
+        } @else if (enrollments.length === 0) {
+          <div class="card">
+            <div class="empty-state">
+              <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+              <h3 class="empty-state-title">Commencez votre apprentissage</h3>
+              <p class="empty-state-description">Vous n'êtes inscrit à aucun cours pour le moment</p>
+              <a routerLink="/courses" class="btn btn-primary">Découvrir les cours</a>
             </div>
           </div>
-
-          <!-- My courses -->
-          <div class="bg-white border border-[#D1D7DC]">
-            <div class="px-6 py-4 border-b border-[#D1D7DC] flex items-center justify-between">
-              <h2 class="font-bold text-[#1C1D1F]">Mes cours</h2>
-              <a routerLink="/courses" class="text-sm text-[#5624D0] font-semibold hover:underline">
-                Explorer le catalogue →
-              </a>
-            </div>
-
-            @if (enrollments.length === 0) {
-              <div class="py-16 text-center px-6">
-                <div class="w-16 h-16 bg-[#EDE9FE] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg class="w-8 h-8 text-[#5624D0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                  </svg>
-                </div>
-                <h3 class="font-bold text-[#1C1D1F] mb-1">Commencez votre apprentissage</h3>
-                <p class="text-sm text-[#6A6F73] mb-5">Vous n'êtes inscrit à aucun cours pour le moment.</p>
-                <a routerLink="/courses" class="btn-primary">Découvrir les cours</a>
-              </div>
-            } @else {
-              <div class="divide-y divide-[#F7F9FA]">
-                @for (enrollment of enrollments; track enrollment.id) {
-                  <div class="p-5 hover:bg-[#F7F9FA] transition-colors">
-                    <div class="flex items-center gap-4">
-                      <!-- Thumbnail -->
-                      <div class="w-20 h-14 bg-[#EDE9FE] border border-[#D1D7DC] flex-shrink-0 overflow-hidden">
-                        @if (enrollment.courseThumbnail) {
-                          <img [src]="enrollment.courseThumbnail" class="w-full h-full object-cover">
-                        } @else {
-                          <div class="w-full h-full flex items-center justify-center">
-                            <svg class="w-6 h-6 text-[#5624D0] opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                          </div>
-                        }
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (enrollment of enrollments; track enrollment.id) {
+              <a [routerLink]="['/courses', enrollment.courseId]" class="card overflow-hidden group hover:shadow-md transition-shadow">
+                <div class="flex">
+                  <!-- Thumbnail -->
+                  <div class="w-32 h-24 flex-shrink-0 bg-[#F3EFFC] overflow-hidden">
+                    @if (enrollment.courseThumbnail) {
+                      <img [src]="enrollment.courseThumbnail" [alt]="enrollment.courseTitle" class="w-full h-full object-cover">
+                    } @else {
+                      <div class="w-full h-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-[#5624D0] opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
                       </div>
+                    }
+                  </div>
 
-                      <!-- Info -->
-                      <div class="flex-1 min-w-0">
-                        <h3 class="font-semibold text-[#1C1D1F] text-sm truncate">{{ enrollment.courseTitle }}</h3>
-                        <p class="text-xs text-[#6A6F73] mt-0.5">{{ enrollment.instructorName }}</p>
-                        <div class="mt-2.5">
-                          <div class="flex justify-between text-xs mb-1">
-                            <span class="text-[#6A6F73]">Progression</span>
-                            <span class="font-semibold text-[#1C1D1F]">{{ enrollment.progressPercentage || 0 }}%</span>
-                          </div>
-                          <div class="w-full bg-[#D1D7DC] h-1.5">
-                            <div class="bg-[#5624D0] h-1.5 transition-all"
-                                 [style.width.%]="enrollment.progressPercentage || 0"></div>
-                          </div>
-                        </div>
+                  <!-- Content -->
+                  <div class="flex-1 p-4 min-w-0">
+                    <h3 class="font-semibold text-[#1C1D1F] text-sm line-clamp-2 group-hover:text-[#5624D0] transition-colors">
+                      {{ enrollment.courseTitle }}
+                    </h3>
+                    <p class="text-xs text-[#6A6F73] mt-1">{{ enrollment.instructorName }}</p>
+
+                    <!-- Progress bar -->
+                    <div class="mt-3">
+                      <div class="flex justify-between text-xs mb-1">
+                        <span class="text-[#6A6F73]">Progression</span>
+                        <span class="font-medium text-[#1C1D1F]">{{ enrollment.progress || 0 }}%</span>
                       </div>
-
-                      <!-- Action -->
-                      <a [routerLink]="['/courses', enrollment.courseId]"
-                         class="flex-shrink-0 px-4 py-2 border border-[#1C1D1F] text-sm font-semibold text-[#1C1D1F] hover:bg-[#1C1D1F] hover:text-white transition-colors">
-                        Continuer
-                      </a>
+                      <div class="h-1.5 bg-[#E4E8EB] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#5624D0] rounded-full transition-all duration-300"
+                             [style.width.%]="enrollment.progress || 0"></div>
+                      </div>
                     </div>
                   </div>
-                }
-              </div>
+                </div>
+              </a>
             }
           </div>
         }
@@ -125,22 +123,22 @@ import { Enrollment } from '../../../core/models';
   `
 })
 export class StudentDashboardComponent implements OnInit {
-  private enrollmentService = inject(EnrollmentService);
   private authService = inject(AuthService);
+  private enrollmentService = inject(EnrollmentService);
 
   enrollments: Enrollment[] = [];
   isLoading = true;
 
-  get userName(): string {
-    return this.authService.getCurrentUser()?.firstName || 'Étudiant';
+  get currentUser() {
+    return this.authService.getCurrentUser();
   }
 
-  get completedCourses(): number {
-    return this.enrollments.filter(e => (e.progressPercentage || 0) === 100).length;
+  get completedCount(): number {
+    return this.enrollments.filter(e => (e.progress || 0) === 100).length;
   }
 
-  get inProgressCourses(): number {
-    return this.enrollments.filter(e => (e.progressPercentage || 0) > 0 && (e.progressPercentage || 0) < 100).length;
+  get inProgressCount(): number {
+    return this.enrollments.filter(e => (e.progress || 0) > 0 && (e.progress || 0) < 100).length;
   }
 
   ngOnInit() {
@@ -148,16 +146,12 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   loadEnrollments() {
-    this.isLoading = true;
     this.enrollmentService.getMyEnrollments().subscribe({
       next: (enrollments) => {
         this.enrollments = enrollments;
         this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Error loading enrollments', err);
-        this.isLoading = false;
-      }
+      error: () => this.isLoading = false
     });
   }
 }
