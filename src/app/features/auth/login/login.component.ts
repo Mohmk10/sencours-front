@@ -9,103 +9,107 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
-    <div class="min-h-screen bg-white flex">
-      <!-- Left - Form -->
-      <div class="flex-1 flex items-center justify-center px-8 py-12">
-        <div class="w-full max-w-md">
-          <!-- Logo -->
-          <a routerLink="/" class="flex items-center gap-2 mb-8">
+    <div class="min-h-screen flex">
+      <!-- Left: Form -->
+      <div class="flex-1 flex items-center justify-center p-8 bg-white">
+        <div class="w-full max-w-[400px]">
+
+          <!-- Logo mobile -->
+          <a routerLink="/" class="flex items-center gap-2 mb-8 lg:hidden">
             <div class="w-8 h-8 bg-[#5624D0] rounded flex items-center justify-center">
-              <span class="text-white font-bold text-base">S</span>
+              <span class="text-white font-bold">S</span>
             </div>
-            <span class="text-lg font-bold text-[#1C1D1F]">SenCours</span>
+            <span class="text-xl font-bold text-[#1C1D1F]">SenCours</span>
           </a>
 
-          <h1 class="text-2xl font-bold text-[#1C1D1F] mb-1">Connexion à votre compte</h1>
-          <p class="text-sm text-[#6A6F73] mb-8">
-            Pas encore de compte ?
-            <a routerLink="/register" class="text-[#5624D0] font-semibold hover:underline">S'inscrire gratuitement</a>
+          <h1 class="text-[28px] font-bold text-[#1C1D1F] leading-tight">
+            Connectez-vous à votre compte
+          </h1>
+          <p class="mt-2 text-[#6A6F73]">
+            Pas encore inscrit ?
+            <a routerLink="/register" class="link">Créer un compte</a>
           </p>
 
           @if (errorMessage) {
-            <div class="mb-5 p-3.5 bg-red-50 border-l-4 border-[#EF4444] text-sm text-red-700">
-              {{ errorMessage }}
+            <div class="alert alert-error mt-6">
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>{{ errorMessage }}</span>
             </div>
           }
 
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-5">
             <div>
-              <label class="block text-sm font-bold text-[#1C1D1F] mb-1.5">Email</label>
+              <label class="label">Adresse email</label>
               <input
                 type="email"
                 formControlName="email"
-                class="w-full px-4 py-3 border border-[#1C1D1F] text-sm text-[#1C1D1F] placeholder-[#6A6F73] focus:outline-none focus:ring-2 focus:ring-[#5624D0] focus:border-[#5624D0] transition-colors"
-                placeholder="votre@email.com">
+                class="input"
+                [class.input-error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+                placeholder="nom@exemple.com">
               @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-                <p class="mt-1 text-xs text-[#EF4444]">Veuillez entrer un email valide</p>
+                <p class="mt-1 text-sm text-[#C4302B]">Veuillez entrer une adresse email valide</p>
               }
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-1.5">
-                <label class="text-sm font-bold text-[#1C1D1F]">Mot de passe</label>
-                <a href="#" class="text-xs text-[#5624D0] hover:underline">Mot de passe oublié ?</a>
-              </div>
+              <label class="label">Mot de passe</label>
               <input
                 type="password"
                 formControlName="password"
-                class="w-full px-4 py-3 border border-[#1C1D1F] text-sm text-[#1C1D1F] placeholder-[#6A6F73] focus:outline-none focus:ring-2 focus:ring-[#5624D0] focus:border-[#5624D0] transition-colors"
-                placeholder="Votre mot de passe">
-              @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-                <p class="mt-1 text-xs text-[#EF4444]">Le mot de passe est requis</p>
-              }
+                class="input"
+                [class.input-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                placeholder="Entrez votre mot de passe">
             </div>
 
             <button
               type="submit"
               [disabled]="loginForm.invalid || isLoading"
-              class="btn-primary w-full py-3 text-base">
-              @if (isLoading) { Connexion en cours... }
-              @else { Se connecter }
+              class="btn btn-primary w-full btn-lg mt-6">
+              @if (isLoading) {
+                <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Connexion...
+              } @else {
+                Se connecter
+              }
             </button>
           </form>
 
-          <div class="mt-8 pt-6 border-t border-[#D1D7DC] text-center">
-            <p class="text-xs text-[#6A6F73]">
-              En vous connectant, vous acceptez nos
-              <a href="#" class="text-[#5624D0] hover:underline">Conditions d'utilisation</a>
-              et notre
-              <a href="#" class="text-[#5624D0] hover:underline">Politique de confidentialité</a>.
-            </p>
-          </div>
+          <p class="mt-8 text-center text-sm text-[#6A6F73]">
+            <a href="#" class="link">Mot de passe oublié ?</a>
+          </p>
         </div>
       </div>
 
-      <!-- Right - Branding -->
-      <div class="hidden lg:flex flex-1 bg-[#5624D0] items-center justify-center">
-        <div class="text-center text-white px-12 max-w-md">
-          <div class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
+      <!-- Right: Branding -->
+      <div class="hidden lg:flex flex-1 bg-[#1C1D1F] items-center justify-center p-12">
+        <div class="max-w-md text-center">
+          <div class="w-16 h-16 bg-[#5624D0] rounded-lg flex items-center justify-center mx-auto mb-8">
+            <span class="text-white font-bold text-3xl">S</span>
           </div>
-          <h2 class="text-3xl font-bold mb-4">Apprenez sans limites</h2>
-          <p class="text-base text-white text-opacity-90 leading-relaxed">
-            Accédez à des milliers de cours créés par des experts du Sénégal et d'ailleurs. Apprenez à votre rythme, où que vous soyez.
+          <h2 class="text-3xl font-bold text-white mb-4">
+            Bienvenue sur SenCours
+          </h2>
+          <p class="text-[#A1A1A1] text-lg leading-relaxed">
+            La première plateforme d'apprentissage en ligne du Sénégal.
+            Accédez à des centaines de cours créés par des experts locaux.
           </p>
-          <div class="mt-8 flex justify-center gap-8 text-sm">
-            <div class="text-center">
-              <p class="text-2xl font-bold">500+</p>
-              <p class="text-white text-opacity-75 mt-0.5">Cours</p>
+          <div class="mt-12 grid grid-cols-3 gap-8 text-center">
+            <div>
+              <p class="text-3xl font-bold text-white">500+</p>
+              <p class="text-sm text-[#A1A1A1] mt-1">Cours</p>
             </div>
-            <div class="text-center">
-              <p class="text-2xl font-bold">10k+</p>
-              <p class="text-white text-opacity-75 mt-0.5">Étudiants</p>
+            <div>
+              <p class="text-3xl font-bold text-white">10K+</p>
+              <p class="text-sm text-[#A1A1A1] mt-1">Étudiants</p>
             </div>
-            <div class="text-center">
-              <p class="text-2xl font-bold">200+</p>
-              <p class="text-white text-opacity-75 mt-0.5">Instructeurs</p>
+            <div>
+              <p class="text-3xl font-bold text-white">50+</p>
+              <p class="text-sm text-[#A1A1A1] mt-1">Instructeurs</p>
             </div>
           </div>
         </div>
@@ -130,16 +134,26 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.authService.login(this.loginForm.value).subscribe({
-        next: () => this.router.navigate(['/dashboard']),
-        error: (err) => {
-          this.isLoading = false;
-          this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect';
+    if (this.loginForm.invalid) return;
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.authService.login(this.loginForm.value).subscribe({
+      next: () => {
+        const user = this.authService.getCurrentUser();
+        if (user?.role === 'SUPER_ADMIN') {
+          this.router.navigate(['/super-admin']);
+        } else if (user?.role === 'ADMIN') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/dashboard']);
         }
-      });
-    }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect';
+      }
+    });
   }
 }

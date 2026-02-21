@@ -3,7 +3,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: 'ETUDIANT' | 'INSTRUCTEUR' | 'ADMIN';
+  role: 'ETUDIANT' | 'INSTRUCTEUR' | 'ADMIN' | 'SUPER_ADMIN';
   bio?: string;
   profilePicture?: string;
   isActive: boolean;
