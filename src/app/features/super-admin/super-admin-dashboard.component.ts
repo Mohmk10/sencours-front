@@ -9,32 +9,37 @@ import { User } from '../../core/models';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="min-h-screen bg-[#F7F9FA]">
-      <!-- Header -->
-      <div class="bg-[#C4302B] py-10">
-        <div class="container-app">
-          <div class="flex items-center gap-3">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-            </svg>
-            <div>
-              <h1 class="text-2xl font-bold text-white">Panneau Super Admin</h1>
-              <p class="text-red-200 text-sm">Accès restreint - Actions sensibles</p>
-            </div>
-          </div>
+    <div class="min-h-screen" style="background: var(--canvas);">
+
+      <!-- Discrete red restriction ribbon -->
+      <div class="py-2.5 px-4 text-sm font-medium flex items-center gap-2.5"
+           style="background: var(--red-tint); border-bottom: 1px solid rgba(127,29,29,0.15);">
+        <svg class="w-4 h-4 flex-shrink-0" style="color: var(--red);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        <span style="color: var(--red);">Zone restreinte — Accès Super Administrateur uniquement</span>
+        <span class="ml-auto badge badge-error">Zone sensible</span>
+      </div>
+
+      <!-- White header -->
+      <div class="bg-white" style="border-bottom: 1px solid var(--border);">
+        <div class="container-app py-8">
+          <h1 class="text-2xl font-bold" style="color: var(--ink);">Panneau Super Admin</h1>
+          <p class="mt-1" style="color: var(--ink-3);">Gestion des comptes administrateurs et instructeurs</p>
         </div>
       </div>
 
       <div class="container-app py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-          <!-- Create Admin Form -->
+        <!-- Two form cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+          <!-- Create Admin -->
           <div class="card">
-            <div class="p-6 border-b border-[#E4E8EB]">
-              <h2 class="font-semibold text-[#1C1D1F]">Créer un administrateur</h2>
-              <p class="text-sm text-[#6A6F73] mt-1">Les admins peuvent gérer les candidatures instructeurs</p>
+            <div class="px-6 py-4" style="border-bottom: 1px solid var(--border);">
+              <h2 class="font-semibold" style="color: var(--ink);">Créer un administrateur</h2>
+              <p class="text-sm mt-0.5" style="color: var(--ink-3);">Les admins peuvent gérer les candidatures instructeurs</p>
             </div>
-
             <form [formGroup]="adminForm" (ngSubmit)="createAdmin()" class="p-6 space-y-4">
               @if (adminSuccess) {
                 <div class="alert alert-success">Administrateur créé avec succès !</div>
@@ -42,8 +47,7 @@ import { User } from '../../core/models';
               @if (adminError) {
                 <div class="alert alert-error">{{ adminError }}</div>
               }
-
-              <div class="grid grid-cols-2 gap-4">
+              <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="label">Prénom</label>
                   <input type="text" formControlName="firstName" class="input" placeholder="Prénom">
@@ -53,30 +57,26 @@ import { User } from '../../core/models';
                   <input type="text" formControlName="lastName" class="input" placeholder="Nom">
                 </div>
               </div>
-
               <div>
                 <label class="label">Email</label>
                 <input type="email" formControlName="email" class="input" placeholder="admin@sencours.sn">
               </div>
-
               <div>
                 <label class="label">Mot de passe</label>
                 <input type="password" formControlName="password" class="input" placeholder="Minimum 8 caractères">
               </div>
-
               <button type="submit" [disabled]="adminForm.invalid || isCreatingAdmin" class="btn btn-primary w-full">
                 @if (isCreatingAdmin) { Création... } @else { Créer l'administrateur }
               </button>
             </form>
           </div>
 
-          <!-- Create Instructor Form -->
+          <!-- Create Instructor -->
           <div class="card">
-            <div class="p-6 border-b border-[#E4E8EB]">
-              <h2 class="font-semibold text-[#1C1D1F]">Créer un instructeur</h2>
-              <p class="text-sm text-[#6A6F73] mt-1">Création directe sans passer par une candidature</p>
+            <div class="px-6 py-4" style="border-bottom: 1px solid var(--border);">
+              <h2 class="font-semibold" style="color: var(--ink);">Créer un instructeur</h2>
+              <p class="text-sm mt-0.5" style="color: var(--ink-3);">Création directe sans passer par une candidature</p>
             </div>
-
             <form [formGroup]="instructorForm" (ngSubmit)="createInstructor()" class="p-6 space-y-4">
               @if (instructorSuccess) {
                 <div class="alert alert-success">Instructeur créé avec succès !</div>
@@ -84,8 +84,7 @@ import { User } from '../../core/models';
               @if (instructorError) {
                 <div class="alert alert-error">{{ instructorError }}</div>
               }
-
-              <div class="grid grid-cols-2 gap-4">
+              <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="label">Prénom</label>
                   <input type="text" formControlName="firstName" class="input" placeholder="Prénom">
@@ -95,17 +94,14 @@ import { User } from '../../core/models';
                   <input type="text" formControlName="lastName" class="input" placeholder="Nom">
                 </div>
               </div>
-
               <div>
                 <label class="label">Email</label>
                 <input type="email" formControlName="email" class="input" placeholder="instructeur@sencours.sn">
               </div>
-
               <div>
                 <label class="label">Mot de passe</label>
                 <input type="password" formControlName="password" class="input" placeholder="Minimum 8 caractères">
               </div>
-
               <button type="submit" [disabled]="instructorForm.invalid || isCreatingInstructor" class="btn btn-primary w-full">
                 @if (isCreatingInstructor) { Création... } @else { Créer l'instructeur }
               </button>
@@ -113,10 +109,10 @@ import { User } from '../../core/models';
           </div>
         </div>
 
-        <!-- Admin List -->
-        <div class="card mt-8">
-          <div class="p-6 border-b border-[#E4E8EB] flex items-center justify-between">
-            <h2 class="font-semibold text-[#1C1D1F]">Administrateurs existants</h2>
+        <!-- Admins list -->
+        <div class="card">
+          <div class="px-6 py-4 flex items-center justify-between" style="border-bottom: 1px solid var(--border);">
+            <h2 class="font-semibold" style="color: var(--ink);">Administrateurs existants</h2>
             <button (click)="loadAdmins()" class="btn btn-ghost btn-sm">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -135,23 +131,25 @@ import { User } from '../../core/models';
               }
             </div>
           } @else if (admins.length === 0) {
-            <div class="p-12 text-center text-[#6A6F73]">
+            <div class="p-10 text-center text-sm" style="color: var(--ink-3);">
               Aucun administrateur trouvé
             </div>
           } @else {
-            <div class="divide-y divide-[#E4E8EB]">
+            <div>
               @for (admin of admins; track admin.id) {
-                <div class="p-4 flex items-center justify-between">
+                <div class="px-6 py-4 flex items-center justify-between"
+                     style="border-bottom: 1px solid var(--border);" class="last:border-b-0">
                   <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-[#B4690E] text-white rounded-full flex items-center justify-center font-semibold text-sm">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0"
+                         style="background: var(--amber);">
                       {{ admin.firstName?.charAt(0) }}{{ admin.lastName?.charAt(0) }}
                     </div>
                     <div>
-                      <p class="font-medium text-[#1C1D1F]">{{ admin.firstName }} {{ admin.lastName }}</p>
-                      <p class="text-sm text-[#6A6F73]">{{ admin.email }}</p>
+                      <p class="font-medium" style="color: var(--ink);">{{ admin.firstName }} {{ admin.lastName }}</p>
+                      <p class="text-sm" style="color: var(--ink-3);">{{ admin.email }}</p>
                     </div>
                   </div>
-                  <button (click)="deleteAdmin(admin)" class="btn btn-ghost btn-sm text-[#C4302B]">
+                  <button (click)="deleteAdmin(admin)" class="btn btn-ghost btn-sm" style="color: #EF4444;">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
@@ -163,20 +161,20 @@ import { User } from '../../core/models';
         </div>
 
         <!-- Warning -->
-        <div class="mt-8 p-4 bg-[#FEECEB] border border-[#C4302B] rounded">
-          <div class="flex items-start gap-3">
-            <svg class="w-5 h-5 text-[#C4302B] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
-            <div>
-              <p class="font-semibold text-[#C4302B]">Zone sensible</p>
-              <p class="text-sm text-[#C4302B] mt-1">
-                Les actions effectuées ici sont critiques et peuvent affecter le fonctionnement de la plateforme.
-                Le compte Super Admin ne peut être modifié que directement en base de données.
-              </p>
-            </div>
+        <div class="mt-6 p-5 flex items-start gap-4"
+             style="background: var(--red-tint); border: 1px solid rgba(127,29,29,0.2); border-radius: var(--r-lg);">
+          <svg class="w-6 h-6 flex-shrink-0 mt-0.5" style="color: var(--red);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <div>
+            <p class="font-semibold" style="color: var(--red);">Zone sensible</p>
+            <p class="text-sm mt-1" style="color: var(--red); opacity: 0.85;">
+              Les actions effectuées ici sont critiques et peuvent affecter le fonctionnement de la plateforme.
+              Le compte Super Admin ne peut être modifié que directement en base de données.
+            </p>
           </div>
         </div>
+
       </div>
     </div>
   `

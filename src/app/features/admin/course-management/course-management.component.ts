@@ -13,20 +13,23 @@ import { environment } from '../../../../environments/environment';
   template: `
     <div class="p-6">
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-xl font-bold text-[#1C1D1F]">Gestion des cours</h1>
+        <h1 class="text-lg font-bold" style="color: var(--ink);">Gestion des cours</h1>
       </div>
 
       <!-- Filters -->
-      <div class="flex flex-wrap gap-4 mb-6">
-        <div class="flex-1 min-w-[200px]">
+      <div class="flex flex-wrap gap-3 mb-6">
+        <div class="flex-1 min-w-[200px] relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
           <input
             type="text"
             [(ngModel)]="searchQuery"
             (keyup.enter)="loadCourses()"
-            class="input"
+            class="input pl-9"
             placeholder="Rechercher par titre...">
         </div>
-        <select [(ngModel)]="selectedStatus" (change)="onStatusChange()" class="input w-48">
+        <select [(ngModel)]="selectedStatus" (change)="onStatusChange()" class="input w-44">
           <option value="">Tous les statuts</option>
           <option value="DRAFT">Brouillon</option>
           <option value="PUBLISHED">Publié</option>
@@ -37,13 +40,13 @@ import { environment } from '../../../../environments/environment';
       @if (isLoading) {
         <div class="space-y-3">
           @for (i of [1,2,3,4]; track i) {
-            <div class="flex items-center gap-4 p-4">
-              <div class="skeleton w-16 h-10 rounded flex-shrink-0"></div>
+            <div class="flex items-center gap-4 p-3">
+              <div class="skeleton w-16 h-10 rounded-lg flex-shrink-0"></div>
               <div class="flex-1 space-y-2">
                 <div class="skeleton h-4 w-1/2"></div>
                 <div class="skeleton h-3 w-1/4"></div>
               </div>
-              <div class="skeleton h-6 w-20"></div>
+              <div class="skeleton h-5 w-20 rounded-full"></div>
             </div>
           }
         </div>
@@ -72,16 +75,17 @@ import { environment } from '../../../../environments/environment';
                 <tr>
                   <td>
                     <div>
-                      <p class="font-medium text-[#1C1D1F] truncate max-w-xs">{{ course.title }}</p>
-                      <p class="text-xs text-[#6A6F73]">{{ course.categoryName }}</p>
+                      <p class="font-medium truncate max-w-xs" style="color: var(--ink);">{{ course.title }}</p>
+                      <p class="text-xs mt-0.5" style="color: var(--ink-3);">{{ course.categoryName }}</p>
                     </div>
                   </td>
-                  <td class="text-[#6A6F73]">{{ course.instructorName }}</td>
+                  <td style="color: var(--ink-3);">{{ course.instructorName }}</td>
                   <td>
                     <select
                       [value]="course.status"
                       (change)="updateStatus(course, $event)"
-                      class="text-sm border border-[#E4E8EB] rounded px-2 py-1 bg-white text-[#1C1D1F] focus:outline-none focus:border-[#5624D0]">
+                      class="text-xs border px-2 py-1.5 focus:outline-none focus:border-violet-500"
+                      style="border-radius: var(--r-sm); border-color: var(--border-2); color: var(--ink); background: var(--surface);">
                       <option value="DRAFT">Brouillon</option>
                       <option value="PUBLISHED">Publié</option>
                       <option value="ARCHIVED">Archivé</option>
@@ -89,21 +93,21 @@ import { environment } from '../../../../environments/environment';
                   </td>
                   <td>
                     @if (course.price === 0) {
-                      <span class="text-[#1E6B55] font-medium">Gratuit</span>
+                      <span class="font-medium" style="color: var(--green);">Gratuit</span>
                     } @else {
-                      {{ course.price | number:'1.0-0' }} FCFA
+                      <span style="color: var(--amber);">{{ course.price | number:'1.0-0' }} FCFA</span>
                     }
                   </td>
-                  <td>{{ course.totalEnrollments || 0 }}</td>
+                  <td style="color: var(--ink-2);">{{ course.totalEnrollments || 0 }}</td>
                   <td>
-                    <div class="flex items-center justify-end gap-2">
+                    <div class="flex items-center justify-end gap-0.5">
                       <a [routerLink]="['/courses', course.id]" class="btn btn-ghost btn-sm" title="Voir">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
                       </a>
-                      <button (click)="deleteCourse(course)" class="btn btn-ghost btn-sm text-[#C4302B]" title="Supprimer">
+                      <button (click)="deleteCourse(course)" class="btn btn-ghost btn-sm" title="Supprimer" style="color: #EF4444;">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                         </svg>
@@ -121,7 +125,9 @@ import { environment } from '../../../../environments/environment';
           <div class="flex justify-center mt-6">
             <div class="flex items-center gap-1">
               <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-ghost btn-sm">Précédent</button>
-              <span class="px-4 text-sm text-[#6A6F73]">Page {{ currentPage + 1 }} sur {{ pageResponse.totalPages }}</span>
+              <span class="px-4 text-sm" style="color: var(--ink-3);">
+                Page {{ currentPage + 1 }} sur {{ pageResponse.totalPages }}
+              </span>
               <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage >= pageResponse.totalPages - 1" class="btn btn-ghost btn-sm">Suivant</button>
             </div>
           </div>

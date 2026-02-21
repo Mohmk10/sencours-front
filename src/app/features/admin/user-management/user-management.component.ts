@@ -11,20 +11,23 @@ import { User, PageResponse } from '../../../core/models';
   template: `
     <div class="p-6">
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-xl font-bold text-[#1C1D1F]">Gestion des utilisateurs</h1>
+        <h1 class="text-lg font-bold" style="color: var(--ink);">Gestion des utilisateurs</h1>
       </div>
 
       <!-- Filters -->
-      <div class="flex flex-wrap gap-4 mb-6">
-        <div class="flex-1 min-w-[200px]">
+      <div class="flex flex-wrap gap-3 mb-6">
+        <div class="flex-1 min-w-[200px] relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
           <input
             type="text"
             [(ngModel)]="searchQuery"
             (keyup.enter)="search()"
-            class="input"
+            class="input pl-9"
             placeholder="Rechercher par nom ou email...">
         </div>
-        <select [(ngModel)]="roleFilter" (change)="loadUsers()" class="input w-48">
+        <select [(ngModel)]="roleFilter" (change)="loadUsers()" class="input w-44">
           <option value="">Tous les rôles</option>
           <option value="ETUDIANT">Étudiants</option>
           <option value="INSTRUCTEUR">Instructeurs</option>
@@ -35,12 +38,13 @@ import { User, PageResponse } from '../../../core/models';
       @if (isLoading) {
         <div class="space-y-3">
           @for (i of [1,2,3,4,5]; track i) {
-            <div class="flex items-center gap-4 p-4">
-              <div class="skeleton w-10 h-10 rounded-full"></div>
+            <div class="flex items-center gap-4 p-3">
+              <div class="skeleton w-9 h-9 rounded-full flex-shrink-0"></div>
               <div class="flex-1 space-y-2">
                 <div class="skeleton h-4 w-1/3"></div>
                 <div class="skeleton h-3 w-1/4"></div>
               </div>
+              <div class="skeleton h-5 w-16 rounded-full"></div>
             </div>
           }
         </div>
@@ -68,38 +72,36 @@ import { User, PageResponse } from '../../../core/models';
                 <tr>
                   <td>
                     <div class="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-full flex items-center justify-center font-semibold text-sm text-white"
+                      <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0"
                            [style.background-color]="getAvatarColor(user.role)">
                         {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}
                       </div>
-                      <span class="font-medium text-[#1C1D1F]">{{ user.firstName }} {{ user.lastName }}</span>
+                      <span class="font-medium" style="color: var(--ink);">{{ user.firstName }} {{ user.lastName }}</span>
                     </div>
                   </td>
-                  <td class="text-[#6A6F73]">{{ user.email }}</td>
+                  <td style="color: var(--ink-3);">{{ user.email }}</td>
                   <td>
                     <span class="badge" [ngClass]="{
                       'badge-neutral': user.role === 'ETUDIANT',
                       'badge-primary': user.role === 'INSTRUCTEUR',
                       'badge-warning': user.role === 'ADMIN',
                       'badge-error': user.role === 'SUPER_ADMIN'
-                    }">
-                      {{ getRoleLabel(user.role) }}
-                    </span>
+                    }">{{ getRoleLabel(user.role) }}</span>
                   </td>
                   <td>
                     @if (user.isActive) {
-                      <span class="inline-flex items-center gap-1 text-sm text-[#1E6B55]">
-                        <span class="w-2 h-2 bg-[#1E6B55] rounded-full"></span>
+                      <span class="inline-flex items-center gap-1.5 text-sm font-medium" style="color: var(--green);">
+                        <span class="w-1.5 h-1.5 rounded-full" style="background: var(--green);"></span>
                         Actif
                       </span>
                     } @else {
-                      <span class="inline-flex items-center gap-1 text-sm text-[#6A6F73]">
-                        <span class="w-2 h-2 bg-[#6A6F73] rounded-full"></span>
+                      <span class="inline-flex items-center gap-1.5 text-sm" style="color: var(--ink-3);">
+                        <span class="w-1.5 h-1.5 rounded-full" style="background: var(--ink-4);"></span>
                         Inactif
                       </span>
                     }
                   </td>
-                  <td class="text-[#6A6F73] text-sm">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+                  <td class="text-sm" style="color: var(--ink-3);">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
                 </tr>
               }
             </tbody>
@@ -113,7 +115,7 @@ import { User, PageResponse } from '../../../core/models';
               <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-ghost btn-sm">
                 Précédent
               </button>
-              <span class="px-4 text-sm text-[#6A6F73]">
+              <span class="px-4 text-sm" style="color: var(--ink-3);">
                 Page {{ currentPage + 1 }} sur {{ pageResponse.totalPages }}
               </span>
               <button (click)="changePage(currentPage + 1)" [disabled]="currentPage >= pageResponse.totalPages - 1" class="btn btn-ghost btn-sm">
@@ -172,11 +174,11 @@ export class UserManagementComponent implements OnInit {
 
   getAvatarColor(role: string): string {
     switch (role) {
-      case 'ETUDIANT': return '#5624D0';
-      case 'INSTRUCTEUR': return '#1E6B55';
-      case 'ADMIN': return '#B4690E';
-      case 'SUPER_ADMIN': return '#C4302B';
-      default: return '#6A6F73';
+      case 'ETUDIANT': return '#5B21B6';
+      case 'INSTRUCTEUR': return '#064E3B';
+      case 'ADMIN': return '#92400E';
+      case 'SUPER_ADMIN': return '#7F1D1D';
+      default: return '#7C7892';
     }
   }
 

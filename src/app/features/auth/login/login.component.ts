@@ -9,37 +9,39 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
-    <div class="min-h-screen flex">
-      <!-- Left: Form -->
-      <div class="flex-1 flex items-center justify-center p-8 bg-white">
-        <div class="w-full max-w-[400px]">
+    <div class="min-h-screen flex items-center justify-center p-4 auth-bg">
 
-          <!-- Logo mobile -->
-          <a routerLink="/" class="flex items-center gap-2 mb-8 lg:hidden">
-            <div class="w-8 h-8 bg-[#5624D0] rounded flex items-center justify-center">
-              <span class="text-white font-bold">S</span>
-            </div>
-            <span class="text-xl font-bold text-[#1C1D1F]">SenCours</span>
+      <!-- Centered card -->
+      <div class="w-full max-w-[420px]">
+
+        <!-- Logo -->
+        <div class="text-center mb-8">
+          <a routerLink="/" class="inline-flex items-center gap-0">
+            <span class="text-2xl font-medium" style="color: var(--ink-3);">Sen</span>
+            <span class="text-2xl font-bold" style="color: var(--ink);">Cours</span>
           </a>
+        </div>
 
-          <h1 class="text-[28px] font-bold text-[#1C1D1F] leading-tight">
-            Connectez-vous à votre compte
-          </h1>
-          <p class="mt-2 text-[#6A6F73]">
+        <!-- Card -->
+        <div class="bg-white p-8"
+             style="border-radius: var(--r-xl); border: 1px solid var(--border); box-shadow: var(--shadow-lg);">
+
+          <h1 class="text-2xl font-bold mb-1" style="color: var(--ink);">Connexion</h1>
+          <p class="text-sm mb-6" style="color: var(--ink-3);">
             Pas encore inscrit ?
-            <a routerLink="/register" class="link">Créer un compte</a>
+            <a routerLink="/register" class="link font-semibold">Créer un compte</a>
           </p>
 
           @if (errorMessage) {
-            <div class="alert alert-error mt-6">
-              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="alert alert-error mb-5">
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
               <span>{{ errorMessage }}</span>
             </div>
           }
 
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-5">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
             <div>
               <label class="label">Adresse email</label>
               <input
@@ -49,7 +51,7 @@ import { AuthService } from '../../../core/services/auth.service';
                 [class.input-error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
                 placeholder="nom@exemple.com">
               @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-                <p class="mt-1 text-sm text-[#C4302B]">Veuillez entrer une adresse email valide</p>
+                <p class="mt-1 text-xs" style="color: #EF4444;">Veuillez entrer une adresse email valide</p>
               }
             </div>
 
@@ -63,57 +65,54 @@ import { AuthService } from '../../../core/services/auth.service';
                 placeholder="Entrez votre mot de passe">
             </div>
 
-            <button
-              type="submit"
-              [disabled]="loginForm.invalid || isLoading"
-              class="btn btn-primary w-full btn-lg mt-6">
-              @if (isLoading) {
-                <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Connexion...
-              } @else {
-                Se connecter
-              }
-            </button>
+            <div class="pt-2">
+              <button
+                type="submit"
+                [disabled]="loginForm.invalid || isLoading"
+                class="btn btn-primary w-full"
+                style="padding: 12px 24px; font-size: 15px;">
+                @if (isLoading) {
+                  <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Connexion...
+                } @else {
+                  Se connecter
+                }
+              </button>
+            </div>
           </form>
 
-          <p class="mt-8 text-center text-sm text-[#6A6F73]">
-            <a href="#" class="link">Mot de passe oublié ?</a>
-          </p>
+          <div class="mt-5 pt-5 text-center" style="border-top: 1px solid var(--border);">
+            <a href="#" class="text-sm link">Mot de passe oublié ?</a>
+          </div>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="mt-6 grid grid-cols-3 gap-4 text-center">
+          <div>
+            <p class="font-bold text-lg" style="color: var(--ink);">500+</p>
+            <p class="text-xs" style="color: var(--ink-3);">Cours</p>
+          </div>
+          <div>
+            <p class="font-bold text-lg" style="color: var(--ink);">10K+</p>
+            <p class="text-xs" style="color: var(--ink-3);">Étudiants</p>
+          </div>
+          <div>
+            <p class="font-bold text-lg" style="color: var(--ink);">50+</p>
+            <p class="text-xs" style="color: var(--ink-3);">Instructeurs</p>
+          </div>
         </div>
       </div>
 
-      <!-- Right: Branding -->
-      <div class="hidden lg:flex flex-1 bg-[#1C1D1F] items-center justify-center p-12">
-        <div class="max-w-md text-center">
-          <div class="w-16 h-16 bg-[#5624D0] rounded-lg flex items-center justify-center mx-auto mb-8">
-            <span class="text-white font-bold text-3xl">S</span>
-          </div>
-          <h2 class="text-3xl font-bold text-white mb-4">
-            Bienvenue sur SenCours
-          </h2>
-          <p class="text-[#A1A1A1] text-lg leading-relaxed">
-            La première plateforme d'apprentissage en ligne du Sénégal.
-            Accédez à des centaines de cours créés par des experts locaux.
-          </p>
-          <div class="mt-12 grid grid-cols-3 gap-8 text-center">
-            <div>
-              <p class="text-3xl font-bold text-white">500+</p>
-              <p class="text-sm text-[#A1A1A1] mt-1">Cours</p>
-            </div>
-            <div>
-              <p class="text-3xl font-bold text-white">10K+</p>
-              <p class="text-sm text-[#A1A1A1] mt-1">Étudiants</p>
-            </div>
-            <div>
-              <p class="text-3xl font-bold text-white">50+</p>
-              <p class="text-sm text-[#A1A1A1] mt-1">Instructeurs</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <style>
+        .auth-bg {
+          background-color: var(--canvas);
+          background-image: radial-gradient(circle at 20% 20%, rgba(91,33,182,0.04) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 80%, rgba(217,119,6,0.04) 0%, transparent 50%);
+        }
+      </style>
     </div>
   `
 })

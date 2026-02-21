@@ -11,20 +11,26 @@ import { PageResponse } from '../../../core/models';
   template: `
     <div class="p-6">
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-xl font-bold text-[#1C1D1F]">Candidatures instructeurs</h1>
+        <h1 class="text-lg font-bold" style="color: var(--ink);">Candidatures instructeurs</h1>
       </div>
 
-      <!-- Filters -->
+      <!-- Status filter pills -->
       <div class="flex flex-wrap gap-2 mb-6">
         @for (filter of statusFilters; track filter.value) {
           <button
             (click)="onStatusFilter(filter.value)"
-            [class.bg-[#1C1D1F]]="selectedStatus === filter.value"
-            [class.text-white]="selectedStatus === filter.value"
-            class="px-4 py-2 text-sm font-medium rounded border border-[#E4E8EB] hover:border-[#1C1D1F] transition-colors">
+            class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-colors"
+            style="border-radius: var(--r-full);"
+            [style.background]="selectedStatus === filter.value ? 'var(--violet)' : 'white'"
+            [style.color]="selectedStatus === filter.value ? 'white' : 'var(--ink-2)'"
+            [style.border]="selectedStatus === filter.value ? '1px solid var(--violet)' : '1px solid var(--border-2)'">
             {{ filter.label }}
             @if (filter.value === 'PENDING' && pendingCount > 0) {
-              <span class="ml-1.5 badge badge-error text-xs">{{ pendingCount }}</span>
+              <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full"
+                    [style.background]="selectedStatus === 'PENDING' ? 'rgba(255,255,255,0.25)' : '#EF4444'"
+                    [style.color]="'white'">
+                {{ pendingCount }}
+              </span>
             }
           </button>
         }
@@ -32,12 +38,15 @@ import { PageResponse } from '../../../core/models';
 
       <!-- Review modal -->
       @if (reviewingApplication) {
-        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div class="bg-white rounded shadow-xl max-w-lg w-full p-6">
-            <h3 class="text-lg font-bold text-[#1C1D1F] mb-1">Examiner la candidature</h3>
-            <p class="text-sm text-[#6A6F73] mb-6">{{ reviewingApplication.userFullName }}</p>
-
-            <div class="mb-6">
+        <div class="fixed inset-0 flex items-center justify-center z-50 p-4"
+             style="background: rgba(13,11,32,0.6);">
+          <div class="bg-white w-full max-w-md"
+               style="border-radius: var(--r-xl); box-shadow: var(--shadow-lg);">
+            <div class="px-6 py-5" style="border-bottom: 1px solid var(--border);">
+              <h3 class="text-base font-bold" style="color: var(--ink);">Examiner la candidature</h3>
+              <p class="text-sm mt-0.5" style="color: var(--ink-3);">{{ reviewingApplication.userFullName }}</p>
+            </div>
+            <div class="p-6">
               <label class="label">Commentaire (optionnel)</label>
               <textarea
                 [(ngModel)]="reviewComment"
@@ -45,18 +54,23 @@ import { PageResponse } from '../../../core/models';
                 class="input resize-none"
                 placeholder="Message pour le candidat..."></textarea>
             </div>
-
-            <div class="flex gap-3">
+            <div class="px-6 pb-6 flex gap-3">
               <button
                 (click)="submitReview(true)"
                 [disabled]="isReviewing"
-                class="flex-1 bg-[#1E6B55] hover:bg-[#1a5e4a] text-white font-semibold py-2.5 px-4 rounded transition-colors">
+                class="flex-1 py-2.5 px-4 font-semibold text-sm text-white transition-colors disabled:opacity-50"
+                style="background: var(--green); border-radius: var(--r-sm);"
+                onmouseenter="this.style.opacity='0.9'"
+                onmouseleave="this.style.opacity='1'">
                 Approuver
               </button>
               <button
                 (click)="submitReview(false)"
                 [disabled]="isReviewing"
-                class="flex-1 bg-[#C4302B] hover:bg-[#a82824] text-white font-semibold py-2.5 px-4 rounded transition-colors">
+                class="flex-1 py-2.5 px-4 font-semibold text-sm text-white transition-colors disabled:opacity-50"
+                style="background: #EF4444; border-radius: var(--r-sm);"
+                onmouseenter="this.style.opacity='0.9'"
+                onmouseleave="this.style.opacity='1'">
                 Rejeter
               </button>
               <button
@@ -72,16 +86,16 @@ import { PageResponse } from '../../../core/models';
 
       <!-- Content -->
       @if (isLoading) {
-        <div class="space-y-4">
+        <div class="space-y-3">
           @for (i of [1,2,3,4]; track i) {
-            <div class="flex items-center gap-4 p-4">
-              <div class="skeleton w-10 h-10 rounded-full flex-shrink-0"></div>
+            <div class="flex items-center gap-4 p-3">
+              <div class="skeleton w-9 h-9 rounded-full flex-shrink-0"></div>
               <div class="flex-1 space-y-2">
                 <div class="skeleton h-4 w-1/3"></div>
                 <div class="skeleton h-3 w-1/4"></div>
               </div>
-              <div class="skeleton h-6 w-20"></div>
-              <div class="skeleton h-8 w-24"></div>
+              <div class="skeleton h-5 w-20 rounded-full"></div>
+              <div class="skeleton h-8 w-24 rounded-md"></div>
             </div>
           }
         </div>
@@ -113,19 +127,22 @@ import { PageResponse } from '../../../core/models';
                 <tr>
                   <td>
                     <div class="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-full bg-[#F3EFFC] flex items-center justify-center flex-shrink-0">
-                        <span class="text-sm font-semibold text-[#5624D0]">
+                      <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                           style="background: var(--violet-tint);">
+                        <span class="text-sm font-bold" style="color: var(--violet);">
                           {{ getInitials(application.userFullName) }}
                         </span>
                       </div>
                       <div class="min-w-0">
-                        <p class="font-medium text-[#1C1D1F] truncate">{{ application.userFullName }}</p>
-                        <p class="text-xs text-[#6A6F73] truncate">{{ application.userEmail }}</p>
+                        <p class="font-medium truncate" style="color: var(--ink);">{{ application.userFullName }}</p>
+                        <p class="text-xs truncate" style="color: var(--ink-3);">{{ application.userEmail }}</p>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <p class="text-sm text-[#1C1D1F] truncate max-w-[200px]">{{ application.expertise || '—' }}</p>
+                    <p class="text-sm truncate max-w-[180px]" style="color: var(--ink-2);">
+                      {{ application.expertise || '—' }}
+                    </p>
                   </td>
                   <td>
                     <span class="badge" [ngClass]="{
@@ -135,10 +152,10 @@ import { PageResponse } from '../../../core/models';
                     }">{{ getStatusLabel(application.status) }}</span>
                   </td>
                   <td>
-                    <span class="text-sm text-[#6A6F73]">{{ application.createdAt | date:'dd/MM/yyyy' }}</span>
+                    <span class="text-sm" style="color: var(--ink-3);">{{ application.createdAt | date:'dd/MM/yyyy' }}</span>
                   </td>
                   <td>
-                    <div class="flex items-center justify-end gap-2">
+                    <div class="flex items-center justify-end gap-1">
                       <button (click)="viewDetails(application)" class="btn btn-ghost btn-sm" title="Voir les détails">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -148,7 +165,7 @@ import { PageResponse } from '../../../core/models';
                       @if (application.status === 'PENDING') {
                         <button
                           (click)="openReviewModal(application)"
-                          class="bg-[#5624D0] text-white hover:bg-[#4a1fb8] transition-colors px-3 py-1.5 rounded text-xs font-medium">
+                          class="btn btn-primary btn-sm">
                           Examiner
                         </button>
                       }
@@ -163,12 +180,14 @@ import { PageResponse } from '../../../core/models';
         <!-- Pagination -->
         @if (pageResponse && pageResponse.totalPages > 1) {
           <div class="flex items-center justify-between mt-6">
-            <p class="text-sm text-[#6A6F73]">
+            <p class="text-sm" style="color: var(--ink-3);">
               {{ pageResponse.totalElements }} candidature{{ pageResponse.totalElements > 1 ? 's' : '' }}
             </p>
-            <div class="flex gap-2">
+            <div class="flex gap-1">
               <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-ghost btn-sm">Précédent</button>
-              <span class="flex items-center text-sm text-[#6A6F73] px-2">Page {{ currentPage + 1 }} / {{ pageResponse.totalPages }}</span>
+              <span class="flex items-center text-sm px-3" style="color: var(--ink-3);">
+                {{ currentPage + 1 }} / {{ pageResponse.totalPages }}
+              </span>
               <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage >= pageResponse.totalPages - 1" class="btn btn-ghost btn-sm">Suivant</button>
             </div>
           </div>
@@ -178,12 +197,15 @@ import { PageResponse } from '../../../core/models';
 
     <!-- Detail modal -->
     @if (selectedApplication) {
-      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
-          <div class="flex items-center justify-between p-6 border-b border-[#E4E8EB]">
+      <div class="fixed inset-0 flex items-center justify-center z-50 p-4"
+           style="background: rgba(13,11,32,0.6);">
+        <div class="bg-white w-full max-w-lg max-h-[80vh] overflow-y-auto"
+             style="border-radius: var(--r-xl); box-shadow: var(--shadow-lg);">
+          <div class="flex items-center justify-between px-6 py-5"
+               style="border-bottom: 1px solid var(--border);">
             <div>
-              <h3 class="text-lg font-bold text-[#1C1D1F]">{{ selectedApplication.userFullName }}</h3>
-              <p class="text-sm text-[#6A6F73]">{{ selectedApplication.userEmail }}</p>
+              <h3 class="text-base font-bold" style="color: var(--ink);">{{ selectedApplication.userFullName }}</h3>
+              <p class="text-sm" style="color: var(--ink-3);">{{ selectedApplication.userEmail }}</p>
             </div>
             <button (click)="selectedApplication = null" class="btn btn-ghost btn-sm">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,42 +215,43 @@ import { PageResponse } from '../../../core/models';
           </div>
           <div class="p-6 space-y-5">
             <div>
-              <p class="text-xs font-semibold text-[#6A6F73] uppercase tracking-wide mb-2">Motivation</p>
-              <p class="text-sm text-[#1C1D1F] leading-relaxed">{{ selectedApplication.motivation }}</p>
+              <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--ink-3);">Motivation</p>
+              <p class="text-sm leading-relaxed" style="color: var(--ink-2);">{{ selectedApplication.motivation }}</p>
             </div>
             @if (selectedApplication.expertise) {
               <div>
-                <p class="text-xs font-semibold text-[#6A6F73] uppercase tracking-wide mb-2">Expertise</p>
-                <p class="text-sm text-[#1C1D1F]">{{ selectedApplication.expertise }}</p>
+                <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--ink-3);">Expertise</p>
+                <p class="text-sm" style="color: var(--ink-2);">{{ selectedApplication.expertise }}</p>
               </div>
             }
             @if (selectedApplication.linkedinUrl) {
               <div>
-                <p class="text-xs font-semibold text-[#6A6F73] uppercase tracking-wide mb-2">LinkedIn</p>
+                <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--ink-3);">LinkedIn</p>
                 <a [href]="selectedApplication.linkedinUrl" target="_blank" class="link text-sm">{{ selectedApplication.linkedinUrl }}</a>
               </div>
             }
             @if (selectedApplication.portfolioUrl) {
               <div>
-                <p class="text-xs font-semibold text-[#6A6F73] uppercase tracking-wide mb-2">Portfolio</p>
+                <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--ink-3);">Portfolio</p>
                 <a [href]="selectedApplication.portfolioUrl" target="_blank" class="link text-sm">{{ selectedApplication.portfolioUrl }}</a>
               </div>
             }
             @if (selectedApplication.adminComment) {
               <div>
-                <p class="text-xs font-semibold text-[#6A6F73] uppercase tracking-wide mb-2">Commentaire admin</p>
-                <p class="text-sm text-[#1C1D1F]">{{ selectedApplication.adminComment }}</p>
-                <p class="text-xs text-[#6A6F73] mt-1">Par {{ selectedApplication.reviewedByName }} — {{ selectedApplication.reviewedAt | date:'dd/MM/yyyy' }}</p>
+                <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--ink-3);">Commentaire admin</p>
+                <p class="text-sm" style="color: var(--ink-2);">{{ selectedApplication.adminComment }}</p>
+                <p class="text-xs mt-1" style="color: var(--ink-4);">Par {{ selectedApplication.reviewedByName }} — {{ selectedApplication.reviewedAt | date:'dd/MM/yyyy' }}</p>
               </div>
             }
-            <div class="pt-4 border-t border-[#E4E8EB] flex items-center justify-between">
+            <div class="pt-4 flex items-center justify-between" style="border-top: 1px solid var(--border);">
               <span class="badge" [ngClass]="{
                 'badge-warning': selectedApplication.status === 'PENDING',
                 'badge-success': selectedApplication.status === 'APPROVED',
                 'badge-error': selectedApplication.status === 'REJECTED'
               }">{{ getStatusLabel(selectedApplication.status) }}</span>
               @if (selectedApplication.status === 'PENDING') {
-                <button (click)="openReviewModal(selectedApplication); selectedApplication = null" class="btn btn-primary btn-sm">
+                <button (click)="openReviewModal(selectedApplication); selectedApplication = null"
+                        class="btn btn-primary btn-sm">
                   Examiner
                 </button>
               }
