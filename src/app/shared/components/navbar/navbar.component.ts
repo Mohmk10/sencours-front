@@ -36,17 +36,46 @@ import { AuthService } from '../../../core/services/auth.service';
           <!-- Navigation -->
           <div class="flex items-center gap-1 flex-shrink-0">
             @if (authService.isAuthenticated()) {
-              @if (authService.hasAnyRole(['INSTRUCTEUR', 'ADMIN'])) {
-                <a routerLink="/dashboard/instructor"
-                   class="hidden lg:block text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0] px-3 py-2 transition-colors">
-                  Enseigner
-                </a>
-              }
 
-              <a routerLink="/dashboard"
-                 class="hidden md:block text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0] px-3 py-2 transition-colors">
-                Mon apprentissage
-              </a>
+              <!-- Navigation Links (desktop) -->
+              <div class="hidden md:flex items-center gap-1">
+
+                <!-- ETUDIANT + INSTRUCTEUR : Mon apprentissage -->
+                @if (authService.hasAnyRole(['ETUDIANT', 'INSTRUCTEUR'])) {
+                  <a routerLink="/dashboard"
+                     routerLinkActive="text-[#5624D0]"
+                     class="px-4 py-2 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0] transition-colors">
+                    Mon apprentissage
+                  </a>
+                }
+
+                <!-- INSTRUCTEUR uniquement : Enseigner -->
+                @if (authService.hasRole('INSTRUCTEUR')) {
+                  <a routerLink="/dashboard/instructor"
+                     routerLinkActive="text-[#5624D0]"
+                     class="px-4 py-2 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0] transition-colors">
+                    Enseigner
+                  </a>
+                }
+
+                <!-- ETUDIANT uniquement : Devenir instructeur -->
+                @if (authService.hasRole('ETUDIANT')) {
+                  <a routerLink="/become-instructor"
+                     routerLinkActive="text-[#5624D0]"
+                     class="px-4 py-2 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0] transition-colors">
+                    Devenir instructeur
+                  </a>
+                }
+
+                <!-- ADMIN uniquement : Administration -->
+                @if (authService.hasRole('ADMIN')) {
+                  <a routerLink="/admin"
+                     routerLinkActive="text-[#5624D0]"
+                     class="px-4 py-2 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0] transition-colors">
+                    Administration
+                  </a>
+                }
+              </div>
 
               <!-- User avatar menu -->
               <div class="relative ml-1">
@@ -57,37 +86,72 @@ import { AuthService } from '../../../core/services/auth.service';
                 </button>
 
                 @if (userMenuOpen) {
-                  <div class="absolute right-0 mt-2 w-60 bg-white border border-[#D1D7DC] shadow-lg py-1 z-50">
-                    <div class="px-4 py-3 border-b border-[#D1D7DC]">
+                  <div class="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-xl py-2 z-50">
+                    <!-- Header avec nom, email et badge rôle -->
+                    <div class="px-4 py-3 border-b border-gray-100">
                       <p class="font-semibold text-[#1C1D1F] text-sm">{{ currentUser?.firstName }} {{ currentUser?.lastName }}</p>
                       <p class="text-xs text-[#6A6F73] mt-0.5">{{ currentUser?.email }}</p>
+                      <span class="inline-block mt-1.5 px-2 py-0.5 text-xs font-medium rounded"
+                            [class.bg-blue-100]="currentUser?.role === 'ETUDIANT'"
+                            [class.text-blue-800]="currentUser?.role === 'ETUDIANT'"
+                            [class.bg-purple-100]="currentUser?.role === 'INSTRUCTEUR'"
+                            [class.text-purple-800]="currentUser?.role === 'INSTRUCTEUR'"
+                            [class.bg-red-100]="currentUser?.role === 'ADMIN'"
+                            [class.text-red-800]="currentUser?.role === 'ADMIN'">
+                        {{ getRoleLabel(currentUser?.role) }}
+                      </span>
                     </div>
 
-                    <a routerLink="/dashboard" (click)="userMenuOpen = false"
-                       class="flex items-center px-4 py-2.5 text-sm text-[#1C1D1F] hover:bg-[#F7F9FA]">
-                      Mon apprentissage
-                    </a>
+                    <!-- Links selon le rôle -->
+                    <div class="py-1">
+                      @if (authService.hasAnyRole(['ETUDIANT', 'INSTRUCTEUR'])) {
+                        <a routerLink="/dashboard" (click)="userMenuOpen = false"
+                           class="block px-4 py-2 text-sm text-[#1C1D1F] hover:bg-gray-50">
+                          Mon apprentissage
+                        </a>
+                      }
 
-                    @if (authService.hasAnyRole(['INSTRUCTEUR', 'ADMIN'])) {
-                      <a routerLink="/dashboard/instructor" (click)="userMenuOpen = false"
-                         class="flex items-center px-4 py-2.5 text-sm text-[#1C1D1F] hover:bg-[#F7F9FA]">
-                        Enseigner sur SenCours
+                      @if (authService.hasRole('INSTRUCTEUR')) {
+                        <a routerLink="/dashboard/instructor" (click)="userMenuOpen = false"
+                           class="block px-4 py-2 text-sm text-[#1C1D1F] hover:bg-gray-50">
+                          Tableau de bord instructeur
+                        </a>
+                      }
+
+                      @if (authService.hasRole('ETUDIANT')) {
+                        <a routerLink="/become-instructor" (click)="userMenuOpen = false"
+                           class="block px-4 py-2 text-sm text-[#1C1D1F] hover:bg-gray-50">
+                          Devenir instructeur
+                        </a>
+                      }
+
+                      @if (authService.hasRole('ADMIN')) {
+                        <a routerLink="/admin/users" (click)="userMenuOpen = false"
+                           class="block px-4 py-2 text-sm text-[#1C1D1F] hover:bg-gray-50">
+                          Gérer les utilisateurs
+                        </a>
+                        <a routerLink="/admin/courses" (click)="userMenuOpen = false"
+                           class="block px-4 py-2 text-sm text-[#1C1D1F] hover:bg-gray-50">
+                          Gérer les cours
+                        </a>
+                        <a routerLink="/admin/applications" (click)="userMenuOpen = false"
+                           class="block px-4 py-2 text-sm text-[#1C1D1F] hover:bg-gray-50">
+                          Candidatures instructeurs
+                        </a>
+                      }
+                    </div>
+
+                    <!-- Settings & Logout -->
+                    <div class="border-t border-gray-100 pt-1">
+                      <a routerLink="/settings" (click)="userMenuOpen = false"
+                         class="block px-4 py-2 text-sm text-[#1C1D1F] hover:bg-gray-50">
+                        Paramètres du compte
                       </a>
-                    }
-
-                    @if (authService.hasRole('ADMIN')) {
-                      <a routerLink="/admin" (click)="userMenuOpen = false"
-                         class="flex items-center px-4 py-2.5 text-sm text-[#1C1D1F] hover:bg-[#F7F9FA]">
-                        Administration
-                      </a>
-                    }
-
-                    <hr class="my-1 border-[#D1D7DC]">
-
-                    <button (click)="logout()"
-                            class="w-full text-left px-4 py-2.5 text-sm text-[#5624D0] hover:bg-[#F7F9FA] font-medium">
-                      Déconnexion
-                    </button>
+                      <button (click)="logout()"
+                              class="w-full text-left px-4 py-2 text-sm text-[#5624D0] hover:bg-gray-50 font-medium">
+                        Déconnexion
+                      </button>
+                    </div>
                   </div>
                 }
               </div>
@@ -134,14 +198,28 @@ import { AuthService } from '../../../core/services/auth.service';
               Catalogue
             </a>
             @if (authService.isAuthenticated()) {
-              <a routerLink="/dashboard" (click)="mobileMenuOpen = false"
-                 class="block py-2.5 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0]">
-                Mon apprentissage
-              </a>
-              @if (authService.hasAnyRole(['INSTRUCTEUR', 'ADMIN'])) {
+              @if (authService.hasAnyRole(['ETUDIANT', 'INSTRUCTEUR'])) {
+                <a routerLink="/dashboard" (click)="mobileMenuOpen = false"
+                   class="block py-2.5 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0]">
+                  Mon apprentissage
+                </a>
+              }
+              @if (authService.hasRole('INSTRUCTEUR')) {
                 <a routerLink="/dashboard/instructor" (click)="mobileMenuOpen = false"
                    class="block py-2.5 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0]">
                   Enseigner
+                </a>
+              }
+              @if (authService.hasRole('ETUDIANT')) {
+                <a routerLink="/become-instructor" (click)="mobileMenuOpen = false"
+                   class="block py-2.5 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0]">
+                  Devenir instructeur
+                </a>
+              }
+              @if (authService.hasRole('ADMIN')) {
+                <a routerLink="/admin" (click)="mobileMenuOpen = false"
+                   class="block py-2.5 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0]">
+                  Administration
                 </a>
               }
               <button (click)="logout()"
@@ -173,6 +251,15 @@ export class NavbarComponent {
     const user = this.authService.getCurrentUser();
     if (!user) return '?';
     return `${user.firstName?.charAt(0) ?? ''}${user.lastName?.charAt(0) ?? ''}`.toUpperCase();
+  }
+
+  getRoleLabel(role: string | undefined): string {
+    switch (role) {
+      case 'ADMIN': return 'Administrateur';
+      case 'INSTRUCTEUR': return 'Instructeur';
+      case 'ETUDIANT': return 'Étudiant';
+      default: return '';
+    }
   }
 
   toggleUserMenu(event: Event) {
