@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -8,97 +8,185 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <nav class="bg-blue-600 text-white shadow-lg">
-      <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
+    <nav class="bg-white border-b border-[#D1D7DC] sticky top-0 z-50">
+      <div class="container-custom">
+        <div class="flex items-center justify-between h-16 gap-4">
+
           <!-- Logo -->
-          <a routerLink="/" class="text-2xl font-bold">SenCours</a>
+          <a routerLink="/" class="flex items-center gap-2 flex-shrink-0">
+            <div class="w-8 h-8 bg-[#5624D0] rounded flex items-center justify-center">
+              <span class="text-white font-bold text-base leading-none">S</span>
+            </div>
+            <span class="text-lg font-bold text-[#1C1D1F] hidden sm:block">SenCours</span>
+          </a>
 
-          <!-- Navigation Links -->
-          <div class="hidden md:flex items-center space-x-4">
-            <a routerLink="/courses" routerLinkActive="bg-blue-700"
-               class="px-3 py-2 rounded hover:bg-blue-700 transition">
-              Cours
-            </a>
+          <!-- Search bar -->
+          <div class="hidden md:flex flex-1 max-w-2xl">
+            <div class="relative w-full">
+              <input
+                type="text"
+                placeholder="Rechercher des cours"
+                class="w-full pl-11 pr-4 py-2.5 border border-[#1C1D1F] rounded-full bg-white text-sm text-[#1C1D1F] placeholder-[#6A6F73] focus:outline-none focus:ring-2 focus:ring-[#5624D0] focus:border-[#5624D0]">
+              <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6A6F73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+          </div>
 
+          <!-- Navigation -->
+          <div class="flex items-center gap-1 flex-shrink-0">
             @if (authService.isAuthenticated()) {
-              @if (authService.hasAnyRole(['ETUDIANT', 'INSTRUCTEUR', 'ADMIN'])) {
-                <a routerLink="/dashboard" routerLinkActive="bg-blue-700"
-                   class="px-3 py-2 rounded hover:bg-blue-700 transition">
-                  Dashboard
-                </a>
-              }
-
               @if (authService.hasAnyRole(['INSTRUCTEUR', 'ADMIN'])) {
-                <a routerLink="/dashboard/instructor" routerLinkActive="bg-blue-700"
-                   class="px-3 py-2 rounded hover:bg-blue-700 transition">
-                  Mes Cours
+                <a routerLink="/dashboard/instructor"
+                   class="hidden lg:block text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0] px-3 py-2 transition-colors">
+                  Enseigner
                 </a>
               }
 
-              @if (authService.hasRole('ADMIN')) {
-                <a routerLink="/admin" routerLinkActive="bg-blue-700"
-                   class="px-3 py-2 rounded hover:bg-blue-700 transition">
-                  Admin
-                </a>
-              }
+              <a routerLink="/dashboard"
+                 class="hidden md:block text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0] px-3 py-2 transition-colors">
+                Mon apprentissage
+              </a>
 
-              <div class="flex items-center space-x-2 ml-4">
-                <span class="text-sm">{{ currentUser?.firstName }}</span>
-                <button (click)="logout()"
-                        class="bg-red-500 px-3 py-1 rounded hover:bg-red-600 transition">
-                  Déconnexion
+              <!-- User avatar menu -->
+              <div class="relative ml-1">
+                <button
+                  (click)="toggleUserMenu($event)"
+                  class="w-9 h-9 rounded-full bg-[#1C1D1F] text-white flex items-center justify-center font-bold text-xs hover:ring-2 hover:ring-[#5624D0] transition-all">
+                  {{ getInitials() }}
                 </button>
+
+                @if (userMenuOpen) {
+                  <div class="absolute right-0 mt-2 w-60 bg-white border border-[#D1D7DC] shadow-lg py-1 z-50">
+                    <div class="px-4 py-3 border-b border-[#D1D7DC]">
+                      <p class="font-semibold text-[#1C1D1F] text-sm">{{ currentUser?.firstName }} {{ currentUser?.lastName }}</p>
+                      <p class="text-xs text-[#6A6F73] mt-0.5">{{ currentUser?.email }}</p>
+                    </div>
+
+                    <a routerLink="/dashboard" (click)="userMenuOpen = false"
+                       class="flex items-center px-4 py-2.5 text-sm text-[#1C1D1F] hover:bg-[#F7F9FA]">
+                      Mon apprentissage
+                    </a>
+
+                    @if (authService.hasAnyRole(['INSTRUCTEUR', 'ADMIN'])) {
+                      <a routerLink="/dashboard/instructor" (click)="userMenuOpen = false"
+                         class="flex items-center px-4 py-2.5 text-sm text-[#1C1D1F] hover:bg-[#F7F9FA]">
+                        Enseigner sur SenCours
+                      </a>
+                    }
+
+                    @if (authService.hasRole('ADMIN')) {
+                      <a routerLink="/admin" (click)="userMenuOpen = false"
+                         class="flex items-center px-4 py-2.5 text-sm text-[#1C1D1F] hover:bg-[#F7F9FA]">
+                        Administration
+                      </a>
+                    }
+
+                    <hr class="my-1 border-[#D1D7DC]">
+
+                    <button (click)="logout()"
+                            class="w-full text-left px-4 py-2.5 text-sm text-[#5624D0] hover:bg-[#F7F9FA] font-medium">
+                      Déconnexion
+                    </button>
+                  </div>
+                }
               </div>
             } @else {
               <a routerLink="/login"
-                 class="px-4 py-2 rounded border border-white hover:bg-white hover:text-blue-600 transition">
-                Connexion
+                 class="text-sm font-semibold text-[#1C1D1F] hover:text-[#5624D0] px-4 py-2 border border-[#1C1D1F] rounded transition-colors hidden sm:block">
+                Se connecter
               </a>
-              <a routerLink="/register"
-                 class="px-4 py-2 rounded bg-white text-blue-600 hover:bg-gray-100 transition">
-                Inscription
+              <a routerLink="/register" class="btn-primary text-sm">
+                S'inscrire
               </a>
             }
-          </div>
 
-          <!-- Mobile menu button -->
-          <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
+            <!-- Mobile menu button -->
+            <button (click)="mobileMenuOpen = !mobileMenuOpen"
+                    class="md:hidden ml-2 p-2 text-[#1C1D1F] hover:text-[#5624D0]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <!-- Mobile menu -->
-        @if (mobileMenuOpen) {
-          <div class="md:hidden pb-4">
-            <a routerLink="/courses" class="block py-2 hover:bg-blue-700 px-2 rounded">Cours</a>
+        <!-- Mobile search -->
+        <div class="md:hidden pb-3">
+          <div class="relative">
+            <input
+              type="text"
+              placeholder="Rechercher des cours"
+              class="w-full pl-10 pr-4 py-2 border border-[#D1D7DC] rounded-full bg-[#F7F9FA] text-sm focus:outline-none focus:ring-2 focus:ring-[#5624D0]">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6A6F73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      @if (mobileMenuOpen) {
+        <div class="md:hidden border-t border-[#D1D7DC] bg-white py-2">
+          <div class="container-custom space-y-1">
+            <a routerLink="/courses" (click)="mobileMenuOpen = false"
+               class="block py-2.5 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0]">
+              Catalogue
+            </a>
             @if (authService.isAuthenticated()) {
-              <a routerLink="/dashboard" class="block py-2 hover:bg-blue-700 px-2 rounded">Dashboard</a>
-              <button (click)="logout()" class="w-full text-left py-2 hover:bg-blue-700 px-2 rounded">
+              <a routerLink="/dashboard" (click)="mobileMenuOpen = false"
+                 class="block py-2.5 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0]">
+                Mon apprentissage
+              </a>
+              @if (authService.hasAnyRole(['INSTRUCTEUR', 'ADMIN'])) {
+                <a routerLink="/dashboard/instructor" (click)="mobileMenuOpen = false"
+                   class="block py-2.5 text-sm font-medium text-[#1C1D1F] hover:text-[#5624D0]">
+                  Enseigner
+                </a>
+              }
+              <button (click)="logout()"
+                      class="block w-full text-left py-2.5 text-sm font-medium text-[#5624D0]">
                 Déconnexion
               </button>
             } @else {
-              <a routerLink="/login" class="block py-2 hover:bg-blue-700 px-2 rounded">Connexion</a>
-              <a routerLink="/register" class="block py-2 hover:bg-blue-700 px-2 rounded">Inscription</a>
+              <a routerLink="/login" (click)="mobileMenuOpen = false"
+                 class="block py-2.5 text-sm font-medium text-[#1C1D1F]">Se connecter</a>
+              <a routerLink="/register" (click)="mobileMenuOpen = false"
+                 class="block py-2.5 text-sm font-medium text-[#5624D0]">S'inscrire</a>
             }
           </div>
-        }
-      </div>
+        </div>
+      }
     </nav>
   `
 })
 export class NavbarComponent {
   authService = inject(AuthService);
   mobileMenuOpen = false;
+  userMenuOpen = false;
 
   get currentUser() {
     return this.authService.getCurrentUser();
   }
 
+  getInitials(): string {
+    const user = this.authService.getCurrentUser();
+    if (!user) return '?';
+    return `${user.firstName?.charAt(0) ?? ''}${user.lastName?.charAt(0) ?? ''}`.toUpperCase();
+  }
+
+  toggleUserMenu(event: Event) {
+    event.stopPropagation();
+    this.userMenuOpen = !this.userMenuOpen;
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.userMenuOpen = false;
+  }
+
   logout() {
+    this.userMenuOpen = false;
     this.authService.logout();
   }
 }
