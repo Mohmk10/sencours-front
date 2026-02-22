@@ -17,19 +17,17 @@ import { RouterModule } from '@angular/router';
           <p class="text-sm" style="color: rgba(255,255,255,0.55);">La première plateforme d'apprentissage en ligne sénégalaise</p>
 
           <!-- Institutions badges -->
-          <div class="flex items-center gap-3 mt-6 flex-wrap">
-            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold"
-                  style="background: rgba(255,102,0,0.25); color: #FFB380; border: 1px solid rgba(255,102,0,0.3);">
-              <svg width="12" height="12" viewBox="0 0 28 28" fill="none">
-                <circle cx="14" cy="14" r="10" stroke="currentColor" stroke-width="3" fill="none"/>
-                <circle cx="14" cy="14" r="4" fill="currentColor"/>
-              </svg>
-              Orange Digital Center
-            </span>
-            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold"
-                  style="background: rgba(255,102,0,0.25); color: #FFB380; border: 1px solid rgba(255,102,0,0.3);">
-              Sonatel Academy
-            </span>
+          <div class="flex items-center gap-4 mt-6 flex-wrap">
+            <div class="inline-flex items-center gap-2.5 px-3 py-2 rounded-xl"
+                 style="background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18);">
+              <img src="assets/images/orange-digital-center.png" alt="Orange Digital Center"
+                   style="height: 32px; object-fit: contain;">
+            </div>
+            <div class="inline-flex items-center gap-2.5 px-3 py-2 rounded-xl"
+                 style="background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18);">
+              <img src="assets/images/sonatel-academy.png" alt="Sonatel Academy"
+                   style="height: 32px; object-fit: contain;">
+            </div>
           </div>
         </div>
       </div>
@@ -78,26 +76,15 @@ import { RouterModule } from '@angular/router';
                 </p>
                 <!-- ODC / Sonatel mini-cards -->
                 <div class="flex flex-wrap gap-3">
-                  <div class="flex items-center gap-2.5 px-3 py-2 rounded-lg"
+                  <div class="flex items-center px-4 py-3 rounded-xl"
                        style="background: #FFF7F0; border: 1px solid #FEDBC0;">
-                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                         style="background: #FF6600;">
-                      <svg width="14" height="14" viewBox="0 0 28 28" fill="none">
-                        <circle cx="14" cy="14" r="10" stroke="white" stroke-width="3" fill="none"/>
-                        <circle cx="14" cy="14" r="4" fill="white"/>
-                      </svg>
-                    </div>
-                    <span class="text-xs font-semibold" style="color: #CC5200;">Orange Digital Center</span>
+                    <img src="assets/images/orange-digital-center.png" alt="Orange Digital Center"
+                         style="height: 40px; object-fit: contain;">
                   </div>
-                  <div class="flex items-center gap-2.5 px-3 py-2 rounded-lg"
+                  <div class="flex items-center px-4 py-3 rounded-xl"
                        style="background: #FFF7F0; border: 1px solid #FEDBC0;">
-                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                         style="background: linear-gradient(135deg, #FF6600, #E04000);">
-                      <svg width="12" height="12" viewBox="0 0 22 22" fill="none">
-                        <path d="M16 5.5C14.5 4 12.5 3.5 10.5 4C7.5 5 6 8 7.5 10.5C8.5 12.5 11 13 13 14C15 15 16.5 17 15.5 19C14.5 21 11.5 21.5 9 20.5C7.5 19.8 6.5 18.8 6 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-                      </svg>
-                    </div>
-                    <span class="text-xs font-semibold" style="color: #CC5200;">Sonatel Academy</span>
+                    <img src="assets/images/sonatel-academy.png" alt="Sonatel Academy"
+                         style="height: 40px; object-fit: contain;">
                   </div>
                 </div>
               </div>
