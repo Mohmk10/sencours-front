@@ -66,12 +66,34 @@ import { AuthService } from '../../../core/services/auth.service';
 
             <div>
               <label class="label">Mot de passe</label>
-              <input
-                type="password"
-                formControlName="password"
-                class="input"
-                [class.input-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-                placeholder="Entrez votre mot de passe">
+              <div class="relative">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  formControlName="password"
+                  class="input"
+                  style="padding-right: 44px;"
+                  [class.input-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                  placeholder="Entrez votre mot de passe">
+                <button
+                  type="button"
+                  (click)="showPassword = !showPassword"
+                  class="absolute right-3 top-1/2 -translate-y-1/2"
+                  style="color: var(--ink-4); background: none; border: none; cursor: pointer; padding: 2px; display: flex; align-items: center;">
+                  @if (showPassword) {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  } @else {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  }
+                </button>
+              </div>
             </div>
 
             <div class="pt-2">
@@ -100,17 +122,17 @@ import { AuthService } from '../../../core/services/auth.service';
       </div>
 
       <!-- Right: Brand panel (hidden on mobile) -->
-      <div class="hidden md:flex w-[45%] flex-shrink-0 flex-col items-center justify-center p-12 relative overflow-hidden"
+      <div class="hidden md:flex w-[45%] flex-shrink-0 flex-col items-center justify-center p-14 relative overflow-hidden"
            style="background: var(--gradient-dark);">
 
         <!-- Decorative blobs -->
-        <div class="absolute top-[-80px] right-[-80px] w-72 h-72 rounded-full pointer-events-none"
-             style="background: rgba(124,58,237,0.12); filter: blur(60px);"></div>
-        <div class="absolute bottom-[-60px] left-[-60px] w-56 h-56 rounded-full pointer-events-none"
-             style="background: rgba(217,119,6,0.10); filter: blur(50px);"></div>
+        <div class="absolute top-[-80px] right-[-80px] w-80 h-80 rounded-full pointer-events-none"
+             style="background: rgba(124,58,237,0.14); filter: blur(70px);"></div>
+        <div class="absolute bottom-[-60px] left-[-60px] w-64 h-64 rounded-full pointer-events-none"
+             style="background: rgba(217,119,6,0.12); filter: blur(60px);"></div>
 
         <!-- Logo large -->
-        <svg width="52" height="52" viewBox="0 0 36 36" fill="none" class="mb-8">
+        <svg width="68" height="68" viewBox="0 0 36 36" fill="none" class="mb-10">
           <rect width="36" height="36" rx="9" fill="url(#login-side-logo-g)"/>
           <path fill-rule="evenodd" clip-rule="evenodd"
             d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
@@ -124,51 +146,51 @@ import { AuthService } from '../../../core/services/auth.service';
           </defs>
         </svg>
 
-        <h2 class="text-2xl font-bold text-white text-center mb-8 leading-snug">
+        <h2 class="text-3xl font-bold text-white text-center mb-10 leading-snug">
           Apprenez avec<br>les meilleurs
         </h2>
 
         <!-- Features -->
-        <div class="space-y-4 w-full max-w-[280px] mb-10">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.25);">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="space-y-5 w-full max-w-[300px] mb-12">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.28);">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
               </svg>
             </div>
-            <span class="text-sm text-white opacity-90">Cours créés par des experts locaux</span>
+            <span class="text-base text-white" style="opacity: 0.92;">Cours créés par des experts locaux</span>
           </div>
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.25);">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.28);">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
-            <span class="text-sm text-white opacity-90">Certificats reconnus par les entreprises</span>
+            <span class="text-base text-white" style="opacity: 0.92;">Certificats reconnus par les entreprises</span>
           </div>
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.25);">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.28);">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
             </div>
-            <span class="text-sm text-white opacity-90">Apprenez à votre rythme, partout</span>
+            <span class="text-base text-white" style="opacity: 0.92;">Apprenez à votre rythme, partout</span>
           </div>
         </div>
 
         <!-- Stats -->
-        <div class="flex items-center gap-8">
+        <div class="flex items-center gap-10">
           <div class="text-center">
-            <p class="text-2xl font-bold" style="color: var(--amber-mid);">500+</p>
-            <p class="text-xs text-white opacity-60 mt-0.5">Cours</p>
+            <p class="text-3xl font-bold" style="color: var(--amber-mid);">500+</p>
+            <p class="text-sm text-white mt-1" style="opacity: 0.55;">Cours</p>
           </div>
-          <div class="w-px h-8 opacity-20 bg-white"></div>
+          <div class="w-px h-10 opacity-20 bg-white"></div>
           <div class="text-center">
-            <p class="text-2xl font-bold" style="color: var(--amber-mid);">10K+</p>
-            <p class="text-xs text-white opacity-60 mt-0.5">Étudiants</p>
+            <p class="text-3xl font-bold" style="color: var(--amber-mid);">10K+</p>
+            <p class="text-sm text-white mt-1" style="opacity: 0.55;">Étudiants</p>
           </div>
         </div>
       </div>
@@ -184,6 +206,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
+  showPassword = false;
 
   constructor() {
     this.loginForm = this.fb.group({

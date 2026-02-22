@@ -93,6 +93,20 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['SUPER_ADMIN'])]
   },
 
+  // Legal pages
+  {
+    path: 'conditions',
+    loadComponent: () => import('./features/legal/conditions/conditions.component').then(m => m.ConditionsComponent)
+  },
+  {
+    path: 'confidentialite',
+    loadComponent: () => import('./features/legal/confidentialite/confidentialite.component').then(m => m.ConfidentialiteComponent)
+  },
+  {
+    path: 'contact',
+    loadComponent: () => import('./features/legal/contact/contact.component').then(m => m.ContactComponent)
+  },
+
   // Catch-all
   { path: '**', redirectTo: 'courses' }
 ];

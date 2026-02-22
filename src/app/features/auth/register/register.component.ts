@@ -84,12 +84,34 @@ import { AuthService } from '../../../core/services/auth.service';
 
             <div>
               <label class="label">Mot de passe</label>
-              <input
-                type="password"
-                formControlName="password"
-                class="input"
-                [class.input-error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
-                placeholder="Minimum 8 caractères">
+              <div class="relative">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  formControlName="password"
+                  class="input"
+                  style="padding-right: 44px;"
+                  [class.input-error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+                  placeholder="Minimum 8 caractères">
+                <button
+                  type="button"
+                  (click)="showPassword = !showPassword"
+                  class="absolute right-3 top-1/2 -translate-y-1/2"
+                  style="color: var(--ink-4); background: none; border: none; cursor: pointer; padding: 2px; display: flex; align-items: center;">
+                  @if (showPassword) {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  } @else {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  }
+                </button>
+              </div>
               @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
                 <p class="mt-1 text-xs" style="color: #EF4444;">Le mot de passe doit contenir au moins 8 caractères</p>
               }
@@ -97,12 +119,34 @@ import { AuthService } from '../../../core/services/auth.service';
 
             <div>
               <label class="label">Confirmer le mot de passe</label>
-              <input
-                type="password"
-                formControlName="confirmPassword"
-                class="input"
-                [class.input-error]="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched"
-                placeholder="Répétez votre mot de passe">
+              <div class="relative">
+                <input
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  formControlName="confirmPassword"
+                  class="input"
+                  style="padding-right: 44px;"
+                  [class.input-error]="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched"
+                  placeholder="Répétez votre mot de passe">
+                <button
+                  type="button"
+                  (click)="showConfirmPassword = !showConfirmPassword"
+                  class="absolute right-3 top-1/2 -translate-y-1/2"
+                  style="color: var(--ink-4); background: none; border: none; cursor: pointer; padding: 2px; display: flex; align-items: center;">
+                  @if (showConfirmPassword) {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  } @else {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  }
+                </button>
+              </div>
               @if (registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched) {
                 <p class="mt-1 text-xs" style="color: #EF4444;">Les mots de passe ne correspondent pas</p>
               }
@@ -121,24 +165,24 @@ import { AuthService } from '../../../core/services/auth.service';
 
           <p class="mt-5 text-xs text-center" style="color: var(--ink-4); line-height: 1.6;">
             En vous inscrivant, vous acceptez nos
-            <a href="#" class="link">Conditions d'utilisation</a> et notre
-            <a href="#" class="link">Politique de confidentialité</a>.
+            <a routerLink="/conditions" class="link">Conditions d'utilisation</a> et notre
+            <a routerLink="/confidentialite" class="link">Politique de confidentialité</a>.
           </p>
         </div>
       </div>
 
       <!-- Right: Brand panel (hidden on mobile) -->
-      <div class="hidden md:flex w-[42%] flex-shrink-0 flex-col items-center justify-center p-12 relative overflow-hidden"
+      <div class="hidden md:flex w-[42%] flex-shrink-0 flex-col items-center justify-center p-14 relative overflow-hidden"
            style="background: var(--gradient-dark);">
 
         <!-- Decorative blobs -->
-        <div class="absolute top-[-80px] left-[-60px] w-72 h-72 rounded-full pointer-events-none"
-             style="background: rgba(124,58,237,0.12); filter: blur(60px);"></div>
-        <div class="absolute bottom-[-60px] right-[-80px] w-56 h-56 rounded-full pointer-events-none"
-             style="background: rgba(217,119,6,0.10); filter: blur(50px);"></div>
+        <div class="absolute top-[-80px] left-[-60px] w-80 h-80 rounded-full pointer-events-none"
+             style="background: rgba(124,58,237,0.14); filter: blur(70px);"></div>
+        <div class="absolute bottom-[-60px] right-[-80px] w-64 h-64 rounded-full pointer-events-none"
+             style="background: rgba(217,119,6,0.12); filter: blur(60px);"></div>
 
         <!-- Logo large -->
-        <svg width="52" height="52" viewBox="0 0 36 36" fill="none" class="mb-8">
+        <svg width="68" height="68" viewBox="0 0 36 36" fill="none" class="mb-10">
           <rect width="36" height="36" rx="9" fill="url(#reg-side-logo-g)"/>
           <path fill-rule="evenodd" clip-rule="evenodd"
             d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
@@ -152,51 +196,51 @@ import { AuthService } from '../../../core/services/auth.service';
           </defs>
         </svg>
 
-        <h2 class="text-2xl font-bold text-white text-center mb-8 leading-snug">
+        <h2 class="text-3xl font-bold text-white text-center mb-10 leading-snug">
           Rejoignez 10 000+<br>apprenants
         </h2>
 
         <!-- Advantages -->
-        <div class="space-y-4 w-full max-w-[280px] mb-10">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.25);">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="space-y-5 w-full max-w-[300px] mb-12">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.28);">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
               </svg>
             </div>
-            <span class="text-sm text-white opacity-90">Accès illimité à 500+ cours</span>
+            <span class="text-base text-white" style="opacity: 0.92;">Accès illimité à 500+ cours</span>
           </div>
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.25);">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.28);">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
-            <span class="text-sm text-white opacity-90">Certificats reconnus</span>
+            <span class="text-base text-white" style="opacity: 0.92;">Certificats reconnus</span>
           </div>
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.25);">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.28);">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
             </div>
-            <span class="text-sm text-white opacity-90">Experts sénégalais de haut niveau</span>
+            <span class="text-base text-white" style="opacity: 0.92;">Experts sénégalais de haut niveau</span>
           </div>
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.25);">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.28);">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
             </div>
-            <span class="text-sm text-white opacity-90">Apprenez à votre propre rythme</span>
+            <span class="text-base text-white" style="opacity: 0.92;">Apprenez à votre propre rythme</span>
           </div>
         </div>
 
-        <p class="text-xs text-center opacity-40 text-white">
+        <p class="text-sm text-center text-white" style="opacity: 0.35;">
           Inscription gratuite · Annulez à tout moment
         </p>
       </div>
@@ -212,6 +256,8 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isLoading = false;
   errorMessage = '';
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor() {
     this.registerForm = this.fb.group({
