@@ -77,12 +77,12 @@ import { RouterModule } from '@angular/router';
                 <!-- ODC / Sonatel mini-cards -->
                 <div class="flex flex-wrap gap-3">
                   <div class="flex items-center px-4 py-3 rounded-xl"
-                       style="background: #FFF7F0; border: 1px solid #FEDBC0;">
+                       style="background: #FFF3E8; border: 1.5px solid #FFB366;">
                     <img src="assets/images/orange-digital-center.png" alt="Orange Digital Center"
                          style="height: 40px; object-fit: contain;">
                   </div>
                   <div class="flex items-center px-4 py-3 rounded-xl"
-                       style="background: #FFF7F0; border: 1px solid #FEDBC0;">
+                       style="background: #E8F7F6; border: 1.5px solid #7ECAC4;">
                     <img src="assets/images/sonatel-academy.png" alt="Sonatel Academy"
                          style="height: 40px; object-fit: contain;">
                   </div>

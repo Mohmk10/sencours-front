@@ -76,13 +76,15 @@ import { RouterModule } from '@angular/router';
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
               <!-- Orange Digital Center -->
-              <div class="flex items-center justify-center p-5 rounded-xl" style="background: #FFF7F0; border: 1.5px solid #FEDBC0;">
+              <div class="flex items-center justify-center p-5 rounded-xl"
+                   style="background: #FFF3E8; border: 1.5px solid #FFB366;">
                 <img src="assets/images/orange-digital-center.png" alt="Orange Digital Center"
                      style="height: 40px; object-fit: contain;">
               </div>
 
               <!-- Sonatel Academy -->
-              <div class="flex items-center justify-center p-5 rounded-xl" style="background: #FFF7F0; border: 1.5px solid #FEDBC0;">
+              <div class="flex items-center justify-center p-5 rounded-xl"
+                   style="background: #E8F7F6; border: 1.5px solid #7ECAC4;">
                 <img src="assets/images/sonatel-academy.png" alt="Sonatel Academy"
                      style="height: 40px; object-fit: contain;">
               </div>
