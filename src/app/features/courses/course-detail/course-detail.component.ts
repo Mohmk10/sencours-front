@@ -33,8 +33,8 @@ import { StarRatingComponent } from '../../../shared/components';
       @if (!isLoading && course) {
         <!-- White hero section -->
         <div class="bg-white" style="border-bottom: 1px solid var(--border);">
-          <div class="container-custom py-10">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div class="container-custom py-14">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <!-- Left: Course info -->
               <div class="lg:col-span-2">
                 <!-- Breadcrumb -->
@@ -83,7 +83,7 @@ import { StarRatingComponent } from '../../../shared/components';
 
               <!-- Right: Enrollment card (desktop) -->
               <div class="hidden lg:block">
-                <div class="enrollment-card bg-white sticky top-20"
+                <div class="enrollment-card bg-white sticky top-24"
                      style="border: 1px solid var(--border-2); border-radius: var(--r-xl); box-shadow: var(--shadow-lg); overflow: hidden;">
 
                   <!-- Thumbnail -->
@@ -159,7 +159,7 @@ import { StarRatingComponent } from '../../../shared/components';
         </div>
 
         <!-- Mobile enrollment bar -->
-        <div class="lg:hidden bg-white sticky top-14 z-30 px-4 py-3 flex items-center justify-between"
+        <div class="lg:hidden bg-white sticky top-16 z-30 px-4 py-3 flex items-center justify-between"
              style="border-bottom: 1px solid var(--border);">
           <span class="font-bold text-lg" style="color: var(--amber);">
             @if (course.price === 0) { Gratuit } @else { {{ course.price | number:'1.0-0' }} FCFA }
@@ -176,8 +176,8 @@ import { StarRatingComponent } from '../../../shared/components';
         </div>
 
         <!-- Main content -->
-        <div class="container-custom py-8">
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="container-custom py-12">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             <div class="lg:col-span-2 space-y-5">
 
               <!-- Course sections accordion -->

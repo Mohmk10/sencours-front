@@ -73,7 +73,7 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
       </div>
 
-      <div class="container-app py-12">
+      <div class="container-app py-16">
         <div class="max-w-2xl mx-auto">
 
           <!-- States -->

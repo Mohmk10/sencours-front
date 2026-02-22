@@ -12,7 +12,7 @@ import { AuthService } from '../../../core/services/auth.service';
          [class.shadow-sm]="isScrolled"
          style="border-bottom: 1px solid var(--border);">
       <div class="container-app">
-        <div class="flex items-center justify-between h-14">
+        <div class="flex items-center justify-between h-16">
 
           <!-- Logo -->
           <a routerLink="/" class="flex items-center gap-2.5 flex-shrink-0">
@@ -43,7 +43,7 @@ import { AuthService } from '../../../core/services/auth.service';
               <input
                 type="text"
                 placeholder="Rechercher un cours..."
-                class="w-full h-9 pl-9 pr-4 text-sm border rounded-full transition-all"
+                class="w-full h-10 pl-9 pr-4 text-sm border rounded-full transition-all"
                 style="background: var(--canvas); border-color: var(--border-2); color: var(--ink);"
                 (focus)="onSearchFocus($event)"
                 (blur)="onSearchBlur($event)">

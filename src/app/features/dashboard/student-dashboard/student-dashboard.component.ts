@@ -15,19 +15,20 @@ import { Enrollment } from '../../../core/models';
       <!-- Gradient header -->
       <div class="page-header-brand">
         <div class="container-app">
-          <h1 class="text-3xl font-bold text-white">
-            Bonjour, <span style="color: var(--amber-mid);">{{ currentUser?.firstName }}</span> 👋
+          <p class="text-sm font-medium mb-2" style="color: rgba(255,255,255,0.45); letter-spacing: 0.08em; text-transform: uppercase;">Tableau de bord</p>
+          <h1 class="text-4xl font-bold text-white">
+            Bonjour, <span style="color: var(--amber-mid);">{{ currentUser?.firstName }}</span>
           </h1>
-          <p class="mt-1.5 text-base" style="color: rgba(255,255,255,0.6);">
+          <p class="mt-3 text-base" style="color: rgba(255,255,255,0.6);">
             Continuez votre parcours d'apprentissage
           </p>
         </div>
       </div>
 
-      <div class="container-app py-8">
+      <div class="container-app py-12">
 
         <!-- Stat cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12">
           <div class="card stat-card stat-card-violet">
             <div class="flex items-center justify-between mb-2">
               <svg class="w-5 h-5" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,13 +59,13 @@ import { Enrollment } from '../../../core/models';
         </div>
 
         <!-- Section header -->
-        <div class="flex items-center justify-between mb-5">
-          <h2 class="text-xl font-bold" style="color: var(--ink);">Mes cours</h2>
-          <a routerLink="/courses" class="link text-sm flex items-center gap-1">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-xl font-bold" style="color: var(--ink);">Mes cours</h2>
+            <p class="text-sm mt-0.5" style="color: var(--ink-3);">{{ enrollments.length }} cours en cours d'apprentissage</p>
+          </div>
+          <a routerLink="/courses" class="btn btn-secondary btn-sm">
             Explorer le catalogue
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
           </a>
         </div>
 
@@ -96,20 +97,20 @@ import { Enrollment } from '../../../core/models';
             <a routerLink="/courses" class="btn btn-primary">Découvrir les cours</a>
           </div>
         } @else {
-          <div class="space-y-3">
+          <div class="space-y-4">
             @for (enrollment of enrollments; track enrollment.id) {
               <a [routerLink]="['/courses', enrollment.courseId]"
                  class="enrollment-card bg-white flex overflow-hidden"
                  style="border: 1px solid var(--border); border-radius: var(--r-lg);">
 
                 <!-- Thumbnail -->
-                <div class="w-36 h-24 flex-shrink-0 overflow-hidden" style="background: var(--violet-tint);">
+                <div class="w-44 h-28 flex-shrink-0 overflow-hidden" style="background: var(--violet-tint);">
                   @if (enrollment.courseThumbnail) {
                     <img [src]="enrollment.courseThumbnail" [alt]="enrollment.courseTitle"
                          class="w-full h-full object-cover">
                   } @else {
-                    <div class="w-full h-full flex items-center justify-center">
-                      <svg class="w-8 h-8" style="color: var(--violet); opacity: 0.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, #EDE9FE, #DDD6FE);">
+                      <svg class="w-8 h-8 opacity-30" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                       </svg>
                     </div>
@@ -117,31 +118,31 @@ import { Enrollment } from '../../../core/models';
                 </div>
 
                 <!-- Content -->
-                <div class="flex-1 p-4 min-w-0 flex flex-col justify-between">
+                <div class="flex-1 px-5 py-4 min-w-0 flex flex-col justify-between">
                   <div>
-                    <h3 class="font-semibold text-sm line-clamp-2 leading-snug" style="color: var(--ink);">
+                    <h3 class="font-semibold text-sm line-clamp-2 leading-snug mb-1" style="color: var(--ink);">
                       {{ enrollment.courseTitle }}
                     </h3>
-                    <p class="text-xs mt-1" style="color: var(--ink-3);">{{ enrollment.instructorName }}</p>
+                    <p class="text-xs" style="color: var(--ink-3);">{{ enrollment.instructorName }}</p>
                   </div>
 
                   <!-- Progress bar -->
-                  <div class="mt-3">
-                    <div class="flex justify-between text-xs mb-1.5">
+                  <div class="mt-4">
+                    <div class="flex justify-between text-xs mb-2">
                       <span style="color: var(--ink-3);">Progression</span>
                       <span class="font-semibold" style="color: var(--ink);">{{ enrollment.progress || 0 }}%</span>
                     </div>
-                    <div class="h-1.5 rounded-full overflow-hidden" style="background: var(--border);">
+                    <div class="h-2 rounded-full overflow-hidden" style="background: var(--border);">
                       <div class="h-full rounded-full transition-all duration-300"
                            [style.width.%]="enrollment.progress || 0"
-                           [style.background]="(enrollment.progress || 0) === 100 ? 'var(--green)' : 'var(--violet)'">
+                           [style.background]="(enrollment.progress || 0) === 100 ? 'var(--gradient-green)' : 'var(--gradient-brand)'">
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <!-- Arrow -->
-                <div class="flex items-center pr-4">
+                <div class="flex items-center px-5">
                   <svg class="w-4 h-4" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                   </svg>

@@ -422,7 +422,7 @@ body {
 // ─── Stat Card ───────────────────────────────────────────────────────────────
 
 .stat-card {
-  padding: 24px;
+  padding: 28px;
 
   &-label {
     font-size: 11px;
@@ -484,7 +484,13 @@ body {
 .page-header-brand {
   background: var(--gradient-dark);
   color: white;
-  padding: 40px 0;
+  padding: 56px 0;
+}
+
+.page-header-brand-sm {
+  background: var(--gradient-dark);
+  color: white;
+  padding: 32px 0;
 }
 
 // ─── Amber Button ─────────────────────────────────────────────────────────────

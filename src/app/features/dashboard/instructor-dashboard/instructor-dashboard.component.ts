@@ -15,14 +15,15 @@ import { Course, PageResponse } from '../../../core/models';
       <!-- Gradient header -->
       <div class="page-header-brand">
         <div class="container-app">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p class="text-sm font-medium mb-2" style="color: rgba(255,255,255,0.45); letter-spacing: 0.08em; text-transform: uppercase;">Tableau de bord</p>
+          <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
-              <h1 class="text-3xl font-bold text-white">Espace instructeur</h1>
-              <p class="mt-1.5 text-base" style="color: rgba(255,255,255,0.6);">
+              <h1 class="text-4xl font-bold text-white">Espace instructeur</h1>
+              <p class="mt-3 text-base" style="color: rgba(255,255,255,0.6);">
                 Gérez vos cours et suivez vos performances
               </p>
             </div>
-            <a routerLink="/courses/new" class="btn btn-amber">
+            <a routerLink="/courses/new" class="btn btn-amber flex-shrink-0">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
               </svg>
@@ -32,10 +33,10 @@ import { Course, PageResponse } from '../../../core/models';
         </div>
       </div>
 
-      <div class="container-app py-8">
+      <div class="container-app py-12">
 
         <!-- Stat cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
           <div class="card stat-card stat-card-violet">
             <div class="mb-2">
               <svg class="w-5 h-5" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">

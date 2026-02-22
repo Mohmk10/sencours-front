@@ -21,7 +21,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
         <div class="absolute bottom-[-30px] left-[10%] w-48 h-48 rounded-full pointer-events-none"
              style="background: rgba(217,119,6,0.06); filter: blur(40px);"></div>
 
-        <div class="container-app py-12 relative">
+        <div class="container-app py-16 relative">
           <h1 class="text-4xl font-bold leading-tight" style="color: var(--ink);">
             Explorer les <span style="text-decoration: underline; text-decoration-color: var(--amber-mid); text-underline-offset: 6px;">cours</span>
           </h1>
@@ -61,9 +61,9 @@ import { Course, Category, PageResponse } from '../../../core/models';
       </div>
 
       <!-- Filter bar -->
-      <div class="bg-white sticky top-14 z-40" style="border-bottom: 1px solid var(--border);">
+      <div class="bg-white sticky top-16 z-40" style="border-bottom: 1px solid var(--border);">
         <div class="container-app">
-          <div class="flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide">
+          <div class="flex items-center gap-2 py-4 overflow-x-auto scrollbar-hide">
             <!-- Category pills -->
             <button
               (click)="selectedCategoryId = null; onFilterChange()"
@@ -102,7 +102,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
       </div>
 
       <!-- Course grid -->
-      <div class="container-app py-8">
+      <div class="container-app py-10">
         @if (isLoading) {
           <!-- Skeleton grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
@@ -167,8 +167,8 @@ import { Course, Category, PageResponse } from '../../../core/models';
                 </div>
 
                 <!-- Content -->
-                <div class="p-4">
-                  <h3 class="font-semibold text-sm line-clamp-2 leading-snug mb-1.5"
+                <div class="p-5">
+                  <h3 class="font-semibold text-sm line-clamp-2 leading-snug mb-2"
                       style="color: var(--ink);">
                     {{ course.title }}
                   </h3>
@@ -183,7 +183,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
                   </div>
 
                   <!-- Rating -->
-                  <div class="flex items-center gap-1.5 mb-3">
+                  <div class="flex items-center gap-1.5 mb-4">
                     <span class="font-bold text-xs" style="color: var(--amber-mid);">
                       {{ (course.averageRating || 0) | number:'1.1-1' }}
                     </span>
@@ -199,7 +199,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
                   </div>
 
                   <!-- Price -->
-                  <div style="border-top: 1px solid var(--border); padding-top: 10px;">
+                  <div style="border-top: 1px solid var(--border); padding-top: 14px;">
                     @if (course.price === 0) {
                       <span class="font-bold text-sm" style="color: var(--green);">Gratuit</span>
                     } @else {
