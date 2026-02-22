@@ -9,9 +9,9 @@ import { Category } from '../../../core/models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-lg font-bold" style="color: var(--ink);">Gestion des catégories</h1>
+    <div>
+      <div class="px-8 py-5 flex items-center justify-between" style="border-bottom: 1px solid var(--border);">
+        <h1 class="text-base font-semibold" style="color: var(--ink);">Gestion des catégories</h1>
         <button (click)="openModal()" class="btn btn-primary btn-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -19,6 +19,7 @@ import { Category } from '../../../core/models';
           Nouvelle catégorie
         </button>
       </div>
+      <div class="p-8">
 
       @if (isLoading) {
         <div class="space-y-3">
@@ -75,6 +76,7 @@ import { Category } from '../../../core/models';
           </table>
         </div>
       }
+      </div>
     </div>
 
     <!-- Modal -->

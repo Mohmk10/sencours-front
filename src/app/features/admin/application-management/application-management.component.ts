@@ -9,13 +9,14 @@ import { PageResponse } from '../../../core/models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-lg font-bold" style="color: var(--ink);">Candidatures instructeurs</h1>
+    <div>
+      <div class="px-8 py-5" style="border-bottom: 1px solid var(--border);">
+        <h1 class="text-base font-semibold" style="color: var(--ink);">Candidatures instructeurs</h1>
       </div>
+      <div class="p-8">
 
       <!-- Status filter pills -->
-      <div class="flex flex-wrap gap-2 mb-6">
+      <div class="flex flex-wrap gap-2.5 mb-8">
         @for (filter of statusFilters; track filter.value) {
           <button
             (click)="onStatusFilter(filter.value)"
@@ -179,7 +180,7 @@ import { PageResponse } from '../../../core/models';
 
         <!-- Pagination -->
         @if (pageResponse && pageResponse.totalPages > 1) {
-          <div class="flex items-center justify-between mt-6">
+          <div class="flex items-center justify-between mt-8">
             <p class="text-sm" style="color: var(--ink-3);">
               {{ pageResponse.totalElements }} candidature{{ pageResponse.totalElements > 1 ? 's' : '' }}
             </p>
@@ -193,6 +194,7 @@ import { PageResponse } from '../../../core/models';
           </div>
         }
       }
+      </div>
     </div>
 
     <!-- Detail modal -->

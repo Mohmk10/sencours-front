@@ -9,13 +9,14 @@ import { User, PageResponse } from '../../../core/models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-lg font-bold" style="color: var(--ink);">Gestion des utilisateurs</h1>
+    <div>
+      <div class="px-8 py-5" style="border-bottom: 1px solid var(--border);">
+        <h1 class="text-base font-semibold" style="color: var(--ink);">Gestion des utilisateurs</h1>
       </div>
+      <div class="p-8">
 
       <!-- Filters -->
-      <div class="flex flex-wrap gap-3 mb-6">
+      <div class="flex flex-wrap gap-4 mb-8">
         <div class="flex-1 min-w-[200px] relative">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -110,7 +111,7 @@ import { User, PageResponse } from '../../../core/models';
 
         <!-- Pagination -->
         @if (pageResponse && pageResponse.totalPages > 1) {
-          <div class="flex justify-center mt-6">
+          <div class="flex justify-center mt-8">
             <div class="flex items-center gap-1">
               <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-ghost btn-sm">
                 Précédent
@@ -125,6 +126,7 @@ import { User, PageResponse } from '../../../core/models';
           </div>
         }
       }
+      </div>
     </div>
   `
 })

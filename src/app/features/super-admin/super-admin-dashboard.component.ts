@@ -21,22 +21,23 @@ import { User } from '../../core/models';
         <span class="ml-auto badge badge-error">Zone sensible</span>
       </div>
 
-      <!-- White header -->
-      <div class="bg-white" style="border-bottom: 1px solid var(--border);">
-        <div class="container-app py-8">
-          <h1 class="text-2xl font-bold" style="color: var(--ink);">Panneau Super Admin</h1>
-          <p class="mt-1" style="color: var(--ink-3);">Gestion des comptes administrateurs et instructeurs</p>
+      <!-- Gradient header -->
+      <div class="page-header-brand">
+        <div class="container-app">
+          <p class="text-xs font-bold mb-1.5 uppercase tracking-widest" style="color: rgba(255,255,255,0.4);">Zone restreinte</p>
+          <h1 class="text-2xl font-bold text-white">Panneau Super Admin</h1>
+          <p class="text-sm mt-1.5" style="color: rgba(255,255,255,0.55);">Gestion des comptes administrateurs et instructeurs</p>
         </div>
       </div>
 
-      <div class="container-app py-8">
+      <div class="container-app py-12">
 
         <!-- Two form cards -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 
           <!-- Create Admin -->
           <div class="card">
-            <div class="px-6 py-4" style="border-bottom: 1px solid var(--border);">
+            <div class="px-6 py-5" style="border-bottom: 1px solid var(--border);">
               <h2 class="font-semibold" style="color: var(--ink);">Créer un administrateur</h2>
               <p class="text-sm mt-0.5" style="color: var(--ink-3);">Les admins peuvent gérer les candidatures instructeurs</p>
             </div>
@@ -73,7 +74,7 @@ import { User } from '../../core/models';
 
           <!-- Create Instructor -->
           <div class="card">
-            <div class="px-6 py-4" style="border-bottom: 1px solid var(--border);">
+            <div class="px-6 py-5" style="border-bottom: 1px solid var(--border);">
               <h2 class="font-semibold" style="color: var(--ink);">Créer un instructeur</h2>
               <p class="text-sm mt-0.5" style="color: var(--ink-3);">Création directe sans passer par une candidature</p>
             </div>
@@ -111,7 +112,7 @@ import { User } from '../../core/models';
 
         <!-- Admins list -->
         <div class="card">
-          <div class="px-6 py-4 flex items-center justify-between" style="border-bottom: 1px solid var(--border);">
+          <div class="px-6 py-5 flex items-center justify-between" style="border-bottom: 1px solid var(--border);">
             <h2 class="font-semibold" style="color: var(--ink);">Administrateurs existants</h2>
             <button (click)="loadAdmins()" class="btn btn-ghost btn-sm">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +162,7 @@ import { User } from '../../core/models';
         </div>
 
         <!-- Warning -->
-        <div class="mt-6 p-5 flex items-start gap-4"
+        <div class="mt-8 p-6 flex items-start gap-4"
              style="background: var(--red-tint); border: 1px solid rgba(127,29,29,0.2); border-radius: var(--r-lg);">
           <svg class="w-6 h-6 flex-shrink-0 mt-0.5" style="color: var(--red);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
