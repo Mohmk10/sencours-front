@@ -61,7 +61,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
       </div>
 
       <!-- Filter bar -->
-      <div class="bg-white sticky top-16 z-40" style="border-bottom: 1px solid var(--border);">
+      <div class="bg-white sticky top-[73px] z-40" style="border-bottom: 1px solid var(--border);">
         <div class="container-app">
           <div class="flex items-center gap-2 py-4 overflow-x-auto scrollbar-hide">
             <!-- Category pills -->

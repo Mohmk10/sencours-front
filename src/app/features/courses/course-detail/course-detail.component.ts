@@ -159,7 +159,7 @@ import { StarRatingComponent } from '../../../shared/components';
         </div>
 
         <!-- Mobile enrollment bar -->
-        <div class="lg:hidden bg-white sticky top-16 z-30 px-4 py-3 flex items-center justify-between"
+        <div class="lg:hidden bg-white sticky top-[73px] z-30 px-4 py-3 flex items-center justify-between"
              style="border-bottom: 1px solid var(--border);">
           <span class="font-bold text-lg" style="color: var(--amber);">
             @if (course.price === 0) { Gratuit } @else { {{ course.price | number:'1.0-0' }} FCFA }

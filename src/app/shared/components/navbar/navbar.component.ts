@@ -12,7 +12,7 @@ import { AuthService } from '../../../core/services/auth.service';
          [class.shadow-sm]="isScrolled"
          style="border-bottom: 1px solid var(--border);">
       <div class="container-app">
-        <div class="flex items-center justify-between h-16">
+        <div class="flex items-center justify-between h-[72px]">
 
           <!-- Logo -->
           <a routerLink="/" class="flex items-center gap-2.5 flex-shrink-0">
@@ -51,7 +51,7 @@ import { AuthService } from '../../../core/services/auth.service';
           </div>
 
           <!-- Nav links + actions -->
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-2">
 
             <!-- Desktop nav links -->
             <div class="hidden md:flex items-center">
