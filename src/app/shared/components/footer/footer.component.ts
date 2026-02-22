@@ -97,7 +97,7 @@ import { AuthService } from '../../../core/services/auth.service';
           <div>
             <h4 class="font-semibold text-sm mb-5 text-white tracking-wide">Projet</h4>
             <ul class="space-y-3 text-sm">
-              <li><a routerLink="/contact" class="footer-link">À propos</a></li>
+              <li><a routerLink="/about" class="footer-link">À propos</a></li>
               <li>
                 <a href="https://github.com/Mohmk10/sencours-front" target="_blank" rel="noopener noreferrer" class="footer-link">
                   Code source

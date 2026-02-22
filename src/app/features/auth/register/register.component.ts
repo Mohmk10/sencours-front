@@ -177,12 +177,12 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <!-- Decorative blobs -->
         <div class="absolute top-[-80px] left-[-60px] w-80 h-80 rounded-full pointer-events-none"
-             style="background: rgba(124,58,237,0.14); filter: blur(70px);"></div>
+             style="background: rgba(124,58,237,0.18); filter: blur(80px);"></div>
         <div class="absolute bottom-[-60px] right-[-80px] w-64 h-64 rounded-full pointer-events-none"
-             style="background: rgba(217,119,6,0.12); filter: blur(60px);"></div>
+             style="background: rgba(217,119,6,0.15); filter: blur(70px);"></div>
 
         <!-- Logo large -->
-        <svg width="68" height="68" viewBox="0 0 36 36" fill="none" class="mb-10">
+        <svg width="120" height="120" viewBox="0 0 36 36" fill="none" class="mb-10">
           <rect width="36" height="36" rx="9" fill="url(#reg-side-logo-g)"/>
           <path fill-rule="evenodd" clip-rule="evenodd"
             d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
@@ -196,51 +196,52 @@ import { AuthService } from '../../../core/services/auth.service';
           </defs>
         </svg>
 
-        <h2 class="text-3xl font-bold text-white text-center mb-10 leading-snug">
+        <h2 class="font-bold text-white text-center mb-10 leading-tight"
+            style="font-size: 2.6rem;">
           Rejoignez 10 000+<br>apprenants
         </h2>
 
         <!-- Advantages -->
-        <div class="space-y-5 w-full max-w-[300px] mb-12">
-          <div class="flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.28);">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="space-y-6 w-full mb-12">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.32);">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
               </svg>
             </div>
-            <span class="text-base text-white" style="opacity: 0.92;">Accès illimité à 500+ cours</span>
+            <span class="text-xl font-medium text-white" style="opacity: 0.93;">Accès illimité à 500+ cours</span>
           </div>
-          <div class="flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.28);">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.32);">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
-            <span class="text-base text-white" style="opacity: 0.92;">Certificats reconnus</span>
+            <span class="text-xl font-medium text-white" style="opacity: 0.93;">Certificats reconnus</span>
           </div>
-          <div class="flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.28);">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.32);">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
             </div>
-            <span class="text-base text-white" style="opacity: 0.92;">Experts sénégalais de haut niveau</span>
+            <span class="text-xl font-medium text-white" style="opacity: 0.93;">Experts sénégalais de haut niveau</span>
           </div>
-          <div class="flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.28);">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.32);">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
             </div>
-            <span class="text-base text-white" style="opacity: 0.92;">Apprenez à votre propre rythme</span>
+            <span class="text-xl font-medium text-white" style="opacity: 0.93;">Apprenez à votre propre rythme</span>
           </div>
         </div>
 
-        <p class="text-sm text-center text-white" style="opacity: 0.35;">
+        <p class="text-base text-center text-white" style="opacity: 0.3;">
           Inscription gratuite · Annulez à tout moment
         </p>
       </div>

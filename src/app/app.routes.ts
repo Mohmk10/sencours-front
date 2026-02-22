@@ -93,7 +93,11 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['SUPER_ADMIN'])]
   },
 
-  // Legal pages
+  // Legal / Info pages
+  {
+    path: 'about',
+    loadComponent: () => import('./features/legal/about/about.component').then(m => m.AboutComponent)
+  },
   {
     path: 'conditions',
     loadComponent: () => import('./features/legal/conditions/conditions.component').then(m => m.ConditionsComponent)

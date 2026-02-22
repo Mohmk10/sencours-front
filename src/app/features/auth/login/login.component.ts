@@ -127,12 +127,12 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <!-- Decorative blobs -->
         <div class="absolute top-[-80px] right-[-80px] w-80 h-80 rounded-full pointer-events-none"
-             style="background: rgba(124,58,237,0.14); filter: blur(70px);"></div>
+             style="background: rgba(124,58,237,0.18); filter: blur(80px);"></div>
         <div class="absolute bottom-[-60px] left-[-60px] w-64 h-64 rounded-full pointer-events-none"
-             style="background: rgba(217,119,6,0.12); filter: blur(60px);"></div>
+             style="background: rgba(217,119,6,0.15); filter: blur(70px);"></div>
 
         <!-- Logo large -->
-        <svg width="68" height="68" viewBox="0 0 36 36" fill="none" class="mb-10">
+        <svg width="120" height="120" viewBox="0 0 36 36" fill="none" class="mb-10">
           <rect width="36" height="36" rx="9" fill="url(#login-side-logo-g)"/>
           <path fill-rule="evenodd" clip-rule="evenodd"
             d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
@@ -146,51 +146,52 @@ import { AuthService } from '../../../core/services/auth.service';
           </defs>
         </svg>
 
-        <h2 class="text-3xl font-bold text-white text-center mb-10 leading-snug">
+        <h2 class="font-bold text-white text-center mb-10 leading-tight"
+            style="font-size: 2.6rem;">
           Apprenez avec<br>les meilleurs
         </h2>
 
         <!-- Features -->
-        <div class="space-y-5 w-full max-w-[300px] mb-12">
-          <div class="flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.28);">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="space-y-6 w-full mb-12">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.32);">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
               </svg>
             </div>
-            <span class="text-base text-white" style="opacity: 0.92;">Cours créés par des experts locaux</span>
+            <span class="text-xl font-medium text-white" style="opacity: 0.93;">Cours créés par des experts locaux</span>
           </div>
-          <div class="flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.28);">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.32);">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
-            <span class="text-base text-white" style="opacity: 0.92;">Certificats reconnus par les entreprises</span>
+            <span class="text-xl font-medium text-white" style="opacity: 0.93;">Certificats reconnus par les entreprises</span>
           </div>
-          <div class="flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background: rgba(124,58,237,0.28);">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.32);">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
             </div>
-            <span class="text-base text-white" style="opacity: 0.92;">Apprenez à votre rythme, partout</span>
+            <span class="text-xl font-medium text-white" style="opacity: 0.93;">Apprenez à votre rythme, partout</span>
           </div>
         </div>
 
         <!-- Stats -->
-        <div class="flex items-center gap-10">
+        <div class="flex items-center gap-12">
           <div class="text-center">
-            <p class="text-3xl font-bold" style="color: var(--amber-mid);">500+</p>
-            <p class="text-sm text-white mt-1" style="opacity: 0.55;">Cours</p>
+            <p class="font-bold leading-none" style="color: var(--amber-mid); font-size: 3.5rem;">500+</p>
+            <p class="text-base text-white mt-2" style="opacity: 0.5;">Cours</p>
           </div>
-          <div class="w-px h-10 opacity-20 bg-white"></div>
+          <div class="w-px h-14 opacity-15 bg-white"></div>
           <div class="text-center">
-            <p class="text-3xl font-bold" style="color: var(--amber-mid);">10K+</p>
-            <p class="text-sm text-white mt-1" style="opacity: 0.55;">Étudiants</p>
+            <p class="font-bold leading-none" style="color: var(--amber-mid); font-size: 3.5rem;">10K+</p>
+            <p class="text-base text-white mt-2" style="opacity: 0.5;">Étudiants</p>
           </div>
         </div>
       </div>
