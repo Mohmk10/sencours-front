@@ -20,7 +20,7 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="absolute bottom-[-30px] left-[-40px] w-52 h-52 rounded-full pointer-events-none"
              style="background: rgba(217,119,6,0.07); filter: blur(45px);"></div>
 
-        <div class="container-app py-14 relative">
+        <div class="container-app py-16 relative">
           <h1 class="font-bold leading-tight" style="color: var(--ink); font-size: clamp(2rem, 5vw, 3.5rem);">
             Devenez <span style="text-decoration: underline; text-decoration-color: var(--amber-mid); text-underline-offset: 8px;">instructeur</span>
           </h1>

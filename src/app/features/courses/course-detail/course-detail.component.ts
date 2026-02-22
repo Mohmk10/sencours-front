@@ -159,25 +159,27 @@ import { StarRatingComponent } from '../../../shared/components';
         </div>
 
         <!-- Mobile enrollment bar -->
-        <div class="lg:hidden bg-white sticky top-[73px] z-30 px-4 py-3 flex items-center justify-between"
+        <div class="lg:hidden bg-white sticky top-[73px] z-30"
              style="border-bottom: 1px solid var(--border);">
-          <span class="font-bold text-lg" style="color: var(--amber);">
-            @if (course.price === 0) { Gratuit } @else { {{ course.price | number:'1.0-0' }} FCFA }
-          </span>
-          @if (!authService.isAuthenticated()) {
-            <a routerLink="/login" class="btn btn-primary btn-sm">Se connecter</a>
-          } @else if (isEnrolled) {
-            <button (click)="goToLearning()" class="btn btn-primary btn-sm">Continuer</button>
-          } @else {
-            <button (click)="enroll()" [disabled]="enrollmentLoading" class="btn btn-primary btn-sm">
-              @if (enrollmentLoading) { ... } @else { S'inscrire }
-            </button>
-          }
+          <div class="container-custom py-3 flex items-center justify-between">
+            <span class="font-bold text-lg" style="color: var(--amber);">
+              @if (course.price === 0) { Gratuit } @else { {{ course.price | number:'1.0-0' }} FCFA }
+            </span>
+            @if (!authService.isAuthenticated()) {
+              <a routerLink="/login" class="btn btn-primary btn-sm">Se connecter</a>
+            } @else if (isEnrolled) {
+              <button (click)="goToLearning()" class="btn btn-primary btn-sm">Continuer</button>
+            } @else {
+              <button (click)="enroll()" [disabled]="enrollmentLoading" class="btn btn-primary btn-sm">
+                @if (enrollmentLoading) { ... } @else { S'inscrire }
+              </button>
+            }
+          </div>
         </div>
 
         <!-- Main content -->
-        <div class="container-custom py-12">
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div class="container-custom py-14">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div class="lg:col-span-2 space-y-5">
 
               <!-- Course sections accordion -->

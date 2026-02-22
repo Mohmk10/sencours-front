@@ -25,10 +25,10 @@ import { Enrollment } from '../../../core/models';
         </div>
       </div>
 
-      <div class="container-app py-12">
+      <div class="container-app py-14">
 
         <!-- Stat cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-14">
           <div class="card stat-card stat-card-violet">
             <div class="flex items-center justify-between mb-2">
               <svg class="w-5 h-5" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">

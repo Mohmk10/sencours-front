@@ -100,10 +100,18 @@ body {
 .container-custom {
   max-width: 1340px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
 
-  @media (min-width: 768px) {
-    padding: 0 48px;
+  @media (min-width: 640px) {
+    padding: 0 32px;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0 56px;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0 72px;
   }
 }
 
@@ -484,7 +492,7 @@ body {
 .page-header-brand {
   background: var(--gradient-dark);
   color: white;
-  padding: 56px 0;
+  padding: 64px 0;
 }
 
 .page-header-brand-sm {

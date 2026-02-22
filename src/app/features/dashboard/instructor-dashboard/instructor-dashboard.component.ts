@@ -33,10 +33,10 @@ import { Course, PageResponse } from '../../../core/models';
         </div>
       </div>
 
-      <div class="container-app py-12">
+      <div class="container-app py-14">
 
         <!-- Stat cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <div class="card stat-card stat-card-violet">
             <div class="mb-2">
               <svg class="w-5 h-5" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">

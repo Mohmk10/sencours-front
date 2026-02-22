@@ -19,8 +19,8 @@ import { InstructorApplicationService } from '../../core/services/instructor-app
         </div>
       </div>
 
-      <div class="container-app py-8">
-        <div class="flex flex-col lg:flex-row gap-8">
+      <div class="container-app py-12">
+        <div class="flex flex-col lg:flex-row gap-10">
 
           <!-- Sidebar nav -->
           <aside class="lg:w-56 flex-shrink-0">

@@ -30,7 +30,7 @@ import { User } from '../../core/models';
         </div>
       </div>
 
-      <div class="container-app py-12">
+      <div class="container-app py-14">
 
         <!-- Two form cards -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
