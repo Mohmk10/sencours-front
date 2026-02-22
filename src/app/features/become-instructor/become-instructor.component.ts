@@ -12,53 +12,62 @@ import { AuthService } from '../../core/services/auth.service';
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
-      <!-- White hero -->
-      <div class="bg-white" style="border-bottom: 1px solid var(--border);">
-        <div class="container-app py-12">
-          <h1 class="text-4xl font-bold leading-tight" style="color: var(--ink);">
-            Devenez <span style="text-decoration: underline; text-decoration-color: var(--amber-mid); text-underline-offset: 6px;">instructeur</span>
+      <!-- Hero gradient -->
+      <div class="hero-gradient" style="border-bottom: 1px solid var(--border);">
+        <!-- Decorative blobs -->
+        <div class="absolute top-[-50px] right-[5%] w-72 h-72 rounded-full pointer-events-none"
+             style="background: rgba(91,33,182,0.08); filter: blur(55px);"></div>
+        <div class="absolute bottom-[-30px] left-[-40px] w-52 h-52 rounded-full pointer-events-none"
+             style="background: rgba(217,119,6,0.07); filter: blur(45px);"></div>
+
+        <div class="container-app py-14 relative">
+          <h1 class="font-bold leading-tight" style="color: var(--ink); font-size: clamp(2rem, 5vw, 3.5rem);">
+            Devenez <span style="text-decoration: underline; text-decoration-color: var(--amber-mid); text-underline-offset: 8px;">instructeur</span>
           </h1>
           <p class="mt-3 text-lg" style="color: var(--ink-3);">
             Partagez votre expertise avec des milliers d'apprenants à travers le Sénégal
           </p>
 
-          <!-- Benefits row -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
-            <div class="flex items-start gap-4">
-              <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                   style="background: var(--amber-tint);">
+          <!-- Benefits row with colored cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-10">
+            <div class="p-5 transition-shadow duration-200"
+                 style="background: var(--amber-tint); border-radius: var(--r-lg); border: 1px solid #FDE68A;"
+                 onmouseenter="this.style.boxShadow='var(--shadow-md)'"
+                 onmouseleave="this.style.boxShadow='none'">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4"
+                   style="background: rgba(217,119,6,0.15);">
                 <svg class="w-6 h-6" style="color: var(--amber-mid);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
               </div>
-              <div>
-                <h3 class="font-semibold" style="color: var(--ink);">Revenus réguliers</h3>
-                <p class="text-sm mt-1" style="color: var(--ink-3);">Gagnez de l'argent à chaque inscription à vos cours</p>
-              </div>
+              <h3 class="font-semibold" style="color: var(--amber);">Revenus réguliers</h3>
+              <p class="text-sm mt-1" style="color: var(--amber);">Gagnez de l'argent à chaque inscription à vos cours</p>
             </div>
-            <div class="flex items-start gap-4">
-              <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                   style="background: var(--violet-tint);">
+            <div class="p-5 transition-shadow duration-200"
+                 style="background: var(--violet-tint); border-radius: var(--r-lg); border: 1px solid #DDD6FE;"
+                 onmouseenter="this.style.boxShadow='var(--shadow-md)'"
+                 onmouseleave="this.style.boxShadow='none'">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4"
+                   style="background: rgba(91,33,182,0.12);">
                 <svg class="w-6 h-6" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
               </div>
-              <div>
-                <h3 class="font-semibold" style="color: var(--ink);">Large audience</h3>
-                <p class="text-sm mt-1" style="color: var(--ink-3);">Atteignez des milliers d'apprenants motivés</p>
-              </div>
+              <h3 class="font-semibold" style="color: var(--violet);">Large audience</h3>
+              <p class="text-sm mt-1" style="color: var(--violet);">Atteignez des milliers d'apprenants motivés</p>
             </div>
-            <div class="flex items-start gap-4">
-              <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                   style="background: var(--green-tint);">
+            <div class="p-5 transition-shadow duration-200"
+                 style="background: var(--green-tint); border-radius: var(--r-lg); border: 1px solid #A7F3D0;"
+                 onmouseenter="this.style.boxShadow='var(--shadow-md)'"
+                 onmouseleave="this.style.boxShadow='none'">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4"
+                   style="background: rgba(6,78,59,0.10);">
                 <svg class="w-6 h-6" style="color: var(--green);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                 </svg>
               </div>
-              <div>
-                <h3 class="font-semibold" style="color: var(--ink);">Badge certifié</h3>
-                <p class="text-sm mt-1" style="color: var(--ink-3);">Obtenez la reconnaissance d'instructeur expert</p>
-              </div>
+              <h3 class="font-semibold" style="color: var(--green);">Badge certifié</h3>
+              <p class="text-sm mt-1" style="color: var(--green);">Obtenez la reconnaissance d'instructeur expert</p>
             </div>
           </div>
         </div>

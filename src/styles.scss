@@ -52,6 +52,14 @@
   --r-xl: 20px;
   --r-full: 9999px;
 
+  /* Gradients */
+  --gradient-brand: linear-gradient(135deg, #5B21B6 0%, #7C3AED 100%);
+  --gradient-brand-warm: linear-gradient(135deg, #2D1066 0%, #5B21B6 60%, #92400E 100%);
+  --gradient-hero: linear-gradient(160deg, #EDE9FE 0%, #F9F8FF 55%, #FEF3C7 100%);
+  --gradient-dark: linear-gradient(135deg, #0D0B20 0%, #2D1066 100%);
+  --gradient-amber: linear-gradient(135deg, #92400E 0%, #D97706 100%);
+  --gradient-green: linear-gradient(135deg, #064E3B 0%, #059669 100%);
+
   /* Legacy aliases (kept for compatibility) */
   --color-primary: #5B21B6;
   --color-primary-hover: #7C3AED;
@@ -439,4 +447,67 @@ body {
     border-radius: 2px;
     opacity: 0.7;
   }
+}
+
+// ─── Colored Stat Cards ───────────────────────────────────────────────────────
+
+.stat-card-violet {
+  background: linear-gradient(135deg, #EDE9FE, #DDD6FE);
+  border: none !important;
+  .stat-card-value { color: var(--violet); }
+  .stat-card-label { color: #5B21B6; }
+}
+
+.stat-card-amber {
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  border: none !important;
+  .stat-card-value { color: var(--amber); }
+  .stat-card-label { color: #92400E; }
+}
+
+.stat-card-green {
+  background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+  border: none !important;
+  .stat-card-value { color: var(--green); }
+  .stat-card-label { color: #064E3B; }
+}
+
+.stat-card-slate {
+  background: linear-gradient(135deg, #F1F0F7, #E8E6F4);
+  border: none !important;
+  .stat-card-value { color: var(--ink-2); }
+  .stat-card-label { color: var(--ink-3); }
+}
+
+// ─── Gradient Page Header ─────────────────────────────────────────────────────
+
+.page-header-brand {
+  background: var(--gradient-dark);
+  color: white;
+  padding: 40px 0;
+}
+
+// ─── Amber Button ─────────────────────────────────────────────────────────────
+
+.btn-amber {
+  @extend .btn;
+  background: var(--gradient-amber);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #7C3500 0%, #B45309 100%);
+    color: white;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+// ─── Hero Gradient ────────────────────────────────────────────────────────────
+
+.hero-gradient {
+  background: var(--gradient-hero);
+  position: relative;
+  overflow: hidden;
 }

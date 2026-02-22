@@ -14,17 +14,32 @@ import { Course, Category, PageResponse } from '../../../core/models';
     <div class="min-h-screen" style="background: var(--canvas);">
 
       <!-- Hero section -->
-      <div class="bg-white" style="border-bottom: 1px solid var(--border);">
-        <div class="container-app py-12">
+      <div class="hero-gradient" style="border-bottom: 1px solid var(--border);">
+        <!-- Decorative blobs -->
+        <div class="absolute top-[-40px] right-[-60px] w-64 h-64 rounded-full pointer-events-none"
+             style="background: rgba(91,33,182,0.07); filter: blur(50px);"></div>
+        <div class="absolute bottom-[-30px] left-[10%] w-48 h-48 rounded-full pointer-events-none"
+             style="background: rgba(217,119,6,0.06); filter: blur(40px);"></div>
+
+        <div class="container-app py-12 relative">
           <h1 class="text-4xl font-bold leading-tight" style="color: var(--ink);">
             Explorer les <span style="text-decoration: underline; text-decoration-color: var(--amber-mid); text-underline-offset: 6px;">cours</span>
           </h1>
-          <p class="mt-3 text-lg" style="color: var(--ink-3);">
-            {{ pageResponse?.totalElements || 0 }} cours disponibles pour vous former
-          </p>
+
+          <!-- Stats row -->
+          <div class="flex items-center gap-4 mt-3 mb-6">
+            <span class="text-sm font-medium px-3 py-1.5"
+                  style="background: rgba(91,33,182,0.08); color: var(--violet); border-radius: var(--r-full);">
+              {{ pageResponse?.totalElements || 0 }} cours
+            </span>
+            <span class="text-sm font-medium px-3 py-1.5"
+                  style="background: rgba(217,119,6,0.08); color: var(--amber); border-radius: var(--r-full);">
+              {{ categories.length }} catégories
+            </span>
+          </div>
 
           <!-- Search bar -->
-          <div class="mt-6 max-w-xl relative">
+          <div class="max-w-xl relative">
             <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
@@ -33,8 +48,8 @@ import { Course, Category, PageResponse } from '../../../core/models';
               [(ngModel)]="searchQuery"
               (keyup.enter)="onSearch()"
               placeholder="Rechercher un cours..."
-              class="w-full h-12 pl-12 pr-32 text-sm border"
-              style="border-radius: var(--r-full); border-color: var(--border-2); background: var(--canvas); color: var(--ink);"
+              class="w-full h-12 pl-12 pr-32 text-sm border bg-white"
+              style="border-radius: var(--r-full); border-color: var(--border-2); color: var(--ink);"
               (focus)="$any($event.target).style.borderColor='var(--violet)'; $any($event.target).style.boxShadow='var(--shadow-focus)'"
               (blur)="$any($event.target).style.borderColor=''; $any($event.target).style.boxShadow=''">
             <button (click)="onSearch()"
@@ -119,7 +134,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
         } @else {
           <!-- Course cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
-            @for (course of pageResponse?.content; track course.id) {
+            @for (course of pageResponse?.content; track course.id; let idx = $index) {
               <a [routerLink]="['/courses', course.id]"
                  class="course-card bg-white overflow-hidden"
                  style="border: 1px solid var(--border); border-radius: var(--r-lg);">
@@ -130,8 +145,9 @@ import { Course, Category, PageResponse } from '../../../core/models';
                     <img [src]="course.thumbnailUrl" [alt]="course.title"
                          class="w-full h-full object-cover transition-transform duration-300 course-card-img">
                   } @else {
-                    <div class="w-full h-full flex items-center justify-center" style="background: var(--violet-tint);">
-                      <svg class="w-10 h-10" style="color: var(--violet); opacity: 0.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-full h-full flex items-center justify-center"
+                         [style.background]="getCardGradient(idx)">
+                      <svg class="w-10 h-10 opacity-30" style="color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                       </svg>
                     </div>
@@ -371,6 +387,17 @@ export class CourseListComponent implements OnInit {
 
     this.router.navigate([], { queryParams });
     this.loadCourses();
+  }
+
+  getCardGradient(index: number): string {
+    const gradients = [
+      'linear-gradient(135deg, #EDE9FE, #DDD6FE)',
+      'linear-gradient(135deg, #FEF3C7, #FDE68A)',
+      'linear-gradient(135deg, #D1FAE5, #A7F3D0)',
+      'linear-gradient(135deg, #5B21B6, #7C3AED)',
+      'linear-gradient(135deg, #92400E, #D97706)',
+    ];
+    return gradients[index % gradients.length];
   }
 
   getVisiblePages(): number[] {

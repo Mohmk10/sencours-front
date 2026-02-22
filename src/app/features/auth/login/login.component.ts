@@ -9,25 +9,34 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
-    <div class="min-h-screen flex items-center justify-center p-4 auth-bg">
+    <div class="min-h-screen flex">
 
-      <!-- Centered card -->
-      <div class="w-full max-w-[420px]">
+      <!-- Left: Form panel -->
+      <div class="flex-1 flex items-center justify-center p-8 bg-white">
+        <div class="w-full max-w-[400px]">
 
-        <!-- Logo -->
-        <div class="text-center mb-8">
-          <a routerLink="/" class="inline-flex items-center gap-0">
-            <span class="text-2xl font-medium" style="color: var(--ink-3);">Sen</span>
-            <span class="text-2xl font-bold" style="color: var(--ink);">Cours</span>
+          <!-- Logo -->
+          <a routerLink="/" class="inline-flex items-center gap-2.5 mb-10">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <rect width="36" height="36" rx="9" fill="url(#login-logo-g)"/>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
+                fill="white" fill-opacity="0.95"/>
+              <defs>
+                <linearGradient id="login-logo-g" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#5B21B6"/>
+                  <stop offset="0.65" stop-color="#7C3AED"/>
+                  <stop offset="1" stop-color="#D97706" stop-opacity="0.85"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="text-xl leading-none">
+              <span style="color:var(--ink-3);font-weight:500">Sen</span><span style="color:var(--violet);font-weight:800">Cours</span>
+            </span>
           </a>
-        </div>
-
-        <!-- Card -->
-        <div class="bg-white p-8"
-             style="border-radius: var(--r-xl); border: 1px solid var(--border); box-shadow: var(--shadow-lg);">
 
           <h1 class="text-2xl font-bold mb-1" style="color: var(--ink);">Connexion</h1>
-          <p class="text-sm mb-6" style="color: var(--ink-3);">
+          <p class="text-sm mb-7" style="color: var(--ink-3);">
             Pas encore inscrit ?
             <a routerLink="/register" class="link font-semibold">Créer un compte</a>
           </p>
@@ -88,31 +97,82 @@ import { AuthService } from '../../../core/services/auth.service';
             <a href="#" class="text-sm link">Mot de passe oublié ?</a>
           </div>
         </div>
+      </div>
 
-        <!-- Stats strip -->
-        <div class="mt-6 grid grid-cols-3 gap-4 text-center">
-          <div>
-            <p class="font-bold text-lg" style="color: var(--ink);">500+</p>
-            <p class="text-xs" style="color: var(--ink-3);">Cours</p>
+      <!-- Right: Brand panel (hidden on mobile) -->
+      <div class="hidden md:flex w-[45%] flex-shrink-0 flex-col items-center justify-center p-12 relative overflow-hidden"
+           style="background: var(--gradient-dark);">
+
+        <!-- Decorative blobs -->
+        <div class="absolute top-[-80px] right-[-80px] w-72 h-72 rounded-full pointer-events-none"
+             style="background: rgba(124,58,237,0.12); filter: blur(60px);"></div>
+        <div class="absolute bottom-[-60px] left-[-60px] w-56 h-56 rounded-full pointer-events-none"
+             style="background: rgba(217,119,6,0.10); filter: blur(50px);"></div>
+
+        <!-- Logo large -->
+        <svg width="52" height="52" viewBox="0 0 36 36" fill="none" class="mb-8">
+          <rect width="36" height="36" rx="9" fill="url(#login-side-logo-g)"/>
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
+            fill="white" fill-opacity="0.95"/>
+          <defs>
+            <linearGradient id="login-side-logo-g" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#5B21B6"/>
+              <stop offset="0.65" stop-color="#7C3AED"/>
+              <stop offset="1" stop-color="#D97706" stop-opacity="0.85"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <h2 class="text-2xl font-bold text-white text-center mb-8 leading-snug">
+          Apprenez avec<br>les meilleurs
+        </h2>
+
+        <!-- Features -->
+        <div class="space-y-4 w-full max-w-[280px] mb-10">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.25);">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </div>
+            <span class="text-sm text-white opacity-90">Cours créés par des experts locaux</span>
           </div>
-          <div>
-            <p class="font-bold text-lg" style="color: var(--ink);">10K+</p>
-            <p class="text-xs" style="color: var(--ink-3);">Étudiants</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.25);">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <span class="text-sm text-white opacity-90">Certificats reconnus par les entreprises</span>
           </div>
-          <div>
-            <p class="font-bold text-lg" style="color: var(--ink);">50+</p>
-            <p class="text-xs" style="color: var(--ink-3);">Instructeurs</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.25);">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <span class="text-sm text-white opacity-90">Apprenez à votre rythme, partout</span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="flex items-center gap-8">
+          <div class="text-center">
+            <p class="text-2xl font-bold" style="color: var(--amber-mid);">500+</p>
+            <p class="text-xs text-white opacity-60 mt-0.5">Cours</p>
+          </div>
+          <div class="w-px h-8 opacity-20 bg-white"></div>
+          <div class="text-center">
+            <p class="text-2xl font-bold" style="color: var(--amber-mid);">10K+</p>
+            <p class="text-xs text-white opacity-60 mt-0.5">Étudiants</p>
           </div>
         </div>
       </div>
 
-      <style>
-        .auth-bg {
-          background-color: var(--canvas);
-          background-image: radial-gradient(circle at 20% 20%, rgba(91,33,182,0.04) 0%, transparent 50%),
-                            radial-gradient(circle at 80% 80%, rgba(217,119,6,0.04) 0%, transparent 50%);
-        }
-      </style>
     </div>
   `
 })

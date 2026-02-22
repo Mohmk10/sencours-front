@@ -9,22 +9,31 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
-    <div class="min-h-screen flex items-center justify-center p-4 auth-bg">
+    <div class="min-h-screen flex">
 
-      <!-- Centered card -->
-      <div class="w-full max-w-[440px]">
+      <!-- Left: Form panel -->
+      <div class="flex-1 flex items-center justify-center p-8 bg-white overflow-y-auto">
+        <div class="w-full max-w-[420px] py-6">
 
-        <!-- Logo -->
-        <div class="text-center mb-8">
-          <a routerLink="/" class="inline-flex items-center gap-0">
-            <span class="text-2xl font-medium" style="color: var(--ink-3);">Sen</span>
-            <span class="text-2xl font-bold" style="color: var(--ink);">Cours</span>
+          <!-- Logo -->
+          <a routerLink="/" class="inline-flex items-center gap-2.5 mb-8">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <rect width="36" height="36" rx="9" fill="url(#reg-logo-g)"/>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
+                fill="white" fill-opacity="0.95"/>
+              <defs>
+                <linearGradient id="reg-logo-g" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#5B21B6"/>
+                  <stop offset="0.65" stop-color="#7C3AED"/>
+                  <stop offset="1" stop-color="#D97706" stop-opacity="0.85"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="text-xl leading-none">
+              <span style="color:var(--ink-3);font-weight:500">Sen</span><span style="color:var(--violet);font-weight:800">Cours</span>
+            </span>
           </a>
-        </div>
-
-        <!-- Card -->
-        <div class="bg-white p-8"
-             style="border-radius: var(--r-xl); border: 1px solid var(--border); box-shadow: var(--shadow-lg);">
 
           <h1 class="text-2xl font-bold mb-1" style="color: var(--ink);">Créer un compte</h1>
           <p class="text-sm mb-6" style="color: var(--ink-3);">
@@ -116,59 +125,82 @@ import { AuthService } from '../../../core/services/auth.service';
             <a href="#" class="link">Politique de confidentialité</a>.
           </p>
         </div>
+      </div>
 
-        <!-- Benefits strip -->
-        <div class="mt-6 grid grid-cols-2 gap-3">
-          <div class="flex items-center gap-2.5 p-3 bg-white rounded-lg"
-               style="border: 1px solid var(--border);">
-            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center"
-                 style="background: var(--violet-tint);">
-              <svg class="w-3.5 h-3.5" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Right: Brand panel (hidden on mobile) -->
+      <div class="hidden md:flex w-[42%] flex-shrink-0 flex-col items-center justify-center p-12 relative overflow-hidden"
+           style="background: var(--gradient-dark);">
+
+        <!-- Decorative blobs -->
+        <div class="absolute top-[-80px] left-[-60px] w-72 h-72 rounded-full pointer-events-none"
+             style="background: rgba(124,58,237,0.12); filter: blur(60px);"></div>
+        <div class="absolute bottom-[-60px] right-[-80px] w-56 h-56 rounded-full pointer-events-none"
+             style="background: rgba(217,119,6,0.10); filter: blur(50px);"></div>
+
+        <!-- Logo large -->
+        <svg width="52" height="52" viewBox="0 0 36 36" fill="none" class="mb-8">
+          <rect width="36" height="36" rx="9" fill="url(#reg-side-logo-g)"/>
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
+            fill="white" fill-opacity="0.95"/>
+          <defs>
+            <linearGradient id="reg-side-logo-g" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#5B21B6"/>
+              <stop offset="0.65" stop-color="#7C3AED"/>
+              <stop offset="1" stop-color="#D97706" stop-opacity="0.85"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <h2 class="text-2xl font-bold text-white text-center mb-8 leading-snug">
+          Rejoignez 10 000+<br>apprenants
+        </h2>
+
+        <!-- Advantages -->
+        <div class="space-y-4 w-full max-w-[280px] mb-10">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.25);">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
               </svg>
             </div>
-            <span class="text-xs font-medium" style="color: var(--ink-2);">Accès illimité</span>
+            <span class="text-sm text-white opacity-90">Accès illimité à 500+ cours</span>
           </div>
-          <div class="flex items-center gap-2.5 p-3 bg-white rounded-lg"
-               style="border: 1px solid var(--border);">
-            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center"
-                 style="background: var(--amber-tint);">
-              <svg class="w-3.5 h-3.5" style="color: var(--amber-mid);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.25);">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
-            <span class="text-xs font-medium" style="color: var(--ink-2);">Certificats reconnus</span>
+            <span class="text-sm text-white opacity-90">Certificats reconnus</span>
           </div>
-          <div class="flex items-center gap-2.5 p-3 bg-white rounded-lg"
-               style="border: 1px solid var(--border);">
-            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center"
-                 style="background: var(--green-tint);">
-              <svg class="w-3.5 h-3.5" style="color: var(--green);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.25);">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
             </div>
-            <span class="text-xs font-medium" style="color: var(--ink-2);">Experts locaux</span>
+            <span class="text-sm text-white opacity-90">Experts sénégalais de haut niveau</span>
           </div>
-          <div class="flex items-center gap-2.5 p-3 bg-white rounded-lg"
-               style="border: 1px solid var(--border);">
-            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center"
-                 style="background: var(--violet-tint);">
-              <svg class="w-3.5 h-3.5" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                 style="background: rgba(124,58,237,0.25);">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
             </div>
-            <span class="text-xs font-medium" style="color: var(--ink-2);">Apprenez à votre rythme</span>
+            <span class="text-sm text-white opacity-90">Apprenez à votre propre rythme</span>
           </div>
         </div>
+
+        <p class="text-xs text-center opacity-40 text-white">
+          Inscription gratuite · Annulez à tout moment
+        </p>
       </div>
 
-      <style>
-        .auth-bg {
-          background-color: var(--canvas);
-          background-image: radial-gradient(circle at 20% 20%, rgba(91,33,182,0.04) 0%, transparent 50%),
-                            radial-gradient(circle at 80% 80%, rgba(217,119,6,0.04) 0%, transparent 50%);
-        }
-      </style>
     </div>
   `
 })

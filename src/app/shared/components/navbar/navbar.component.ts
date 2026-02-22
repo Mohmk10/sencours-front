@@ -14,10 +14,24 @@ import { AuthService } from '../../../core/services/auth.service';
       <div class="container-app">
         <div class="flex items-center justify-between h-14">
 
-          <!-- Logo wordmark -->
-          <a routerLink="/" class="flex items-center gap-0 flex-shrink-0">
-            <span class="text-lg font-medium" style="color: var(--ink-3);">Sen</span>
-            <span class="text-lg font-bold" style="color: var(--ink);">Cours</span>
+          <!-- Logo -->
+          <a routerLink="/" class="flex items-center gap-2.5 flex-shrink-0">
+            <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+              <rect width="36" height="36" rx="9" fill="url(#nav-logo-g)"/>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
+                fill="white" fill-opacity="0.95"/>
+              <defs>
+                <linearGradient id="nav-logo-g" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#5B21B6"/>
+                  <stop offset="0.65" stop-color="#7C3AED"/>
+                  <stop offset="1" stop-color="#D97706" stop-opacity="0.85"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="text-lg leading-none">
+              <span style="color:var(--ink-3);font-weight:500">Sen</span><span style="color:var(--violet);font-weight:800">Cours</span>
+            </span>
           </a>
 
           <!-- Search bar (desktop) -->
@@ -56,7 +70,8 @@ import { AuthService } from '../../../core/services/auth.service';
                 @if (authService.hasRole('ETUDIANT')) {
                   <a routerLink="/become-instructor"
                      routerLinkActive="nav-active"
-                     class="nav-link">Enseigner sur SenCours</a>
+                     class="nav-link font-semibold"
+                     style="color: var(--amber-mid);">Enseigner sur SenCours</a>
                 }
                 @if (authService.hasRole('ADMIN')) {
                   <a routerLink="/admin"

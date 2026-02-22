@@ -12,13 +12,13 @@ import { Enrollment } from '../../../core/models';
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
-      <!-- White header -->
-      <div class="bg-white" style="border-bottom: 1px solid var(--border);">
-        <div class="container-app py-10">
-          <h1 class="text-3xl font-bold" style="color: var(--ink);">
-            Bonjour, <span style="color: var(--violet);">{{ currentUser?.firstName }}</span> 👋
+      <!-- Gradient header -->
+      <div class="page-header-brand">
+        <div class="container-app">
+          <h1 class="text-3xl font-bold text-white">
+            Bonjour, <span style="color: var(--amber-mid);">{{ currentUser?.firstName }}</span> 👋
           </h1>
-          <p class="mt-1.5 text-base" style="color: var(--ink-3);">
+          <p class="mt-1.5 text-base" style="color: rgba(255,255,255,0.6);">
             Continuez votre parcours d'apprentissage
           </p>
         </div>
@@ -28,20 +28,32 @@ import { Enrollment } from '../../../core/models';
 
         <!-- Stat cards -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-          <div class="card stat-card">
-            <p class="stat-card-label">Cours inscrits</p>
+          <div class="card stat-card stat-card-violet">
+            <div class="flex items-center justify-between mb-2">
+              <svg class="w-5 h-5" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </div>
             <p class="stat-card-value">{{ enrollments.length }}</p>
-            <div class="stat-card-accent" style="background: var(--violet);"></div>
+            <p class="stat-card-label mt-1">Cours inscrits</p>
           </div>
-          <div class="card stat-card">
-            <p class="stat-card-label">Terminés</p>
-            <p class="stat-card-value" style="color: var(--green);">{{ completedCount }}</p>
-            <div class="stat-card-accent" style="background: var(--green);"></div>
+          <div class="card stat-card stat-card-green">
+            <div class="flex items-center justify-between mb-2">
+              <svg class="w-5 h-5" style="color: var(--green);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <p class="stat-card-value">{{ completedCount }}</p>
+            <p class="stat-card-label mt-1">Terminés</p>
           </div>
-          <div class="card stat-card">
-            <p class="stat-card-label">En cours</p>
-            <p class="stat-card-value" style="color: var(--amber);">{{ inProgressCount }}</p>
-            <div class="stat-card-accent" style="background: var(--amber-mid);"></div>
+          <div class="card stat-card stat-card-amber">
+            <div class="flex items-center justify-between mb-2">
+              <svg class="w-5 h-5" style="color: var(--amber);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <p class="stat-card-value">{{ inProgressCount }}</p>
+            <p class="stat-card-label mt-1">En cours</p>
           </div>
         </div>
 

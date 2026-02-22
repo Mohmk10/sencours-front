@@ -100,18 +100,19 @@ import { StarRatingComponent } from '../../../shared/components';
                     }
                   </div>
 
-                  <!-- Price + CTA -->
-                  <div class="p-6">
-                    <div class="mb-5">
-                      @if (course.price === 0) {
-                        <span class="text-3xl font-bold" style="color: var(--green);">Gratuit</span>
-                      } @else {
-                        <span class="text-3xl font-bold" style="color: var(--amber);">
-                          {{ course.price | number:'1.0-0' }} FCFA
-                        </span>
-                      }
-                    </div>
+                  <!-- Price header gradient -->
+                  <div class="px-6 py-5" style="background: var(--gradient-brand);">
+                    @if (course.price === 0) {
+                      <span class="text-3xl font-bold text-white">Gratuit</span>
+                    } @else {
+                      <span class="text-3xl font-bold" style="color: var(--amber-mid);">
+                        {{ course.price | number:'1.0-0' }} FCFA
+                      </span>
+                    }
+                  </div>
 
+                  <!-- CTA -->
+                  <div class="p-6">
                     <div class="space-y-2.5">
                       @if (!authService.isAuthenticated()) {
                         <a routerLink="/login" class="btn btn-primary w-full">
@@ -137,7 +138,7 @@ import { StarRatingComponent } from '../../../shared/components';
                         </button>
                       } @else {
                         <button (click)="enroll()" [disabled]="enrollmentLoading"
-                                class="btn btn-primary w-full">
+                                class="btn btn-amber w-full">
                           @if (enrollmentLoading) { Inscription... } @else { S'inscrire maintenant }
                         </button>
                       }

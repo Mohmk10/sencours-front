@@ -13,9 +13,23 @@ import { RouterModule } from '@angular/router';
 
           <!-- Brand -->
           <div class="col-span-2 md:col-span-1">
-            <a routerLink="/" class="flex items-center gap-0 mb-5">
-              <span class="text-lg font-medium" style="color: rgba(255,255,255,0.5);">Sen</span>
-              <span class="text-lg font-bold text-white">Cours</span>
+            <a routerLink="/" class="flex items-center gap-2 mb-5">
+              <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
+                <rect width="36" height="36" rx="9" fill="url(#footer-logo-g)"/>
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M18 7C18 7 11 13 11 20a7 7 0 0014 0c0-7-7-13-7-13zm0 17a3 3 0 01-3-3c0-2.5 3-6.5 3-6.5s3 4 3 6.5a3 3 0 01-3 3z"
+                  fill="white" fill-opacity="0.95"/>
+                <defs>
+                  <linearGradient id="footer-logo-g" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#5B21B6"/>
+                    <stop offset="0.65" stop-color="#7C3AED"/>
+                    <stop offset="1" stop-color="#D97706" stop-opacity="0.85"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span class="text-lg leading-none">
+                <span style="color:rgba(255,255,255,0.55);font-weight:500">Sen</span><span style="color:white;font-weight:800">Cours</span>
+              </span>
             </a>
             <p class="text-sm leading-relaxed" style="color: rgba(255,255,255,0.45);">
               La première plateforme d'apprentissage en ligne du Sénégal. Formez-vous avec des experts locaux.

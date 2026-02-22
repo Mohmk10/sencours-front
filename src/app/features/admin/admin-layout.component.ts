@@ -10,11 +10,11 @@ import { InstructorApplicationService } from '../../core/services/instructor-app
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
-      <!-- White page header -->
-      <div class="bg-white" style="border-bottom: 1px solid var(--border);">
-        <div class="container-app py-6">
-          <h1 class="text-xl font-bold" style="color: var(--ink);">Administration</h1>
-          <p class="text-sm mt-0.5" style="color: var(--ink-3);">Gérez la plateforme SenCours</p>
+      <!-- Gradient header -->
+      <div class="page-header-brand" style="padding: 24px 0;">
+        <div class="container-app">
+          <h1 class="text-xl font-bold text-white">Administration</h1>
+          <p class="text-sm mt-0.5" style="color: rgba(255,255,255,0.55);">Gérez la plateforme SenCours</p>
         </div>
       </div>
 
@@ -25,7 +25,11 @@ import { InstructorApplicationService } from '../../core/services/instructor-app
           <aside class="lg:w-56 flex-shrink-0">
             <nav class="bg-white sticky top-20"
                  style="border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden;">
-              <div class="p-1.5 space-y-0.5">
+              <!-- Brand accent bar -->
+              <div style="height: 4px; background: var(--gradient-brand);"></div>
+
+              <div class="p-1.5">
+                <p class="px-3 pt-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest" style="color: var(--ink-4);">NAVIGATION</p>
                 <a routerLink="/admin/users"
                    routerLinkActive="admin-nav-active"
                    class="admin-nav-item">
@@ -42,6 +46,8 @@ import { InstructorApplicationService } from '../../core/services/instructor-app
                   </svg>
                   Cours
                 </a>
+
+                <p class="px-3 pt-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest" style="color: var(--ink-4);">GESTION</p>
                 <a routerLink="/admin/applications"
                    routerLinkActive="admin-nav-active"
                    class="admin-nav-item">
@@ -94,8 +100,8 @@ import { InstructorApplicationService } from '../../core/services/instructor-app
           color: var(--ink);
         }
         .admin-nav-item.admin-nav-active {
-          background: var(--violet-xlight) !important;
-          color: var(--violet) !important;
+          background: var(--violet) !important;
+          color: white !important;
         }
       </style>
     </div>

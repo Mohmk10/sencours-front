@@ -12,17 +12,17 @@ import { Course, PageResponse } from '../../../core/models';
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
-      <!-- White header -->
-      <div class="bg-white" style="border-bottom: 1px solid var(--border);">
-        <div class="container-app py-10">
+      <!-- Gradient header -->
+      <div class="page-header-brand">
+        <div class="container-app">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 class="text-3xl font-bold" style="color: var(--ink);">Espace instructeur</h1>
-              <p class="mt-1.5 text-base" style="color: var(--ink-3);">
+              <h1 class="text-3xl font-bold text-white">Espace instructeur</h1>
+              <p class="mt-1.5 text-base" style="color: rgba(255,255,255,0.6);">
                 Gérez vos cours et suivez vos performances
               </p>
             </div>
-            <a routerLink="/courses/new" class="btn btn-primary">
+            <a routerLink="/courses/new" class="btn btn-amber">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
               </svg>
@@ -36,25 +36,41 @@ import { Course, PageResponse } from '../../../core/models';
 
         <!-- Stat cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div class="card stat-card">
-            <p class="stat-card-label">Total cours</p>
+          <div class="card stat-card stat-card-violet">
+            <div class="mb-2">
+              <svg class="w-5 h-5" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </div>
             <p class="stat-card-value">{{ pageResponse?.totalElements || 0 }}</p>
-            <div class="stat-card-accent" style="background: var(--violet);"></div>
+            <p class="stat-card-label mt-1">Total cours</p>
           </div>
-          <div class="card stat-card">
-            <p class="stat-card-label">Publiés</p>
-            <p class="stat-card-value" style="color: var(--green);">{{ publishedCount }}</p>
-            <div class="stat-card-accent" style="background: var(--green);"></div>
+          <div class="card stat-card stat-card-green">
+            <div class="mb-2">
+              <svg class="w-5 h-5" style="color: var(--green);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <p class="stat-card-value">{{ publishedCount }}</p>
+            <p class="stat-card-label mt-1">Publiés</p>
           </div>
-          <div class="card stat-card">
-            <p class="stat-card-label">Brouillons</p>
-            <p class="stat-card-value" style="color: var(--amber);">{{ draftCount }}</p>
-            <div class="stat-card-accent" style="background: var(--amber-mid);"></div>
+          <div class="card stat-card stat-card-amber">
+            <div class="mb-2">
+              <svg class="w-5 h-5" style="color: var(--amber);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+            </div>
+            <p class="stat-card-value">{{ draftCount }}</p>
+            <p class="stat-card-label mt-1">Brouillons</p>
           </div>
-          <div class="card stat-card">
-            <p class="stat-card-label">Total étudiants</p>
+          <div class="card stat-card stat-card-slate">
+            <div class="mb-2">
+              <svg class="w-5 h-5" style="color: var(--ink-2);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+            </div>
             <p class="stat-card-value">{{ totalStudents }}</p>
-            <div class="stat-card-accent" style="background: var(--ink-3);"></div>
+            <p class="stat-card-label mt-1">Total étudiants</p>
           </div>
         </div>
 
