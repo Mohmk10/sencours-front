@@ -12,12 +12,30 @@ import { Category } from '../../../core/models';
     <div>
       <div class="px-8 py-5 flex items-center justify-between" style="border-bottom: 1px solid var(--border);">
         <h1 class="text-base font-semibold" style="color: var(--ink);">Gestion des catégories</h1>
-        <button (click)="openModal()" class="btn btn-primary btn-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-          Nouvelle catégorie
-        </button>
+        <div class="flex items-center gap-2">
+          @if (categories.length === 0 && !isLoading) {
+            <button (click)="seedDefaultCategories()" [disabled]="isSeeding" class="btn btn-secondary btn-sm">
+              @if (isSeeding) {
+                <svg class="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Initialisation...
+              } @else {
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                Initialiser les catégories
+              }
+            </button>
+          }
+          <button (click)="openModal()" class="btn btn-primary btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Nouvelle catégorie
+          </button>
+        </div>
       </div>
       <div class="p-8">
 
@@ -117,13 +135,55 @@ export class CategoryManagementComponent implements OnInit {
 
   categories: Category[] = [];
   isLoading = true;
+  isSeeding = false;
   showModal = false;
   editingCategory: Category | null = null;
   formData = { name: '', description: '' };
   isSaving = false;
 
+  private readonly DEFAULT_CATEGORIES = [
+    { name: 'Développement Web & Mobile', description: 'HTML, CSS, JavaScript, Angular, React, Flutter, développement d\'applications' },
+    { name: 'Data Science & Intelligence Artificielle', description: 'Python, Machine Learning, Deep Learning, analyse de données, modèles prédictifs' },
+    { name: 'Design Graphique & UX/UI', description: 'Figma, Adobe XD, Photoshop, Illustrator, conception d\'interfaces utilisateur' },
+    { name: 'Marketing Digital', description: 'Réseaux sociaux, SEO, publicité en ligne, email marketing, stratégie de contenu' },
+    { name: 'Finance & Comptabilité', description: 'Comptabilité, gestion financière, fiscalité, audit, finance d\'entreprise' },
+    { name: 'Langues', description: 'Français, Anglais, Wolof, Arabe, Mandarin, apprentissage des langues' },
+    { name: 'Entrepreneuriat & Business', description: 'Création d\'entreprise, business plan, leadership, management, stratégie' },
+    { name: 'Réseaux & Cybersécurité', description: 'Administration réseau, sécurité informatique, Linux, Cisco, ethical hacking' },
+    { name: 'Bureautique & Productivité', description: 'Word, Excel, PowerPoint, Google Workspace, outils de productivité' },
+    { name: 'Agriculture & Agribusiness', description: 'Techniques agricoles, agro-alimentaire, gestion d\'exploitation, agriculture durable' },
+    { name: 'Droit & Sciences Juridiques', description: 'Droit des affaires, droit civil, droit du travail, procédures juridiques' },
+    { name: 'Santé & Bien-être', description: 'Nutrition, premiers secours, santé communautaire, bien-être mental' }
+  ];
+
   ngOnInit() {
     this.loadCategories();
+  }
+
+  seedDefaultCategories() {
+    if (!confirm('Initialiser les 12 catégories par défaut de la plateforme ?')) return;
+    this.isSeeding = true;
+    let completed = 0;
+    const total = this.DEFAULT_CATEGORIES.length;
+
+    for (const cat of this.DEFAULT_CATEGORIES) {
+      this.categoryService.createCategory(cat).subscribe({
+        next: () => {
+          completed++;
+          if (completed === total) {
+            this.isSeeding = false;
+            this.loadCategories();
+          }
+        },
+        error: () => {
+          completed++;
+          if (completed === total) {
+            this.isSeeding = false;
+            this.loadCategories();
+          }
+        }
+      });
+    }
   }
 
   loadCategories() {

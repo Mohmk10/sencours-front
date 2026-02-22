@@ -24,7 +24,7 @@ import { InstructorApplicationService } from '../../core/services/instructor-app
 
           <!-- Sidebar nav -->
           <aside class="lg:w-56 flex-shrink-0">
-            <nav class="bg-white sticky top-24"
+            <nav class="bg-white sticky top-[73px]"
                  style="border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden;">
               <!-- Brand accent bar -->
               <div style="height: 4px; background: var(--gradient-brand);"></div>

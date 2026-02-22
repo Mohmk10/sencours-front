@@ -118,7 +118,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
               </div>
             }
           </div>
-        } @else if (pageResponse?.content?.length === 0) {
+        } @else if (filteredCourses.length === 0) {
           <!-- Empty state -->
           <div class="card py-20 text-center">
             <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
@@ -134,7 +134,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
         } @else {
           <!-- Course cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
-            @for (course of pageResponse?.content; track course.id; let idx = $index) {
+            @for (course of filteredCourses; track course.id; let idx = $index) {
               <a [routerLink]="['/courses', course.id]"
                  class="course-card bg-white overflow-hidden"
                  style="border: 1px solid var(--border); border-radius: var(--r-lg);">
@@ -177,7 +177,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
                   <div class="flex items-center gap-2 mb-2">
                     <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
                          style="background: var(--violet); font-size: 9px;">
-                      {{ course.instructorName.charAt(0).toUpperCase() }}
+                      {{ (course.instructorName || '?').charAt(0).toUpperCase() }}
                     </div>
                     <span class="text-xs truncate" style="color: var(--ink-3);">{{ course.instructorName }}</span>
                   </div>
@@ -387,6 +387,13 @@ export class CourseListComponent implements OnInit {
 
     this.router.navigate([], { queryParams });
     this.loadCourses();
+  }
+
+  get filteredCourses() {
+    const courses = this.pageResponse?.content || [];
+    if (this.priceFilter === 'free') return courses.filter(c => c.price === 0);
+    if (this.priceFilter === 'paid') return courses.filter(c => c.price > 0);
+    return courses;
   }
 
   getCardGradient(index: number): string {

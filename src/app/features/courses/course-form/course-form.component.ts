@@ -11,113 +11,183 @@ import { Category } from '../../../core/models';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
-    <div class="container mx-auto px-4 py-8">
-      <div class="max-w-2xl mx-auto">
-        <h1 class="text-2xl font-bold mb-6">
-          {{ isEditMode ? 'Modifier le cours' : 'Créer un nouveau cours' }}
-        </h1>
+    <div class="min-h-screen" style="background: var(--canvas);">
 
-        @if (errorMessage) {
-          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {{ errorMessage }}
-          </div>
-        }
+      <!-- Header gradient -->
+      <div class="page-header-brand">
+        <div class="container-app">
+          <a routerLink="/dashboard/instructor"
+             class="inline-flex items-center gap-1.5 text-xs mb-4 transition-opacity hover:opacity-100"
+             style="color: rgba(255,255,255,0.5);">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Tableau de bord instructeur
+          </a>
+          <p class="text-xs font-bold mb-2 uppercase tracking-widest" style="color: rgba(255,255,255,0.4);">
+            Espace instructeur
+          </p>
+          <h1 class="text-2xl font-bold text-white">
+            {{ isEditMode ? 'Modifier le cours' : 'Créer un cours' }}
+          </h1>
+          <p class="text-sm mt-1.5" style="color: rgba(255,255,255,0.55);">
+            {{ isEditMode ? 'Mettez à jour les informations de votre cours' : 'Renseignez les informations de votre nouveau cours' }}
+          </p>
+        </div>
+      </div>
 
-        <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" class="bg-white rounded-lg shadow p-6 space-y-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Titre *</label>
-            <input
-              type="text"
-              formControlName="title"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Ex: Introduction à Python">
-            @if (courseForm.get('title')?.invalid && courseForm.get('title')?.touched) {
-              <p class="mt-1 text-sm text-red-600">Le titre doit contenir entre 5 et 100 caractères</p>
-            }
-          </div>
+      <div class="container-app py-12">
+        <div class="max-w-2xl mx-auto">
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-            <textarea
-              formControlName="description"
-              rows="5"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Décrivez votre cours en détail..."></textarea>
-            @if (courseForm.get('description')?.invalid && courseForm.get('description')?.touched) {
-              <p class="mt-1 text-sm text-red-600">La description doit contenir au moins 20 caractères</p>
-            }
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Prix (FCFA) *</label>
-              <input
-                type="number"
-                formControlName="price"
-                min="0"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="0 pour gratuit">
-              @if (courseForm.get('price')?.invalid && courseForm.get('price')?.touched) {
-                <p class="mt-1 text-sm text-red-600">Le prix doit être positif ou nul</p>
-              }
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie *</label>
-              <select
-                formControlName="categoryId"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                <option [ngValue]="null" disabled>Sélectionnez une catégorie</option>
-                @for (category of categories; track category.id) {
-                  <option [ngValue]="category.id">{{ category.name }}</option>
-                }
-              </select>
-              @if (courseForm.get('categoryId')?.invalid && courseForm.get('categoryId')?.touched) {
-                <p class="mt-1 text-sm text-red-600">Veuillez sélectionner une catégorie</p>
-              }
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">URL de l'image (optionnel)</label>
-            <input
-              type="url"
-              formControlName="thumbnailUrl"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="https://example.com/image.jpg">
-          </div>
-
-          @if (isEditMode) {
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-              <select
-                formControlName="status"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                <option value="DRAFT">Brouillon</option>
-                <option value="PUBLISHED">Publié</option>
-                <option value="ARCHIVED">Archivé</option>
-              </select>
+          @if (errorMessage) {
+            <div class="alert alert-error mb-6">
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>{{ errorMessage }}</span>
             </div>
           }
 
-          <div class="flex gap-4 pt-4">
-            <button
-              type="submit"
-              [disabled]="courseForm.invalid || isLoading"
-              class="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
-              @if (isLoading) {
-                Enregistrement...
-              } @else {
-                {{ isEditMode ? 'Mettre à jour' : 'Créer le cours' }}
+          <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+            <div class="card p-8 space-y-6">
+
+              <!-- Titre -->
+              <div>
+                <label class="label">
+                  Titre du cours <span style="color: #EF4444;">*</span>
+                </label>
+                <input
+                  type="text"
+                  formControlName="title"
+                  class="input"
+                  [class.input-error]="courseForm.get('title')?.invalid && courseForm.get('title')?.touched"
+                  placeholder="Ex: Introduction au développement web avec Angular">
+                @if (courseForm.get('title')?.invalid && courseForm.get('title')?.touched) {
+                  <p class="mt-1 text-xs" style="color: #EF4444;">Le titre doit contenir entre 5 et 100 caractères</p>
+                }
+              </div>
+
+              <!-- Description -->
+              <div>
+                <label class="label">
+                  Description <span style="color: #EF4444;">*</span>
+                </label>
+                <textarea
+                  formControlName="description"
+                  rows="5"
+                  class="input resize-none"
+                  [class.input-error]="courseForm.get('description')?.invalid && courseForm.get('description')?.touched"
+                  placeholder="Décrivez votre cours en détail : ce que les apprenants vont acquérir, le niveau requis, les thèmes abordés..."></textarea>
+                @if (courseForm.get('description')?.invalid && courseForm.get('description')?.touched) {
+                  <p class="mt-1 text-xs" style="color: #EF4444;">La description doit contenir au moins 20 caractères</p>
+                }
+              </div>
+
+              <!-- Prix + Catégorie -->
+              <div class="grid grid-cols-2 gap-5">
+                <div>
+                  <label class="label">
+                    Prix (FCFA) <span style="color: #EF4444;">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    formControlName="price"
+                    min="0"
+                    class="input"
+                    [class.input-error]="courseForm.get('price')?.invalid && courseForm.get('price')?.touched"
+                    placeholder="0 pour gratuit">
+                  @if (courseForm.get('price')?.invalid && courseForm.get('price')?.touched) {
+                    <p class="mt-1 text-xs" style="color: #EF4444;">Le prix doit être positif ou nul</p>
+                  }
+                </div>
+
+                <div>
+                  <label class="label">
+                    Catégorie <span style="color: #EF4444;">*</span>
+                  </label>
+                  @if (categoriesLoading) {
+                    <div class="input flex items-center gap-2" style="color: var(--ink-3);">
+                      <svg class="w-4 h-4 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                      </svg>
+                      Chargement...
+                    </div>
+                  } @else if (categories.length === 0) {
+                    <div class="flex items-start gap-2.5 p-3 text-xs"
+                         style="background: var(--amber-tint); color: var(--amber); border-radius: var(--r-md); border: 1px solid rgba(217,119,6,0.25);">
+                      <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                      </svg>
+                      <span>Aucune catégorie disponible. Un administrateur doit d'abord créer les catégories via <strong>Admin → Catégories → Initialiser les catégories</strong>.</span>
+                    </div>
+                  } @else {
+                    <select
+                      formControlName="categoryId"
+                      class="input"
+                      [class.input-error]="courseForm.get('categoryId')?.invalid && courseForm.get('categoryId')?.touched">
+                      <option [ngValue]="null" disabled>Sélectionnez une catégorie</option>
+                      @for (category of categories; track category.id) {
+                        <option [ngValue]="category.id">{{ category.name }}</option>
+                      }
+                    </select>
+                    @if (courseForm.get('categoryId')?.invalid && courseForm.get('categoryId')?.touched) {
+                      <p class="mt-1 text-xs" style="color: #EF4444;">Veuillez sélectionner une catégorie</p>
+                    }
+                  }
+                </div>
+              </div>
+
+              <!-- URL vignette -->
+              <div>
+                <label class="label">URL de la vignette <span class="font-normal" style="color: var(--ink-4);">(optionnel)</span></label>
+                <input
+                  type="url"
+                  formControlName="thumbnailUrl"
+                  class="input"
+                  placeholder="https://exemple.com/image.jpg">
+                <p class="mt-1 text-xs" style="color: var(--ink-4);">
+                  Image de couverture affichée sur la carte du cours. Recommandé : 1280×720px.
+                </p>
+              </div>
+
+              <!-- Statut (mode édition uniquement) -->
+              @if (isEditMode) {
+                <div>
+                  <label class="label">Statut de publication</label>
+                  <select formControlName="status" class="input">
+                    <option value="DRAFT">Brouillon — visible uniquement par vous</option>
+                    <option value="PUBLISHED">Publié — visible dans le catalogue</option>
+                    <option value="ARCHIVED">Archivé — retiré du catalogue</option>
+                  </select>
+                </div>
               }
-            </button>
-            <a
-              routerLink="/dashboard/instructor"
-              class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-center">
-              Annuler
-            </a>
-          </div>
-        </form>
+
+              <!-- Actions -->
+              <div class="flex gap-4 pt-4" style="border-top: 1px solid var(--border);">
+                <a routerLink="/dashboard/instructor" class="btn btn-secondary flex-1 text-center">
+                  Annuler
+                </a>
+                <button
+                  type="submit"
+                  [disabled]="courseForm.invalid || isLoading || categoriesLoading"
+                  class="btn btn-primary flex-1">
+                  @if (isLoading) {
+                    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Enregistrement...
+                  } @else {
+                    {{ isEditMode ? 'Mettre à jour le cours' : 'Créer le cours' }}
+                  }
+                </button>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
       </div>
     </div>
   `
@@ -131,6 +201,7 @@ export class CourseFormComponent implements OnInit {
 
   courseForm: FormGroup;
   categories: Category[] = [];
+  categoriesLoading = true;
   isLoading = false;
   isEditMode = false;
   courseId: number | null = null;
@@ -159,9 +230,16 @@ export class CourseFormComponent implements OnInit {
   }
 
   loadCategories() {
+    this.categoriesLoading = true;
     this.categoryService.getAllCategories().subscribe({
-      next: (categories) => this.categories = categories,
-      error: (err) => console.error('Error loading categories', err)
+      next: (categories) => {
+        this.categories = categories;
+        this.categoriesLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading categories', err);
+        this.categoriesLoading = false;
+      }
     });
   }
 

@@ -83,7 +83,7 @@ import { StarRatingComponent } from '../../../shared/components';
 
               <!-- Right: Enrollment card (desktop) -->
               <div class="hidden lg:block">
-                <div class="enrollment-card bg-white sticky top-24"
+                <div class="enrollment-card bg-white sticky top-[73px]"
                      style="border: 1px solid var(--border-2); border-radius: var(--r-xl); box-shadow: var(--shadow-lg); overflow: hidden;">
 
                   <!-- Thumbnail -->
@@ -126,6 +126,15 @@ import { StarRatingComponent } from '../../../shared/components';
                           </svg>
                           Vous êtes inscrit à ce cours
                         </div>
+                        @if (showLearningNotice) {
+                          <div class="flex items-start gap-2.5 p-3 mb-3 text-xs"
+                               style="background: var(--amber-tint); color: var(--amber); border-radius: var(--r-md); border: 1px solid rgba(217,119,6,0.2);">
+                            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span>Le lecteur de cours est en cours de développement. Retrouvez vos cours inscrits dans votre tableau de bord.</span>
+                          </div>
+                        }
                         <button (click)="goToLearning()" class="btn btn-primary w-full">
                           Continuer l'apprentissage
                         </button>
@@ -168,7 +177,7 @@ import { StarRatingComponent } from '../../../shared/components';
             @if (!authService.isAuthenticated()) {
               <a routerLink="/login" class="btn btn-primary btn-sm">Se connecter</a>
             } @else if (isEnrolled) {
-              <button (click)="goToLearning()" class="btn btn-primary btn-sm">Continuer</button>
+              <button (click)="goToLearning()" class="btn btn-primary btn-sm">Mon tableau de bord</button>
             } @else {
               <button (click)="enroll()" [disabled]="enrollmentLoading" class="btn btn-primary btn-sm">
                 @if (enrollmentLoading) { ... } @else { S'inscrire }
@@ -314,7 +323,7 @@ import { StarRatingComponent } from '../../../shared/components';
                   } @else {
                     <div class="space-y-5">
                       @for (review of reviews; track review.id) {
-                        <div class="flex gap-3 pb-5" style="border-bottom: 1px solid var(--border);" class="last:border-b-0">
+                        <div class="flex gap-3 pb-5 last:border-b-0" style="border-bottom: 1px solid var(--border);">
                           <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
                                style="background: var(--violet);">
                             {{ review.userName.charAt(0).toUpperCase() }}
@@ -347,13 +356,13 @@ import { StarRatingComponent } from '../../../shared/components';
 
             <!-- Right: Instructor -->
             <div>
-              <div class="bg-white p-5 sticky top-24"
+              <div class="bg-white p-5 sticky top-[73px]"
                    style="border: 1px solid var(--border); border-radius: var(--r-lg);">
                 <h3 class="font-bold mb-4" style="color: var(--ink);">Votre instructeur</h3>
                 <div class="flex items-center gap-3 mb-4">
                   <div class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white flex-shrink-0"
                        style="background: var(--violet);">
-                    {{ course.instructorName.charAt(0).toUpperCase() }}
+                    {{ (course.instructorName || '?').charAt(0).toUpperCase() }}
                   </div>
                   <div>
                     <p class="font-semibold text-sm" style="color: var(--ink);">{{ course.instructorName }}</p>
@@ -412,6 +421,7 @@ export class CourseDetailComponent implements OnInit {
   expandedSections: boolean[] = [];
 
   newReview = { rating: 0, comment: '' };
+  showLearningNotice = false;
 
   ngOnInit() {
     const courseId = Number(this.route.snapshot.paramMap.get('id'));
@@ -507,7 +517,8 @@ export class CourseDetailComponent implements OnInit {
   }
 
   goToLearning() {
-    alert('Fonctionnalité de lecture de cours à venir !');
+    this.showLearningNotice = true;
+    setTimeout(() => this.showLearningNotice = false, 6000);
   }
 
   submitReview() {

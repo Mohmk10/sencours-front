@@ -1,12 +1,13 @@
 import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   template: `
     <nav class="bg-white sticky top-0 z-50 transition-shadow duration-200"
          [class.shadow-sm]="isScrolled"
@@ -42,6 +43,8 @@ import { AuthService } from '../../../core/services/auth.service';
               </svg>
               <input
                 type="text"
+                [(ngModel)]="navSearchQuery"
+                (keyup.enter)="onNavSearch()"
                 placeholder="Rechercher un cours..."
                 class="w-full h-10 pl-9 pr-4 text-sm border rounded-full transition-all"
                 style="background: var(--canvas); border-color: var(--border-2); color: var(--ink);"
@@ -303,9 +306,11 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class NavbarComponent {
   authService = inject(AuthService);
+  private router = inject(Router);
   userMenuOpen = false;
   mobileMenuOpen = false;
   isScrolled = false;
+  navSearchQuery = '';
 
   get currentUser() {
     return this.authService.getCurrentUser();
@@ -321,6 +326,14 @@ export class NavbarComponent {
     const target = event.target as HTMLElement;
     if (!target.closest('.relative')) {
       this.userMenuOpen = false;
+    }
+  }
+
+  onNavSearch() {
+    const q = this.navSearchQuery.trim();
+    if (q) {
+      this.router.navigate(['/courses'], { queryParams: { q } });
+      this.navSearchQuery = '';
     }
   }
 
