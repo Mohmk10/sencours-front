@@ -76,34 +76,15 @@ import { RouterModule } from '@angular/router';
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
               <!-- Orange Digital Center -->
-              <div class="flex items-center gap-4 p-4 rounded-xl" style="background: #FFF7F0; border: 1.5px solid #FEDBC0;">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                     style="background: #FF6600;">
-                  <!-- O stylisé -->
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <circle cx="14" cy="14" r="10" stroke="white" stroke-width="3" fill="none"/>
-                    <circle cx="14" cy="14" r="4" fill="white"/>
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm font-bold leading-tight" style="color: #CC5200;">Orange Digital Center</p>
-                  <p class="text-xs mt-0.5" style="color: #E07020;">Innovation &amp; Formation numérique</p>
-                </div>
+              <div class="flex items-center justify-center p-5 rounded-xl" style="background: #FFF7F0; border: 1.5px solid #FEDBC0;">
+                <img src="assets/images/orange-digital-center.png" alt="Orange Digital Center"
+                     style="height: 40px; object-fit: contain;">
               </div>
 
               <!-- Sonatel Academy -->
-              <div class="flex items-center gap-4 p-4 rounded-xl" style="background: #FFF7F0; border: 1.5px solid #FEDBC0;">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                     style="background: linear-gradient(135deg, #FF6600, #E04000);">
-                  <!-- S stylisé -->
-                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                    <path d="M16 5.5C14.5 4 12.5 3.5 10.5 4C7.5 5 6 8 7.5 10.5C8.5 12.5 11 13 13 14C15 15 16.5 17 15.5 19C14.5 21 11.5 21.5 9 20.5C7.5 19.8 6.5 18.8 6 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm font-bold leading-tight" style="color: #CC5200;">Sonatel Academy</p>
-                  <p class="text-xs mt-0.5" style="color: #E07020;">École de formation aux métiers du numérique</p>
-                </div>
+              <div class="flex items-center justify-center p-5 rounded-xl" style="background: #FFF7F0; border: 1.5px solid #FEDBC0;">
+                <img src="assets/images/sonatel-academy.png" alt="Sonatel Academy"
+                     style="height: 40px; object-fit: contain;">
               </div>
 
             </div>
