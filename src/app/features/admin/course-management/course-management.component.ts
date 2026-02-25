@@ -28,7 +28,8 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
             type="text"
             [(ngModel)]="searchQuery"
             (keyup.enter)="loadCourses()"
-            class="input pl-12"
+            class="input"
+            style="padding-left: 3rem;"
             placeholder="Rechercher par titre...">
         </div>
         <select [(ngModel)]="selectedStatus" (change)="onStatusChange()" class="input w-44">

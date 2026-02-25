@@ -22,7 +22,7 @@ import { Category } from '../../../core/models';
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
-            {{ isEditMode ? 'Retour à l\'éditeur' : 'Tableau de bord instructeur' }}
+            {{ isEditMode ? 'Retour à l\\'éditeur' : 'Tableau de bord instructeur' }}
           </a>
           <p class="text-xs font-bold mb-2 uppercase tracking-widest" style="color: rgba(255,255,255,0.4);">
             Espace instructeur

@@ -226,7 +226,10 @@ body {
 
 .input {
   width: 100%;
-  padding: 10px 14px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 14px;
+  padding-right: 14px;
   font-size: 14px;
   border: 1px solid var(--border-2);
   border-radius: var(--r-md);

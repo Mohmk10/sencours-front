@@ -38,7 +38,7 @@ import { AuthService } from '../../../core/services/auth.service';
           <!-- Search bar (desktop) -->
           <div class="hidden lg:flex flex-1 max-w-[520px] mx-8">
             <div class="relative w-full">
-              <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
               <input
@@ -46,7 +46,7 @@ import { AuthService } from '../../../core/services/auth.service';
                 [(ngModel)]="navSearchQuery"
                 (keyup.enter)="onNavSearch()"
                 placeholder="Rechercher un cours..."
-                class="w-full h-10 pl-9 pr-4 text-sm border rounded-full transition-all"
+                class="w-full h-10 pl-12 pr-4 text-sm border rounded-full transition-all"
                 style="background: var(--canvas); border-color: var(--border-2); color: var(--ink);"
                 (focus)="onSearchFocus($event)"
                 (blur)="onSearchBlur($event)">

@@ -20,7 +20,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
       <!-- Loading skeleton -->
       @if (isLoading) {
         <div class="bg-white" style="border-bottom: 1px solid var(--border);">
-          <div class="container-custom py-10">
+          <div class="container-app py-10">
             <div class="max-w-2xl space-y-4">
               <div class="skeleton h-3 w-24"></div>
               <div class="skeleton h-8 w-3/4"></div>
@@ -34,7 +34,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
       @if (!isLoading && course) {
         <!-- White hero section -->
         <div class="bg-white" style="border-bottom: 1px solid var(--border);">
-          <div class="container-custom py-14">
+          <div class="container-app py-14">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <!-- Left: Course info -->
               <div class="lg:col-span-2">
@@ -171,7 +171,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
         <!-- Mobile enrollment bar -->
         <div class="lg:hidden bg-white sticky top-[73px] z-30"
              style="border-bottom: 1px solid var(--border);">
-          <div class="container-custom py-3 flex items-center justify-between">
+          <div class="container-app py-3 flex items-center justify-between">
             <span class="font-bold text-lg" style="color: var(--amber);">
               @if (course.price === 0) { Gratuit } @else { {{ course.price | number:'1.0-0' }} FCFA }
             </span>
@@ -188,7 +188,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
         </div>
 
         <!-- Main content -->
-        <div class="container-custom py-14">
+        <div class="container-app py-14">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div class="lg:col-span-2 space-y-5">
 
@@ -386,7 +386,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
 
       <!-- Not found -->
       @if (!isLoading && !course) {
-        <div class="container-custom py-24 text-center">
+        <div class="container-app py-24 text-center">
           <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
                style="background: var(--violet-tint);">
             <svg class="w-8 h-8" style="color: var(--violet);" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -26,7 +26,8 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
             type="text"
             [(ngModel)]="searchQuery"
             (keyup.enter)="search()"
-            class="input pl-12"
+            class="input"
+            style="padding-left: 3rem;"
             placeholder="Rechercher par nom ou email...">
         </div>
         <select [(ngModel)]="roleFilter" (change)="loadUsers()" class="input w-44">

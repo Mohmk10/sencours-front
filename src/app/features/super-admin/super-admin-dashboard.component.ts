@@ -133,7 +133,8 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
                     [(ngModel)]="searchTerm"
                     (ngModelChange)="filterUsers()"
                     placeholder="Rechercher par nom ou email..."
-                    class="input pl-12 w-full">
+                    class="input w-full"
+                    style="padding-left: 3rem;"
                 </div>
               </div>
               <select
@@ -358,7 +359,7 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
       <app-confirm-modal
         [isOpen]="showDeleteModal"
         title="Supprimer définitivement"
-        [message]="'Voulez-vous vraiment SUPPRIMER DÉFINITIVEMENT ' + selectedUserForAction?.firstName + ' ' + selectedUserForAction?.lastName + ' ?\n\nCette action supprimera également :\n• Tous ses cours\n• Toutes ses inscriptions\n• Toutes ses données\n\nCette action est IRRÉVERSIBLE.'"
+        [message]="'Voulez-vous vraiment SUPPRIMER DÉFINITIVEMENT ' + selectedUserForAction?.firstName + ' ' + selectedUserForAction?.lastName + ' ?\\n\\nCette action supprimera également :\\n• Tous ses cours\\n• Toutes ses inscriptions\\n• Toutes ses données\\n\\nCette action est IRRÉVERSIBLE.'"
         type="danger"
         confirmText="Supprimer définitivement"
         (confirmed)="confirmDeleteUser()"
