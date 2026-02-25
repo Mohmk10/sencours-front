@@ -49,6 +49,10 @@ export class CourseService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  updateCourseStatus(courseId: number, status: 'DRAFT' | 'PUBLISHED'): Observable<Course> {
+    return this.http.patch<Course>(`${this.apiUrl}/${courseId}/status`, { status });
+  }
+
   getInstructorCourses(instructorId: number, page = 0, size = 10): Observable<PageResponse<Course>> {
     const params = new HttpParams().set('page', page).set('size', size);
     return this.http.get<PageResponse<Course>>(`${this.apiUrl}/instructor/${instructorId}/paginated`, { params });

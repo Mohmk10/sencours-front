@@ -14,6 +14,7 @@ export interface LessonCreateRequest {
   orderIndex?: number;
   isFree: boolean;
   videoUrl?: string;
+  filePath?: string;
   quizData?: string;
 }
 
