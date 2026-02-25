@@ -8,11 +8,12 @@ import { ReviewService } from '../../../core/services/review.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Course, Section, Review } from '../../../core/models';
 import { StarRatingComponent } from '../../../shared/components';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, StarRatingComponent],
+  imports: [CommonModule, RouterModule, FormsModule, StarRatingComponent, ConfirmModalComponent],
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
@@ -138,7 +139,7 @@ import { StarRatingComponent } from '../../../shared/components';
                         <button (click)="goToLearning()" class="btn btn-primary w-full">
                           Continuer l'apprentissage
                         </button>
-                        <button (click)="unenroll()" [disabled]="enrollmentLoading"
+                        <button (click)="openUnenrollModal()" [disabled]="enrollmentLoading"
                                 class="w-full py-2.5 text-sm font-semibold border transition-colors disabled:opacity-50"
                                 style="border-radius: var(--r-sm); border-color: #EF4444; color: #EF4444;"
                                 onmouseenter="this.style.background='#FEF2F2'"
@@ -397,6 +398,17 @@ import { StarRatingComponent } from '../../../shared/components';
           <a routerLink="/courses" class="btn btn-primary">Retour au catalogue</a>
         </div>
       }
+
+      <!-- Modal Désinscription -->
+      <app-confirm-modal
+        [isOpen]="showUnenrollModal"
+        title="Se désinscrire"
+        message="Êtes-vous sûr de vouloir vous désinscrire de ce cours ?"
+        type="warning"
+        confirmText="Se désinscrire"
+        (confirmed)="confirmUnenroll()"
+        (cancelled)="showUnenrollModal = false">
+      </app-confirm-modal>
     </div>
   `
 })
@@ -422,6 +434,7 @@ export class CourseDetailComponent implements OnInit {
 
   newReview = { rating: 0, comment: '' };
   showLearningNotice = false;
+  showUnenrollModal = false;
 
   ngOnInit() {
     const courseId = Number(this.route.snapshot.paramMap.get('id'));
@@ -499,9 +512,13 @@ export class CourseDetailComponent implements OnInit {
     });
   }
 
-  unenroll() {
+  openUnenrollModal() {
+    this.showUnenrollModal = true;
+  }
+
+  confirmUnenroll() {
     if (!this.course) return;
-    if (!confirm('Êtes-vous sûr de vouloir vous désinscrire de ce cours ?')) return;
+    this.showUnenrollModal = false;
     this.enrollmentLoading = true;
     this.enrollmentError = '';
     this.enrollmentService.unenrollFromCourse(this.course.id).subscribe({

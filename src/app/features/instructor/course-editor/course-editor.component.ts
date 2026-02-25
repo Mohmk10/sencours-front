@@ -6,11 +6,12 @@ import { CourseService } from '../../../core/services/course.service';
 import { SectionService, SectionCreateRequest } from '../../../core/services/section.service';
 import { LessonService, LessonCreateRequest } from '../../../core/services/lesson.service';
 import { Course, Section, Lesson } from '../../../core/models';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-course-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ConfirmModalComponent],
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
@@ -115,7 +116,7 @@ import { Course, Section, Lesson } from '../../../core/models';
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
                       </button>
-                      <button (click)="deleteSection(section)"
+                      <button (click)="openDeleteSectionModal(section)"
                               class="btn btn-ghost btn-sm" style="color: #EF4444;" title="Supprimer">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -178,7 +179,7 @@ import { Course, Section, Lesson } from '../../../core/models';
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                               </button>
-                              <button (click)="deleteLesson(section, lesson)"
+                              <button (click)="openDeleteLessonModal(section, lesson)"
                                       class="btn btn-ghost btn-sm" style="color: #EF4444;" title="Supprimer">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -322,6 +323,40 @@ import { Course, Section, Lesson } from '../../../core/models';
         </div>
       }
 
+      <!-- Modal Suppression Section -->
+      <app-confirm-modal
+        [isOpen]="showDeleteSectionModal"
+        title="Supprimer la section"
+        [message]="'Supprimer la section &quot;' + selectedSectionForDelete?.title + '&quot; et toutes ses leçons ?'"
+        type="danger"
+        confirmText="Supprimer"
+        (confirmed)="confirmDeleteSection()"
+        (cancelled)="showDeleteSectionModal = false; selectedSectionForDelete = null">
+      </app-confirm-modal>
+
+      <!-- Modal Suppression Leçon -->
+      <app-confirm-modal
+        [isOpen]="showDeleteLessonModal"
+        title="Supprimer la leçon"
+        [message]="'Supprimer la leçon &quot;' + selectedLessonForDelete?.title + '&quot; ?'"
+        type="danger"
+        confirmText="Supprimer"
+        (confirmed)="confirmDeleteLesson()"
+        (cancelled)="showDeleteLessonModal = false; selectedLessonForDelete = null">
+      </app-confirm-modal>
+
+      <!-- Modal Erreur -->
+      <app-confirm-modal
+        [isOpen]="showErrorModal"
+        title="Erreur"
+        [message]="errorModalMessage"
+        type="danger"
+        confirmText="Fermer"
+        [showCancel]="false"
+        (confirmed)="showErrorModal = false"
+        (cancelled)="showErrorModal = false">
+      </app-confirm-modal>
+
     </div>
   `
 })
@@ -351,6 +386,19 @@ export class CourseEditorComponent implements OnInit {
   targetSectionId: number | null = null;
   lessonForm: LessonCreateRequest = this.emptyLessonForm();
   isSavingLesson = false;
+
+  // Delete section modal
+  showDeleteSectionModal = false;
+  selectedSectionForDelete: Section | null = null;
+
+  // Delete lesson modal
+  showDeleteLessonModal = false;
+  selectedLessonForDelete: Lesson | null = null;
+  selectedSectionForLesson: Section | null = null;
+
+  // Error modal
+  showErrorModal = false;
+  errorModalMessage = '';
 
   get totalLessons(): number {
     return this.sections.reduce((sum, s) => sum + (s.lessons?.length || 0), 0);
@@ -425,11 +473,25 @@ export class CourseEditorComponent implements OnInit {
     });
   }
 
-  deleteSection(section: Section) {
-    if (!confirm(`Supprimer la section "${section.title}" et toutes ses leçons ?`)) return;
-    this.sectionService.deleteSection(section.id).subscribe({
-      next: () => this.loadSections(),
-      error: (err) => alert(err.error?.message || 'Impossible de supprimer cette section')
+  openDeleteSectionModal(section: Section) {
+    this.selectedSectionForDelete = section;
+    this.showDeleteSectionModal = true;
+  }
+
+  confirmDeleteSection() {
+    if (!this.selectedSectionForDelete) return;
+    this.sectionService.deleteSection(this.selectedSectionForDelete.id).subscribe({
+      next: () => {
+        this.showDeleteSectionModal = false;
+        this.selectedSectionForDelete = null;
+        this.loadSections();
+      },
+      error: (err) => {
+        this.showDeleteSectionModal = false;
+        this.selectedSectionForDelete = null;
+        this.errorModalMessage = err.error?.message || 'Impossible de supprimer cette section';
+        this.showErrorModal = true;
+      }
     });
   }
 
@@ -483,15 +545,32 @@ export class CourseEditorComponent implements OnInit {
     });
   }
 
-  deleteLesson(section: Section, lesson: Lesson) {
-    if (!confirm(`Supprimer la leçon "${lesson.title}" ?`)) return;
-    this.lessonService.deleteLesson(lesson.id).subscribe({
+  openDeleteLessonModal(section: Section, lesson: Lesson) {
+    this.selectedSectionForLesson = section;
+    this.selectedLessonForDelete = lesson;
+    this.showDeleteLessonModal = true;
+  }
+
+  confirmDeleteLesson() {
+    if (!this.selectedLessonForDelete || !this.selectedSectionForLesson) return;
+    const section = this.selectedSectionForLesson;
+    const lessonId = this.selectedLessonForDelete.id;
+    this.lessonService.deleteLesson(lessonId).subscribe({
       next: () => {
+        this.showDeleteLessonModal = false;
         if (section.lessons) {
-          section.lessons = section.lessons.filter(l => l.id !== lesson.id);
+          section.lessons = section.lessons.filter(l => l.id !== lessonId);
         }
+        this.selectedLessonForDelete = null;
+        this.selectedSectionForLesson = null;
       },
-      error: (err) => alert(err.error?.message || 'Impossible de supprimer cette leçon')
+      error: (err) => {
+        this.showDeleteLessonModal = false;
+        this.selectedLessonForDelete = null;
+        this.selectedSectionForLesson = null;
+        this.errorModalMessage = err.error?.message || 'Impossible de supprimer cette leçon';
+        this.showErrorModal = true;
+      }
     });
   }
 

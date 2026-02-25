@@ -5,11 +5,12 @@ import { SuperAdminService } from '../../core/services/super-admin.service';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/models';
+import { ConfirmModalComponent } from '../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-super-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ConfirmModalComponent],
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
@@ -124,7 +125,7 @@ import { User } from '../../core/models';
             <div class="flex flex-col md:flex-row gap-4 mb-6">
               <div class="flex-1">
                 <div class="relative">
-                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6A6F73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6A6F73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                   </svg>
                   <input
@@ -221,7 +222,7 @@ import { User } from '../../core/models';
                             @if (user.id !== currentUserId) {
                               <!-- Bouton Suspendre/Réactiver -->
                               <button
-                                (click)="toggleUserStatus(user)"
+                                (click)="openSuspendModal(user)"
                                 [title]="user.isActive ? 'Suspendre' : 'Réactiver'"
                                 class="p-2 rounded-lg transition-colors"
                                 [ngClass]="user.isActive ? 'text-orange-500 hover:bg-orange-50' : 'text-green-500 hover:bg-green-50'">
@@ -239,7 +240,7 @@ import { User } from '../../core/models';
 
                               <!-- Bouton Supprimer -->
                               <button
-                                (click)="deleteUser(user)"
+                                (click)="openDeleteModal(user)"
                                 title="Supprimer définitivement"
                                 class="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -339,6 +340,65 @@ import { User } from '../../core/models';
         </div>
 
       </div>
+
+      <!-- Modal Suspension -->
+      <app-confirm-modal
+        [isOpen]="showSuspendModal"
+        [title]="selectedUserForAction?.isActive ? 'Suspendre l\\'utilisateur' : 'Réactiver l\\'utilisateur'"
+        [message]="selectedUserForAction?.isActive
+          ? 'Voulez-vous suspendre ' + selectedUserForAction?.firstName + ' ' + selectedUserForAction?.lastName + ' ?\\n\\nCet utilisateur ne pourra plus accéder à la plateforme.'
+          : 'Voulez-vous réactiver ' + selectedUserForAction?.firstName + ' ' + selectedUserForAction?.lastName + ' ?\\n\\nCet utilisateur pourra de nouveau accéder à la plateforme.'"
+        [type]="selectedUserForAction?.isActive ? 'warning' : 'success'"
+        [confirmText]="selectedUserForAction?.isActive ? 'Suspendre' : 'Réactiver'"
+        (confirmed)="confirmSuspend()"
+        (cancelled)="closeSuspendModal()">
+      </app-confirm-modal>
+
+      <!-- Modal Suppression Utilisateur -->
+      <app-confirm-modal
+        [isOpen]="showDeleteModal"
+        title="Supprimer définitivement"
+        [message]="'Voulez-vous vraiment SUPPRIMER DÉFINITIVEMENT ' + selectedUserForAction?.firstName + ' ' + selectedUserForAction?.lastName + ' ?\n\nCette action supprimera également :\n• Tous ses cours\n• Toutes ses inscriptions\n• Toutes ses données\n\nCette action est IRRÉVERSIBLE.'"
+        type="danger"
+        confirmText="Supprimer définitivement"
+        (confirmed)="confirmDeleteUser()"
+        (cancelled)="closeDeleteModal()">
+      </app-confirm-modal>
+
+      <!-- Modal Suppression Admin -->
+      <app-confirm-modal
+        [isOpen]="showDeleteAdminModal"
+        title="Supprimer l'administrateur"
+        [message]="'Supprimer l\\'administrateur ' + selectedAdmin?.firstName + ' ' + selectedAdmin?.lastName + ' ?'"
+        type="danger"
+        confirmText="Supprimer"
+        (confirmed)="confirmDeleteAdmin()"
+        (cancelled)="closeDeleteAdminModal()">
+      </app-confirm-modal>
+
+      <!-- Modal Reset Database -->
+      <app-confirm-modal
+        [isOpen]="showResetModal"
+        title="Réinitialisation de la base"
+        message="Cette action va SUPPRIMER DÉFINITIVEMENT :&#10;• Tous les utilisateurs (sauf vous)&#10;• Toutes les catégories&#10;• Tous les cours&#10;• Toutes les sections et leçons&#10;• Toutes les inscriptions&#10;• Toutes les reviews&#10;&#10;Êtes-vous ABSOLUMENT sûr ?"
+        type="danger"
+        confirmText="Réinitialiser"
+        (confirmed)="confirmResetDatabase()"
+        (cancelled)="showResetModal = false">
+      </app-confirm-modal>
+
+      <!-- Modal Erreur -->
+      <app-confirm-modal
+        [isOpen]="showErrorModal"
+        title="Erreur"
+        [message]="errorModalMessage"
+        type="danger"
+        confirmText="Fermer"
+        [showCancel]="false"
+        (confirmed)="showErrorModal = false"
+        (cancelled)="showErrorModal = false">
+      </app-confirm-modal>
+
     </div>
   `
 })
@@ -373,6 +433,16 @@ export class SuperAdminDashboardComponent implements OnInit {
   roleFilter = '';
   currentUserId: number | null = null;
   isLoadingUsers = true;
+
+  // Modal state
+  showSuspendModal = false;
+  showDeleteModal = false;
+  showDeleteAdminModal = false;
+  showResetModal = false;
+  showErrorModal = false;
+  errorModalMessage = '';
+  selectedUserForAction: User | null = null;
+  selectedAdmin: User | null = null;
 
   constructor() {
     this.adminForm = this.fb.group({
@@ -437,9 +507,17 @@ export class SuperAdminDashboardComponent implements OnInit {
     });
   }
 
-  toggleUserStatus(user: User) {
-    const action = user.isActive ? 'suspendre' : 'réactiver';
-    if (!confirm(`Voulez-vous ${action} ${user.firstName} ${user.lastName} ?`)) return;
+  // --- Suspend / Reactivate ---
+
+  openSuspendModal(user: User) {
+    this.selectedUserForAction = user;
+    this.showSuspendModal = true;
+  }
+
+  confirmSuspend() {
+    if (!this.selectedUserForAction) return;
+    const user = this.selectedUserForAction;
+    this.showSuspendModal = false;
 
     this.userService.toggleUserStatus(user.id).subscribe({
       next: (updatedUser) => {
@@ -448,22 +526,53 @@ export class SuperAdminDashboardComponent implements OnInit {
           this.allUsers[index] = updatedUser;
           this.filterUsers();
         }
+        this.selectedUserForAction = null;
       },
-      error: (err) => alert(err.error?.message || 'Erreur lors de la modification')
+      error: (err) => {
+        this.errorModalMessage = err.error?.message || 'Erreur lors de la modification';
+        this.showErrorModal = true;
+        this.selectedUserForAction = null;
+      }
     });
   }
 
-  deleteUser(user: User) {
-    if (!confirm(`⚠️ ATTENTION ⚠️\n\nVoulez-vous vraiment SUPPRIMER DÉFINITIVEMENT ${user.firstName} ${user.lastName} ?\n\nCette action supprimera également tous ses cours, inscriptions et données associées.\n\nCette action est IRRÉVERSIBLE.`)) return;
+  closeSuspendModal() {
+    this.showSuspendModal = false;
+    this.selectedUserForAction = null;
+  }
+
+  // --- Delete User ---
+
+  openDeleteModal(user: User) {
+    this.selectedUserForAction = user;
+    this.showDeleteModal = true;
+  }
+
+  confirmDeleteUser() {
+    if (!this.selectedUserForAction) return;
+    const user = this.selectedUserForAction;
+    this.showDeleteModal = false;
 
     this.userService.deleteUser(user.id).subscribe({
       next: () => {
         this.allUsers = this.allUsers.filter(u => u.id !== user.id);
         this.filterUsers();
+        this.selectedUserForAction = null;
       },
-      error: (err) => alert(err.error?.message || 'Erreur lors de la suppression')
+      error: (err) => {
+        this.errorModalMessage = err.error?.message || 'Erreur lors de la suppression';
+        this.showErrorModal = true;
+        this.selectedUserForAction = null;
+      }
     });
   }
+
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.selectedUserForAction = null;
+  }
+
+  // --- Create Admin ---
 
   createAdmin() {
     if (this.adminForm.invalid) return;
@@ -488,6 +597,8 @@ export class SuperAdminDashboardComponent implements OnInit {
     });
   }
 
+  // --- Create Instructor ---
+
   createInstructor() {
     if (this.instructorForm.invalid) return;
 
@@ -510,22 +621,45 @@ export class SuperAdminDashboardComponent implements OnInit {
     });
   }
 
-  deleteAdmin(admin: User) {
-    if (!confirm(`Supprimer l'administrateur ${admin.firstName} ${admin.lastName} ?`)) return;
+  // --- Delete Admin ---
+
+  openDeleteAdminModal(admin: User) {
+    this.selectedAdmin = admin;
+    this.showDeleteAdminModal = true;
+  }
+
+  confirmDeleteAdmin() {
+    if (!this.selectedAdmin) return;
+    const admin = this.selectedAdmin;
+    this.showDeleteAdminModal = false;
 
     this.superAdminService.deleteAdmin(admin.id).subscribe({
-      next: () => this.loadAdmins(),
-      error: (err) => alert(err.error?.message || 'Erreur lors de la suppression')
+      next: () => {
+        this.loadAdmins();
+        this.selectedAdmin = null;
+      },
+      error: (err) => {
+        this.errorModalMessage = err.error?.message || 'Erreur lors de la suppression';
+        this.showErrorModal = true;
+        this.selectedAdmin = null;
+      }
     });
   }
 
+  closeDeleteAdminModal() {
+    this.showDeleteAdminModal = false;
+    this.selectedAdmin = null;
+  }
+
+  // --- Reset Database ---
+
   resetDatabase() {
     if (this.resetConfirmation !== 'RESET') return;
+    this.showResetModal = true;
+  }
 
-    if (!confirm('⚠️ ATTENTION ⚠️\n\nCette action va SUPPRIMER DÉFINITIVEMENT :\n- Tous les utilisateurs (sauf vous)\n- Toutes les catégories\n- Tous les cours\n- Toutes les sections et leçons\n- Toutes les inscriptions\n- Toutes les reviews\n\nÊtes-vous ABSOLUMENT sûr ?')) {
-      return;
-    }
-
+  confirmResetDatabase() {
+    this.showResetModal = false;
     this.isResetting = true;
     this.resetSuccess = false;
     this.resetError = '';
@@ -544,6 +678,8 @@ export class SuperAdminDashboardComponent implements OnInit {
       }
     });
   }
+
+  // --- Helpers ---
 
   getAvatarColor(role: string): string {
     const colors: Record<string, string> = {

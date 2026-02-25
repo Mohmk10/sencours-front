@@ -77,6 +77,9 @@ import { SuspensionAppealService } from '../../core/services/suspension-appeal.s
                       Soumettre ma contestation
                     }
                   </button>
+                  @if (appealError) {
+                    <div class="alert alert-error mt-3">{{ appealError }}</div>
+                  }
                 </div>
               </div>
             } @else {
@@ -123,6 +126,7 @@ export class SuspendedComponent implements OnInit {
   private appealService = inject(SuspensionAppealService);
 
   appealReason = '';
+  appealError = '';
   isSubmitting = false;
   hasSubmittedAppeal = false;
   lastAppealDate: Date | null = null;
@@ -146,6 +150,7 @@ export class SuspendedComponent implements OnInit {
   submitAppeal() {
     if (this.appealReason.length < 20) return;
 
+    this.appealError = '';
     this.isSubmitting = true;
     this.appealService.submitAppeal(this.appealReason).subscribe({
       next: () => {
@@ -155,7 +160,7 @@ export class SuspendedComponent implements OnInit {
       },
       error: (err) => {
         this.isSubmitting = false;
-        alert(err.error?.message || 'Erreur lors de l\'envoi');
+        this.appealError = err.error?.message || 'Erreur lors de l\'envoi';
       }
     });
   }

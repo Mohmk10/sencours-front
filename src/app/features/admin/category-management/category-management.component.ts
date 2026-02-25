@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../../../core/services/category.service';
 import { Category } from '../../../core/models';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-category-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfirmModalComponent],
   template: `
     <div>
       <div class="px-8 py-5 flex items-center justify-between" style="border-bottom: 1px solid var(--border);">
@@ -81,7 +82,7 @@ import { Category } from '../../../core/models';
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
                       </button>
-                      <button (click)="deleteCategory(category)" class="btn btn-ghost btn-sm" style="color: #EF4444;">
+                      <button (click)="openDeleteCategoryModal(category)" class="btn btn-ghost btn-sm" style="color: #EF4444;">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                         </svg>
@@ -128,6 +129,40 @@ import { Category } from '../../../core/models';
         </div>
       </div>
     }
+
+    <!-- Modal Initialisation -->
+    <app-confirm-modal
+      [isOpen]="showSeedModal"
+      title="Initialiser les catégories"
+      message="Initialiser les 12 catégories par défaut de la plateforme ?"
+      type="info"
+      confirmText="Initialiser"
+      (confirmed)="confirmSeed()"
+      (cancelled)="showSeedModal = false">
+    </app-confirm-modal>
+
+    <!-- Modal Suppression Catégorie -->
+    <app-confirm-modal
+      [isOpen]="showDeleteCategoryModal"
+      [title]="'Supprimer la catégorie'"
+      [message]="'Supprimer la catégorie &quot;' + selectedCategory?.name + '&quot; ?'"
+      type="danger"
+      confirmText="Supprimer"
+      (confirmed)="confirmDeleteCategory()"
+      (cancelled)="showDeleteCategoryModal = false; selectedCategory = null">
+    </app-confirm-modal>
+
+    <!-- Modal Erreur -->
+    <app-confirm-modal
+      [isOpen]="showErrorModal"
+      title="Erreur"
+      [message]="errorModalMessage"
+      type="danger"
+      confirmText="Fermer"
+      [showCancel]="false"
+      (confirmed)="showErrorModal = false"
+      (cancelled)="showErrorModal = false">
+    </app-confirm-modal>
   `
 })
 export class CategoryManagementComponent implements OnInit {
@@ -140,6 +175,11 @@ export class CategoryManagementComponent implements OnInit {
   editingCategory: Category | null = null;
   formData = { name: '', description: '' };
   isSaving = false;
+  showSeedModal = false;
+  showDeleteCategoryModal = false;
+  showErrorModal = false;
+  errorModalMessage = '';
+  selectedCategory: Category | null = null;
 
   private readonly DEFAULT_CATEGORIES = [
     { name: 'Développement Web & Mobile', description: 'HTML, CSS, JavaScript, Angular, React, Flutter, développement d\'applications' },
@@ -161,7 +201,11 @@ export class CategoryManagementComponent implements OnInit {
   }
 
   seedDefaultCategories() {
-    if (!confirm('Initialiser les 12 catégories par défaut de la plateforme ?')) return;
+    this.showSeedModal = true;
+  }
+
+  confirmSeed() {
+    this.showSeedModal = false;
     this.isSeeding = true;
     let completed = 0;
     const total = this.DEFAULT_CATEGORIES.length;
@@ -233,12 +277,21 @@ export class CategoryManagementComponent implements OnInit {
     });
   }
 
-  deleteCategory(category: Category) {
-    if (!confirm(`Supprimer la catégorie "${category.name}" ?`)) return;
+  openDeleteCategoryModal(category: Category) {
+    this.selectedCategory = category;
+    this.showDeleteCategoryModal = true;
+  }
 
-    this.categoryService.deleteCategory(category.id).subscribe({
-      next: () => this.loadCategories(),
-      error: (err) => alert(err.error?.message || 'Impossible de supprimer cette catégorie')
+  confirmDeleteCategory() {
+    if (!this.selectedCategory) return;
+    this.showDeleteCategoryModal = false;
+    this.categoryService.deleteCategory(this.selectedCategory.id).subscribe({
+      next: () => { this.selectedCategory = null; this.loadCategories(); },
+      error: (err) => {
+        this.selectedCategory = null;
+        this.errorModalMessage = err.error?.message || 'Impossible de supprimer cette catégorie';
+        this.showErrorModal = true;
+      }
     });
   }
 }

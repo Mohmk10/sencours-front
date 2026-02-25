@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { CourseService } from '../../../core/services/course.service';
 import { Course, PageResponse } from '../../../core/models';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ConfirmModalComponent],
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
@@ -177,7 +178,7 @@ import { Course, PageResponse } from '../../../core/models';
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h7"/>
                             </svg>
                           </a>
-                          <button (click)="deleteCourse(course)"
+                          <button (click)="openDeleteCourseModal(course)"
                                   class="btn btn-ghost btn-sm" title="Supprimer le cours" style="color: #EF4444;">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -193,6 +194,17 @@ import { Course, PageResponse } from '../../../core/models';
           }
         </div>
       </div>
+
+      <!-- Modal Suppression Cours -->
+      <app-confirm-modal
+        [isOpen]="showDeleteCourseModal"
+        title="Supprimer le cours"
+        [message]="'Supprimer le cours &quot;' + selectedCourse?.title + '&quot; ?'"
+        type="danger"
+        confirmText="Supprimer"
+        (confirmed)="confirmDeleteCourse()"
+        (cancelled)="showDeleteCourseModal = false; selectedCourse = null">
+      </app-confirm-modal>
     </div>
   `
 })
@@ -202,6 +214,8 @@ export class InstructorDashboardComponent implements OnInit {
 
   pageResponse: PageResponse<Course> | null = null;
   isLoading = true;
+  showDeleteCourseModal = false;
+  selectedCourse: Course | null = null;
 
   get publishedCount(): number {
     return this.pageResponse?.content?.filter(c => c.status === 'PUBLISHED').length || 0;
@@ -241,10 +255,16 @@ export class InstructorDashboardComponent implements OnInit {
     }
   }
 
-  deleteCourse(course: Course) {
-    if (!confirm(`Supprimer le cours "${course.title}" ?`)) return;
-    this.courseService.deleteCourse(course.id).subscribe({
-      next: () => this.loadCourses()
+  openDeleteCourseModal(course: Course) {
+    this.selectedCourse = course;
+    this.showDeleteCourseModal = true;
+  }
+
+  confirmDeleteCourse() {
+    if (!this.selectedCourse) return;
+    this.showDeleteCourseModal = false;
+    this.courseService.deleteCourse(this.selectedCourse.id).subscribe({
+      next: () => { this.selectedCourse = null; this.loadCourses(); }
     });
   }
 }

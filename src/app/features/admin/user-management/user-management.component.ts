@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../core/services/user.service';
 import { User, PageResponse } from '../../../core/models';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfirmModalComponent],
   template: `
     <div>
       <div class="px-8 py-5" style="border-bottom: 1px solid var(--border);">
@@ -18,7 +19,7 @@ import { User, PageResponse } from '../../../core/models';
       <!-- Filters -->
       <div class="flex flex-wrap gap-4 mb-8">
         <div class="flex-1 min-w-[200px] relative">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
           <input
@@ -108,7 +109,7 @@ import { User, PageResponse } from '../../../core/models';
                     <div class="flex justify-end">
                       @if (canSuspend(user)) {
                         <button
-                          (click)="toggleUserStatus(user)"
+                          (click)="openSuspendModal(user)"
                           [title]="user.isActive ? 'Suspendre' : 'Réactiver'"
                           class="p-2 rounded-lg transition-colors"
                           [ngClass]="user.isActive ? 'text-orange-500 hover:bg-orange-50' : 'text-green-500 hover:bg-green-50'">
@@ -152,6 +153,31 @@ import { User, PageResponse } from '../../../core/models';
         }
       }
       </div>
+
+      <!-- Modal Suspension -->
+      <app-confirm-modal
+        [isOpen]="showSuspendModal"
+        [title]="selectedUserForAction?.isActive ? 'Suspendre l\\'utilisateur' : 'Réactiver l\\'utilisateur'"
+        [message]="selectedUserForAction?.isActive
+          ? 'Voulez-vous suspendre ' + selectedUserForAction?.firstName + ' ' + selectedUserForAction?.lastName + ' ?\\n\\nCet utilisateur ne pourra plus accéder à la plateforme.'
+          : 'Voulez-vous réactiver ' + selectedUserForAction?.firstName + ' ' + selectedUserForAction?.lastName + ' ?\\n\\nCet utilisateur pourra de nouveau accéder à la plateforme.'"
+        [type]="selectedUserForAction?.isActive ? 'warning' : 'success'"
+        [confirmText]="selectedUserForAction?.isActive ? 'Suspendre' : 'Réactiver'"
+        (confirmed)="confirmSuspend()"
+        (cancelled)="closeSuspendModal()">
+      </app-confirm-modal>
+
+      <!-- Modal Erreur -->
+      <app-confirm-modal
+        [isOpen]="showErrorModal"
+        title="Erreur"
+        [message]="errorModalMessage"
+        type="danger"
+        confirmText="Fermer"
+        [showCancel]="false"
+        (confirmed)="showErrorModal = false"
+        (cancelled)="showErrorModal = false">
+      </app-confirm-modal>
     </div>
   `
 })
@@ -163,6 +189,10 @@ export class UserManagementComponent implements OnInit {
   searchQuery = '';
   roleFilter = '';
   currentPage = 0;
+  showSuspendModal = false;
+  showErrorModal = false;
+  errorModalMessage = '';
+  selectedUserForAction: User | null = null;
 
   ngOnInit() {
     this.loadUsers();
@@ -203,19 +233,33 @@ export class UserManagementComponent implements OnInit {
     return user.role === 'ETUDIANT' || user.role === 'INSTRUCTEUR';
   }
 
-  toggleUserStatus(user: User) {
-    const action = user.isActive ? 'suspendre' : 'réactiver';
-    if (!confirm(`Voulez-vous ${action} ${user.firstName} ${user.lastName} ?`)) return;
+  openSuspendModal(user: User) {
+    this.selectedUserForAction = user;
+    this.showSuspendModal = true;
+  }
 
-    this.userService.toggleUserStatus(user.id).subscribe({
+  confirmSuspend() {
+    if (!this.selectedUserForAction) return;
+    this.showSuspendModal = false;
+    this.userService.toggleUserStatus(this.selectedUserForAction.id).subscribe({
       next: (updatedUser) => {
-        const index = this.pageResponse?.content?.findIndex(u => u.id === user.id) ?? -1;
+        const index = this.pageResponse?.content?.findIndex(u => u.id === this.selectedUserForAction!.id) ?? -1;
         if (index !== -1 && this.pageResponse?.content) {
           this.pageResponse.content[index] = updatedUser;
         }
+        this.selectedUserForAction = null;
       },
-      error: (err) => alert(err.error?.message || 'Erreur')
+      error: (err) => {
+        this.errorModalMessage = err.error?.message || 'Erreur';
+        this.showErrorModal = true;
+        this.selectedUserForAction = null;
+      }
     });
+  }
+
+  closeSuspendModal() {
+    this.showSuspendModal = false;
+    this.selectedUserForAction = null;
   }
 
   getAvatarColor(role: string): string {

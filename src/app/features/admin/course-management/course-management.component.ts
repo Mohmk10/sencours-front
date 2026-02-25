@@ -5,11 +5,12 @@ import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Course, PageResponse } from '../../../core/models';
 import { environment } from '../../../../environments/environment';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-course-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ConfirmModalComponent],
   template: `
     <div>
       <div class="px-8 py-5" style="border-bottom: 1px solid var(--border);">
@@ -20,14 +21,14 @@ import { environment } from '../../../../environments/environment';
       <!-- Filters -->
       <div class="flex flex-wrap gap-4 mb-8">
         <div class="flex-1 min-w-[200px] relative">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
           <input
             type="text"
             [(ngModel)]="searchQuery"
             (keyup.enter)="loadCourses()"
-            class="input pl-9"
+            class="input pl-12"
             placeholder="Rechercher par titre...">
         </div>
         <select [(ngModel)]="selectedStatus" (change)="onStatusChange()" class="input w-44">
@@ -108,7 +109,7 @@ import { environment } from '../../../../environments/environment';
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
                       </a>
-                      <button (click)="deleteCourse(course)" class="btn btn-ghost btn-sm" title="Supprimer" style="color: #EF4444;">
+                      <button (click)="openDeleteCourseModal(course)" class="btn btn-ghost btn-sm" title="Supprimer" style="color: #EF4444;">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                         </svg>
@@ -135,6 +136,17 @@ import { environment } from '../../../../environments/environment';
         }
       }
       </div>
+
+      <!-- Modal Suppression Cours -->
+      <app-confirm-modal
+        [isOpen]="showDeleteCourseModal"
+        title="Supprimer le cours"
+        [message]="'Supprimer &quot;' + selectedCourse?.title + '&quot; ?'"
+        type="danger"
+        confirmText="Supprimer"
+        (confirmed)="confirmDeleteCourse()"
+        (cancelled)="showDeleteCourseModal = false; selectedCourse = null">
+      </app-confirm-modal>
     </div>
   `
 })
@@ -146,6 +158,8 @@ export class CourseManagementComponent implements OnInit {
   searchQuery = '';
   selectedStatus = '';
   currentPage = 0;
+  showDeleteCourseModal = false;
+  selectedCourse: Course | null = null;
 
   ngOnInit() { this.loadCourses(); }
 
@@ -173,10 +187,16 @@ export class CourseManagementComponent implements OnInit {
     });
   }
 
-  deleteCourse(course: Course) {
-    if (!confirm(`Supprimer "${course.title}" ?`)) return;
-    this.http.delete(`${environment.apiUrl}/courses/${course.id}`).subscribe({
-      next: () => this.loadCourses()
+  openDeleteCourseModal(course: Course) {
+    this.selectedCourse = course;
+    this.showDeleteCourseModal = true;
+  }
+
+  confirmDeleteCourse() {
+    if (!this.selectedCourse) return;
+    this.showDeleteCourseModal = false;
+    this.http.delete(`${environment.apiUrl}/courses/${this.selectedCourse.id}`).subscribe({
+      next: () => { this.selectedCourse = null; this.loadCourses(); }
     });
   }
 }
