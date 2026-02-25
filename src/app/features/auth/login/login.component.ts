@@ -1,13 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ModalComponent } from '../../../shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ModalComponent],
   template: `
     <div class="min-h-screen flex">
 
@@ -196,6 +197,20 @@ import { AuthService } from '../../../core/services/auth.service';
         </div>
       </div>
 
+      <!-- Modal Compte Supprimé -->
+      <app-modal
+        [isOpen]="showDeletedAccountModal"
+        title="Compte Supprimé"
+        type="danger"
+        [showCancel]="false"
+        confirmText="J'ai compris"
+        (confirmed)="showDeletedAccountModal = false"
+        (closed)="showDeletedAccountModal = false">
+        <div class="text-center">
+          <p class="text-[#6A6F73]">{{ deletedAccountMessage }}</p>
+        </div>
+      </app-modal>
+
     </div>
   `
 })
@@ -203,11 +218,14 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
   showPassword = false;
+  showDeletedAccountModal = false;
+  deletedAccountMessage = '';
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -223,20 +241,37 @@ export class LoginComponent {
     this.errorMessage = '';
 
     this.authService.login(this.loginForm.value).subscribe({
-      next: () => {
-        const user = this.authService.getCurrentUser();
-        if (user?.role === 'SUPER_ADMIN') {
-          this.router.navigate(['/super-admin']);
-        } else if (user?.role === 'ADMIN') {
-          this.router.navigate(['/admin']);
+      next: (response) => {
+        this.isLoading = false;
+
+        // Vérifier si l'utilisateur est suspendu
+        if (response.isActive === false) {
+          this.router.navigate(['/suspended']);
         } else {
-          this.router.navigate(['/dashboard']);
+          // Redirection normale selon le rôle
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.getDefaultRoute(response.role);
+          this.router.navigate([returnUrl]);
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect';
+
+        // Gérer le cas du compte supprimé
+        if (err.error?.error === 'ACCOUNT_DELETED') {
+          this.showDeletedAccountModal = true;
+          this.deletedAccountMessage = err.error.message;
+        } else {
+          this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect';
+        }
       }
     });
+  }
+
+  private getDefaultRoute(role: string): string {
+    switch (role) {
+      case 'SUPER_ADMIN': return '/super-admin';
+      case 'ADMIN': return '/admin';
+      default: return '/dashboard';
+    }
   }
 }

@@ -98,6 +98,12 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['SUPER_ADMIN'])]
   },
 
+  // Suspended account
+  {
+    path: 'suspended',
+    loadComponent: () => import('./features/suspended/suspended.component').then(m => m.SuspendedComponent)
+  },
+
   // Legal / Info pages
   {
     path: 'about',

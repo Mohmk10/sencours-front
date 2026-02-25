@@ -132,7 +132,7 @@ import { User } from '../../core/models';
                     [(ngModel)]="searchTerm"
                     (ngModelChange)="filterUsers()"
                     placeholder="Rechercher par nom ou email..."
-                    class="input pl-10 w-full">
+                    class="input pl-12 w-full">
                 </div>
               </div>
               <select

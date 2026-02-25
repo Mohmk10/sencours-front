@@ -25,7 +25,7 @@ import { User, PageResponse } from '../../../core/models';
             type="text"
             [(ngModel)]="searchQuery"
             (keyup.enter)="search()"
-            class="input pl-9"
+            class="input pl-12"
             placeholder="Rechercher par nom ou email...">
         </div>
         <select [(ngModel)]="roleFilter" (change)="loadUsers()" class="input w-44">

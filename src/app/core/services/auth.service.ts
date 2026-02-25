@@ -68,7 +68,7 @@ export class AuthService {
       firstName: response.fullName.split(' ')[0],
       lastName: response.fullName.split(' ').slice(1).join(' '),
       role: response.role as User['role'],
-      isActive: true,
+      isActive: response.isActive !== false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
