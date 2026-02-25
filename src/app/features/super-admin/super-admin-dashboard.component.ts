@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { SuperAdminService } from '../../core/services/super-admin.service';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -10,7 +10,7 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
 @Component({
   selector: 'app-super-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, ConfirmModalComponent],
+  imports: [CommonModule, FormsModule, ConfirmModalComponent],
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
@@ -44,7 +44,7 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
               <h2 class="font-semibold" style="color: var(--ink);">Créer un administrateur</h2>
               <p class="text-sm mt-0.5" style="color: var(--ink-3);">Les admins peuvent gérer les candidatures instructeurs</p>
             </div>
-            <form [formGroup]="adminForm" (ngSubmit)="createAdmin()" class="p-6 space-y-4">
+            <form (ngSubmit)="createAdmin()" class="p-6 space-y-4">
               @if (adminSuccess) {
                 <div class="alert alert-success">Administrateur créé avec succès !</div>
               }
@@ -54,22 +54,57 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="label">Prénom</label>
-                  <input type="text" formControlName="firstName" class="input" placeholder="Prénom">
+                  <input type="text" [(ngModel)]="adminFormData.firstName" name="adminFirstName" class="input" placeholder="Prénom" required>
                 </div>
                 <div>
                   <label class="label">Nom</label>
-                  <input type="text" formControlName="lastName" class="input" placeholder="Nom">
+                  <input type="text" [(ngModel)]="adminFormData.lastName" name="adminLastName" class="input" placeholder="Nom" required>
                 </div>
               </div>
               <div>
                 <label class="label">Email</label>
-                <input type="email" formControlName="email" class="input" placeholder="admin@sencours.sn">
+                <input type="email" [(ngModel)]="adminFormData.email" name="adminEmail" class="input" placeholder="admin@sencours.sn" required>
               </div>
               <div>
                 <label class="label">Mot de passe</label>
-                <input type="password" formControlName="password" class="input" placeholder="Minimum 8 caractères">
+                <div class="relative">
+                  <input [type]="showAdminPassword ? 'text' : 'password'" [(ngModel)]="adminFormData.password" name="adminPassword" class="input" style="padding-right: 44px;" placeholder="Minimum 8 caractères" required minlength="8">
+                  <button type="button" (click)="showAdminPassword = !showAdminPassword" class="absolute right-3 top-1/2 -translate-y-1/2" style="color: var(--ink-4); background: none; border: none; cursor: pointer; padding: 2px; display: flex; align-items: center;">
+                    @if (showAdminPassword) {
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                      </svg>
+                    } @else {
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    }
+                  </button>
+                </div>
               </div>
-              <button type="submit" [disabled]="adminForm.invalid || isCreatingAdmin" class="btn btn-primary w-full">
+              <div>
+                <label class="label">Confirmer le mot de passe</label>
+                <div class="relative">
+                  <input [type]="showAdminConfirmPassword ? 'text' : 'password'" [(ngModel)]="adminFormData.confirmPassword" name="adminConfirmPassword" class="input" style="padding-right: 44px;" [style.border-color]="adminFormData.password && adminFormData.confirmPassword && adminFormData.password !== adminFormData.confirmPassword ? '#EF4444' : ''" placeholder="Retapez le mot de passe" required>
+                  <button type="button" (click)="showAdminConfirmPassword = !showAdminConfirmPassword" class="absolute right-3 top-1/2 -translate-y-1/2" style="color: var(--ink-4); background: none; border: none; cursor: pointer; padding: 2px; display: flex; align-items: center;">
+                    @if (showAdminConfirmPassword) {
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                      </svg>
+                    } @else {
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    }
+                  </button>
+                </div>
+                @if (adminFormData.password && adminFormData.confirmPassword && adminFormData.password !== adminFormData.confirmPassword) {
+                  <p class="mt-1 text-xs" style="color: #EF4444;">Les mots de passe ne correspondent pas</p>
+                }
+              </div>
+              <button type="submit" [disabled]="!isAdminFormValid() || isCreatingAdmin" class="btn btn-primary w-full">
                 @if (isCreatingAdmin) { Création... } @else { Créer l'administrateur }
               </button>
             </form>
@@ -81,7 +116,7 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
               <h2 class="font-semibold" style="color: var(--ink);">Créer un instructeur</h2>
               <p class="text-sm mt-0.5" style="color: var(--ink-3);">Création directe sans passer par une candidature</p>
             </div>
-            <form [formGroup]="instructorForm" (ngSubmit)="createInstructor()" class="p-6 space-y-4">
+            <form (ngSubmit)="createInstructor()" class="p-6 space-y-4">
               @if (instructorSuccess) {
                 <div class="alert alert-success">Instructeur créé avec succès !</div>
               }
@@ -91,22 +126,57 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="label">Prénom</label>
-                  <input type="text" formControlName="firstName" class="input" placeholder="Prénom">
+                  <input type="text" [(ngModel)]="instructorFormData.firstName" name="instructorFirstName" class="input" placeholder="Prénom" required>
                 </div>
                 <div>
                   <label class="label">Nom</label>
-                  <input type="text" formControlName="lastName" class="input" placeholder="Nom">
+                  <input type="text" [(ngModel)]="instructorFormData.lastName" name="instructorLastName" class="input" placeholder="Nom" required>
                 </div>
               </div>
               <div>
                 <label class="label">Email</label>
-                <input type="email" formControlName="email" class="input" placeholder="instructeur@sencours.sn">
+                <input type="email" [(ngModel)]="instructorFormData.email" name="instructorEmail" class="input" placeholder="instructeur@sencours.sn" required>
               </div>
               <div>
                 <label class="label">Mot de passe</label>
-                <input type="password" formControlName="password" class="input" placeholder="Minimum 8 caractères">
+                <div class="relative">
+                  <input [type]="showInstructorPassword ? 'text' : 'password'" [(ngModel)]="instructorFormData.password" name="instructorPassword" class="input" style="padding-right: 44px;" placeholder="Minimum 8 caractères" required minlength="8">
+                  <button type="button" (click)="showInstructorPassword = !showInstructorPassword" class="absolute right-3 top-1/2 -translate-y-1/2" style="color: var(--ink-4); background: none; border: none; cursor: pointer; padding: 2px; display: flex; align-items: center;">
+                    @if (showInstructorPassword) {
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                      </svg>
+                    } @else {
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    }
+                  </button>
+                </div>
               </div>
-              <button type="submit" [disabled]="instructorForm.invalid || isCreatingInstructor" class="btn btn-primary w-full">
+              <div>
+                <label class="label">Confirmer le mot de passe</label>
+                <div class="relative">
+                  <input [type]="showInstructorConfirmPassword ? 'text' : 'password'" [(ngModel)]="instructorFormData.confirmPassword" name="instructorConfirmPassword" class="input" style="padding-right: 44px;" [style.border-color]="instructorFormData.password && instructorFormData.confirmPassword && instructorFormData.password !== instructorFormData.confirmPassword ? '#EF4444' : ''" placeholder="Retapez le mot de passe" required>
+                  <button type="button" (click)="showInstructorConfirmPassword = !showInstructorConfirmPassword" class="absolute right-3 top-1/2 -translate-y-1/2" style="color: var(--ink-4); background: none; border: none; cursor: pointer; padding: 2px; display: flex; align-items: center;">
+                    @if (showInstructorConfirmPassword) {
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                      </svg>
+                    } @else {
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    }
+                  </button>
+                </div>
+                @if (instructorFormData.password && instructorFormData.confirmPassword && instructorFormData.password !== instructorFormData.confirmPassword) {
+                  <p class="mt-1 text-xs" style="color: #EF4444;">Les mots de passe ne correspondent pas</p>
+                }
+              </div>
+              <button type="submit" [disabled]="!isInstructorFormValid() || isCreatingInstructor" class="btn btn-primary w-full">
                 @if (isCreatingInstructor) { Création... } @else { Créer l'instructeur }
               </button>
             </form>
@@ -404,13 +474,16 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
   `
 })
 export class SuperAdminDashboardComponent implements OnInit {
-  private fb = inject(FormBuilder);
   private superAdminService = inject(SuperAdminService);
   private userService = inject(UserService);
   private authService = inject(AuthService);
 
-  adminForm: FormGroup;
-  instructorForm: FormGroup;
+  adminFormData = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
+  instructorFormData = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
+  showAdminPassword = false;
+  showAdminConfirmPassword = false;
+  showInstructorPassword = false;
+  showInstructorConfirmPassword = false;
   admins: User[] = [];
 
   isCreatingAdmin = false;
@@ -444,22 +517,6 @@ export class SuperAdminDashboardComponent implements OnInit {
   errorModalMessage = '';
   selectedUserForAction: User | null = null;
   selectedAdmin: User | null = null;
-
-  constructor() {
-    this.adminForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
-    });
-
-    this.instructorForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
-    });
-  }
 
   ngOnInit() {
     this.loadCurrentUser();
@@ -575,18 +632,29 @@ export class SuperAdminDashboardComponent implements OnInit {
 
   // --- Create Admin ---
 
+  isAdminFormValid(): boolean {
+    return !!this.adminFormData.firstName && !!this.adminFormData.lastName && !!this.adminFormData.email &&
+      this.adminFormData.password.length >= 8 && this.adminFormData.password === this.adminFormData.confirmPassword;
+  }
+
+  isInstructorFormValid(): boolean {
+    return !!this.instructorFormData.firstName && !!this.instructorFormData.lastName && !!this.instructorFormData.email &&
+      this.instructorFormData.password.length >= 8 && this.instructorFormData.password === this.instructorFormData.confirmPassword;
+  }
+
   createAdmin() {
-    if (this.adminForm.invalid) return;
+    if (!this.isAdminFormValid()) return;
 
     this.isCreatingAdmin = true;
     this.adminSuccess = false;
     this.adminError = '';
 
-    this.superAdminService.createAdmin(this.adminForm.value).subscribe({
+    const { confirmPassword, ...data } = this.adminFormData;
+    this.superAdminService.createAdmin(data).subscribe({
       next: () => {
         this.isCreatingAdmin = false;
         this.adminSuccess = true;
-        this.adminForm.reset();
+        this.adminFormData = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
         this.loadAdmins();
         this.loadAllUsers();
         setTimeout(() => this.adminSuccess = false, 3000);
@@ -601,17 +669,18 @@ export class SuperAdminDashboardComponent implements OnInit {
   // --- Create Instructor ---
 
   createInstructor() {
-    if (this.instructorForm.invalid) return;
+    if (!this.isInstructorFormValid()) return;
 
     this.isCreatingInstructor = true;
     this.instructorSuccess = false;
     this.instructorError = '';
 
-    this.superAdminService.createInstructor(this.instructorForm.value).subscribe({
+    const { confirmPassword, ...data } = this.instructorFormData;
+    this.superAdminService.createInstructor(data).subscribe({
       next: () => {
         this.isCreatingInstructor = false;
         this.instructorSuccess = true;
-        this.instructorForm.reset();
+        this.instructorFormData = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
         this.loadAllUsers();
         setTimeout(() => this.instructorSuccess = false, 3000);
       },

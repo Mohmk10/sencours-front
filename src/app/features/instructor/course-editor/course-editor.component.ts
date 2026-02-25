@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CourseService } from '../../../core/services/course.service';
 import { SectionService, SectionCreateRequest } from '../../../core/services/section.service';
-import { LessonService, LessonCreateRequest } from '../../../core/services/lesson.service';
+import { LessonService, LessonCreateRequest, QuizQuestion } from '../../../core/services/lesson.service';
 import { Course, Section, Lesson } from '../../../core/models';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
@@ -55,7 +55,8 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
       </div>
 
       <div class="container-app py-12">
-        <div class="max-w-3xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div class="lg:col-span-2">
 
           <!-- Sections card -->
           <div class="card overflow-hidden">
@@ -141,7 +142,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                             <!-- Type icon -->
                             <div class="w-7 h-7 rounded flex items-center justify-center flex-shrink-0"
                                  [style.background]="getLessonTypeBg(lesson.type)">
-                              @if (lesson.type === 'VIDEO') {
+                              @if (lesson.type === 'VIDEO' || lesson.type === 'VIDEO_UPLOAD') {
                                 <svg class="w-3.5 h-3.5" [style.color]="getLessonTypeColor(lesson.type)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -149,6 +150,14 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                               } @else if (lesson.type === 'QUIZ') {
                                 <svg class="w-3.5 h-3.5" [style.color]="getLessonTypeColor(lesson.type)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                              } @else if (lesson.type === 'PDF') {
+                                <svg class="w-3.5 h-3.5" [style.color]="getLessonTypeColor(lesson.type)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                </svg>
+                              } @else if (lesson.type === 'IMAGE') {
+                                <svg class="w-3.5 h-3.5" [style.color]="getLessonTypeColor(lesson.type)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
                               } @else {
                                 <svg class="w-3.5 h-3.5" [style.color]="getLessonTypeColor(lesson.type)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,7 +174,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                               <span class="text-xs px-2 py-0.5 rounded-full font-medium"
                                     [style.background]="getLessonTypeBg(lesson.type)"
                                     [style.color]="getLessonTypeColor(lesson.type)">
-                                {{ lesson.type }}
+                                {{ getLessonTypeLabel(lesson.type) }}
                               </span>
                               @if (lesson.isFree) {
                                 <span class="badge badge-primary" style="font-size: 10px;">Aperçu</span>
@@ -208,7 +217,62 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
             }
           </div>
 
-        </div>
+          </div><!-- end left column -->
+
+          <!-- Sidebar -->
+          <div class="space-y-6">
+            <div class="card p-6">
+              <h3 class="font-semibold mb-4" style="color: var(--ink);">Informations du cours</h3>
+              <dl class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                  <dt style="color: var(--ink-3);">Statut</dt>
+                  <dd>
+                    <span class="badge"
+                          [class.badge-success]="course?.status === 'PUBLISHED'"
+                          [class.badge-warning]="course?.status === 'DRAFT'"
+                          [class.badge-neutral]="course?.status === 'ARCHIVED'">
+                      {{ getStatusLabel(course?.status) }}
+                    </span>
+                  </dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt style="color: var(--ink-3);">Prix</dt>
+                  <dd class="font-medium" style="color: var(--ink);">{{ course?.price === 0 ? 'Gratuit' : (course?.price | number) + ' FCFA' }}</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt style="color: var(--ink-3);">Sections</dt>
+                  <dd class="font-medium" style="color: var(--ink);">{{ sections.length }}</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt style="color: var(--ink-3);">Leçons</dt>
+                  <dd class="font-medium" style="color: var(--ink);">{{ totalLessons }}</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt style="color: var(--ink-3);">Durée totale</dt>
+                  <dd class="font-medium" style="color: var(--ink);">{{ totalDuration }} min</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="card p-6">
+              <h3 class="font-semibold mb-4" style="color: var(--ink);">Actions</h3>
+              <div class="space-y-3">
+                @if (course?.status === 'DRAFT') {
+                  <button (click)="publishCourse()" [disabled]="isPublishing" class="btn btn-primary w-full">
+                    @if (isPublishing) { Publication... } @else { Publier le cours }
+                  </button>
+                } @else if (course?.status === 'PUBLISHED') {
+                  <button (click)="unpublishCourse()" [disabled]="isPublishing" class="btn btn-secondary w-full">
+                    @if (isPublishing) { En cours... } @else { Passer en brouillon }
+                  </button>
+                }
+                <a [routerLink]="['/courses', courseId]" class="btn btn-secondary w-full text-center">
+                  Voir la page du cours
+                </a>
+              </div>
+            </div>
+          </div>
+        </div><!-- end grid -->
       </div>
 
       <!-- ==============================
@@ -267,9 +331,12 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                 <div>
                   <label class="label">Type <span style="color: #EF4444;">*</span></label>
                   <select [(ngModel)]="lessonForm.type" class="input">
-                    <option value="VIDEO">Vidéo</option>
+                    <option value="VIDEO">Vidéo (URL)</option>
+                    <option value="VIDEO_UPLOAD">Vidéo (upload)</option>
                     <option value="TEXT">Texte</option>
                     <option value="QUIZ">Quiz</option>
+                    <option value="PDF">PDF</option>
+                    <option value="IMAGE">Image</option>
                   </select>
                 </div>
                 <div>
@@ -279,22 +346,89 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                 </div>
               </div>
 
-              @if (lessonForm.type === 'VIDEO') {
-                <div>
-                  <label class="label">URL de la vidéo</label>
-                  <input type="text" [(ngModel)]="lessonForm.videoUrl" class="input"
-                         placeholder="https://youtu.be/... ou https://www.youtube.com/watch?v=...">
-                  <p class="mt-1 text-xs" style="color: var(--ink-4);">
-                    Lien YouTube, Vimeo ou tout autre hébergeur vidéo.
-                  </p>
-                </div>
+              @switch (lessonForm.type) {
+                @case ('VIDEO') {
+                  <div>
+                    <label class="label">URL de la vidéo</label>
+                    <input type="text" [(ngModel)]="lessonForm.videoUrl" class="input"
+                           placeholder="https://youtu.be/... ou https://www.youtube.com/watch?v=...">
+                    <p class="mt-1 text-xs" style="color: var(--ink-4);">Lien YouTube, Vimeo ou tout autre hébergeur vidéo.</p>
+                  </div>
+                }
+                @case ('TEXT') {
+                  <div>
+                    <label class="label">Contenu du texte <span style="color: #EF4444;">*</span></label>
+                    <textarea [(ngModel)]="lessonForm.content" rows="6" class="input resize-none"
+                              placeholder="Écrivez le contenu de votre leçon..."></textarea>
+                  </div>
+                }
+                @case ('QUIZ') {
+                  <div>
+                    <label class="label">Quiz</label>
+                    <div class="p-4" style="border: 1px solid var(--border); border-radius: var(--r-md);">
+                      <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs" style="color: var(--ink-3);">{{ quizQuestions.length }} question(s)</span>
+                        <button type="button" (click)="addQuestion()" class="text-sm font-medium" style="color: var(--violet);">+ Ajouter une question</button>
+                      </div>
+                      @for (question of quizQuestions; track question.id; let qi = $index) {
+                        <div class="p-4 mb-3" style="border: 1px solid var(--border); border-radius: var(--r-md);">
+                          <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-semibold" style="color: var(--ink);">Question {{ qi + 1 }}</span>
+                            <button type="button" (click)="removeQuestion(qi)" class="text-xs" style="color: #EF4444;">Supprimer</button>
+                          </div>
+                          <select [(ngModel)]="question.type" class="input mb-3">
+                            <option value="multiple_choice">Choix multiple (une réponse)</option>
+                            <option value="multiple_answers">Choix multiple (plusieurs réponses)</option>
+                            <option value="true_false">Vrai / Faux</option>
+                          </select>
+                          <input type="text" [(ngModel)]="question.question" class="input mb-3" placeholder="Votre question...">
+                          @if (question.type !== 'true_false') {
+                            <div class="space-y-2 mb-3">
+                              @for (option of question.options; track $index; let oi = $index) {
+                                <div class="flex items-center gap-2">
+                                  <input [type]="question.type === 'multiple_choice' ? 'radio' : 'checkbox'" [name]="'q' + qi" [checked]="isCorrectAnswer(question, oi)" (change)="setCorrectAnswer(question, oi)" class="flex-shrink-0">
+                                  <input type="text" [(ngModel)]="question.options![oi]" class="input flex-1" [placeholder]="'Option ' + (oi + 1)">
+                                  @if (question.options!.length > 2) {
+                                    <button type="button" (click)="removeOption(question, oi)" class="text-sm flex-shrink-0" style="color: #EF4444;">&#215;</button>
+                                  }
+                                </div>
+                              }
+                              <button type="button" (click)="addOption(question)" class="text-sm" style="color: var(--violet);">+ Ajouter une option</button>
+                            </div>
+                          } @else {
+                            <div class="flex items-center gap-4 mb-3">
+                              <label class="flex items-center gap-2 text-sm" style="color: var(--ink);">
+                                <input type="radio" [name]="'tf' + qi" [checked]="question.correctAnswer === true" (change)="question.correctAnswer = true"> Vrai
+                              </label>
+                              <label class="flex items-center gap-2 text-sm" style="color: var(--ink);">
+                                <input type="radio" [name]="'tf' + qi" [checked]="question.correctAnswer === false" (change)="question.correctAnswer = false"> Faux
+                              </label>
+                            </div>
+                          }
+                          <input type="text" [(ngModel)]="question.explanation" class="input" placeholder="Explication (optionnel)">
+                        </div>
+                      }
+                      @if (quizQuestions.length === 0) {
+                        <p class="text-center py-4 text-sm" style="color: var(--ink-3);">Aucune question. Ajoutez-en une pour créer le quiz.</p>
+                      }
+                    </div>
+                  </div>
+                }
+                @case ('PDF') {
+                  <div>
+                    <label class="label">URL du PDF</label>
+                    <input type="text" [(ngModel)]="lessonForm.videoUrl" class="input" placeholder="https://exemple.com/document.pdf">
+                    <p class="mt-1 text-xs" style="color: var(--ink-4);">Lien vers le fichier PDF hébergé.</p>
+                  </div>
+                }
+                @case ('IMAGE') {
+                  <div>
+                    <label class="label">URL de l'image</label>
+                    <input type="text" [(ngModel)]="lessonForm.videoUrl" class="input" placeholder="https://exemple.com/image.jpg">
+                    <p class="mt-1 text-xs" style="color: var(--ink-4);">Lien vers l'image hébergée.</p>
+                  </div>
+                }
               }
-
-              <div>
-                <label class="label">Description <span class="font-normal" style="color: var(--ink-4);">(optionnel)</span></label>
-                <textarea [(ngModel)]="lessonForm.content" rows="3" class="input resize-none"
-                          placeholder="Décrivez le contenu de cette leçon..."></textarea>
-              </div>
 
               <div class="flex items-center gap-3 p-3"
                    style="background: var(--violet-xlight); border-radius: var(--r-md);">
@@ -387,6 +521,9 @@ export class CourseEditorComponent implements OnInit {
   lessonForm: LessonCreateRequest = this.emptyLessonForm();
   isSavingLesson = false;
 
+  // Quiz
+  quizQuestions: QuizQuestion[] = [];
+
   // Delete section modal
   showDeleteSectionModal = false;
   selectedSectionForDelete: Section | null = null;
@@ -400,8 +537,16 @@ export class CourseEditorComponent implements OnInit {
   showErrorModal = false;
   errorModalMessage = '';
 
+  // Sidebar
+  isPublishing = false;
+
   get totalLessons(): number {
     return this.sections.reduce((sum, s) => sum + (s.lessons?.length || 0), 0);
+  }
+
+  get totalDuration(): number {
+    return this.sections.reduce((sum, s) =>
+      sum + (s.lessons?.reduce((lSum, l) => lSum + (l.duration || 0), 0) || 0), 0);
   }
 
   ngOnInit() {
@@ -506,8 +651,19 @@ export class CourseEditorComponent implements OnInit {
       type: lesson.type,
       duration: lesson.duration || 0,
       isFree: lesson.isFree,
-      videoUrl: lesson.videoUrl || ''
+      videoUrl: lesson.videoUrl || '',
+      quizData: lesson.quizData
     } : this.emptyLessonForm();
+
+    if (lesson && lesson.type === 'QUIZ' && lesson.quizData) {
+      try {
+        const parsed = JSON.parse(lesson.quizData);
+        this.quizQuestions = parsed.questions || [];
+      } catch { this.quizQuestions = []; }
+    } else {
+      this.quizQuestions = [];
+    }
+
     this.showLessonModal = true;
   }
 
@@ -516,6 +672,7 @@ export class CourseEditorComponent implements OnInit {
     this.editingLesson = null;
     this.targetSectionId = null;
     this.lessonForm = this.emptyLessonForm();
+    this.quizQuestions = [];
   }
 
   saveLesson() {
@@ -528,8 +685,14 @@ export class CourseEditorComponent implements OnInit {
       type: this.lessonForm.type,
       duration: this.lessonForm.duration || undefined,
       isFree: this.lessonForm.isFree,
-      videoUrl: this.lessonForm.type === 'VIDEO' ? (this.lessonForm.videoUrl || undefined) : undefined
+      videoUrl: (this.lessonForm.type === 'VIDEO' || this.lessonForm.type === 'PDF' || this.lessonForm.type === 'IMAGE')
+        ? (this.lessonForm.videoUrl || undefined)
+        : undefined
     };
+
+    if (this.lessonForm.type === 'QUIZ' && this.quizQuestions.length > 0) {
+      request.quizData = JSON.stringify({ title: 'Quiz', passingScore: 70, questions: this.quizQuestions });
+    }
 
     const obs = this.editingLesson
       ? this.lessonService.updateLesson(this.editingLesson.id, request)
@@ -574,10 +737,91 @@ export class CourseEditorComponent implements OnInit {
     });
   }
 
+  // ---- Quiz methods ----
+
+  addQuestion() {
+    this.quizQuestions.push({
+      id: Date.now(),
+      type: 'multiple_choice',
+      question: '',
+      options: ['', ''],
+      correctAnswer: 0,
+      explanation: ''
+    });
+  }
+
+  removeQuestion(index: number) {
+    this.quizQuestions.splice(index, 1);
+  }
+
+  addOption(question: QuizQuestion) {
+    if (!question.options) question.options = [];
+    question.options.push('');
+  }
+
+  removeOption(question: QuizQuestion, index: number) {
+    question.options?.splice(index, 1);
+  }
+
+  isCorrectAnswer(question: QuizQuestion, optionIndex: number): boolean {
+    if (question.type === 'multiple_choice') {
+      return question.correctAnswer === optionIndex;
+    }
+    if (question.type === 'multiple_answers') {
+      return question.correctAnswers?.includes(optionIndex) || false;
+    }
+    return false;
+  }
+
+  setCorrectAnswer(question: QuizQuestion, optionIndex: number) {
+    if (question.type === 'multiple_choice') {
+      question.correctAnswer = optionIndex;
+    } else if (question.type === 'multiple_answers') {
+      if (!question.correctAnswers) question.correctAnswers = [];
+      const idx = question.correctAnswers.indexOf(optionIndex);
+      if (idx === -1) question.correctAnswers.push(optionIndex);
+      else question.correctAnswers.splice(idx, 1);
+    }
+  }
+
+  // ---- Publish / Unpublish ----
+
+  publishCourse() {
+    if (!this.course) return;
+    this.isPublishing = true;
+    this.courseService.updateCourse(this.courseId, { status: 'PUBLISHED' }).subscribe({
+      next: (updated) => {
+        this.course = updated;
+        this.isPublishing = false;
+      },
+      error: (err) => {
+        this.isPublishing = false;
+        this.errorModalMessage = err.error?.message || 'Erreur lors de la publication';
+        this.showErrorModal = true;
+      }
+    });
+  }
+
+  unpublishCourse() {
+    if (!this.course) return;
+    this.isPublishing = true;
+    this.courseService.updateCourse(this.courseId, { status: 'DRAFT' }).subscribe({
+      next: (updated) => {
+        this.course = updated;
+        this.isPublishing = false;
+      },
+      error: (err) => {
+        this.isPublishing = false;
+        this.errorModalMessage = err.error?.message || 'Erreur lors du changement de statut';
+        this.showErrorModal = true;
+      }
+    });
+  }
+
   // ---- Helpers ----
 
   private emptyLessonForm(): LessonCreateRequest {
-    return { title: '', content: '', type: 'VIDEO', duration: 0, isFree: false, videoUrl: '' };
+    return { title: '', content: '', type: 'VIDEO', duration: 0, isFree: false, videoUrl: '', quizData: undefined };
   }
 
   getStatusLabel(status?: string): string {
@@ -589,18 +833,36 @@ export class CourseEditorComponent implements OnInit {
     }
   }
 
+  getLessonTypeLabel(type: string): string {
+    switch (type) {
+      case 'VIDEO': return 'Vidéo';
+      case 'VIDEO_UPLOAD': return 'Vidéo upload';
+      case 'TEXT': return 'Texte';
+      case 'QUIZ': return 'Quiz';
+      case 'PDF': return 'PDF';
+      case 'IMAGE': return 'Image';
+      default: return type;
+    }
+  }
+
   getLessonTypeBg(type: string): string {
     switch (type) {
-      case 'VIDEO': return 'var(--violet-tint)';
+      case 'VIDEO':
+      case 'VIDEO_UPLOAD': return 'var(--violet-tint)';
       case 'QUIZ': return 'var(--amber-tint)';
+      case 'PDF': return 'rgba(249,115,22,0.1)';
+      case 'IMAGE': return 'rgba(168,85,247,0.1)';
       default: return 'var(--green-tint)';
     }
   }
 
   getLessonTypeColor(type: string): string {
     switch (type) {
-      case 'VIDEO': return 'var(--violet)';
+      case 'VIDEO':
+      case 'VIDEO_UPLOAD': return 'var(--violet)';
       case 'QUIZ': return 'var(--amber)';
+      case 'PDF': return '#F97316';
+      case 'IMAGE': return '#A855F7';
       default: return 'var(--green)';
     }
   }

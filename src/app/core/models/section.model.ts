@@ -12,10 +12,12 @@ export interface Lesson {
   id: number;
   title: string;
   content?: string;
-  type: 'VIDEO' | 'TEXT' | 'QUIZ';
+  type: 'VIDEO' | 'VIDEO_UPLOAD' | 'TEXT' | 'QUIZ' | 'PDF' | 'IMAGE';
   duration?: number;
   orderIndex: number;
   isFree: boolean;
   videoUrl?: string;
+  filePath?: string;
+  quizData?: string;
   sectionId: number;
 }
