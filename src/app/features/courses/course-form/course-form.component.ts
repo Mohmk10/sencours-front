@@ -16,13 +16,13 @@ import { Category } from '../../../core/models';
       <!-- Header gradient -->
       <div class="page-header-brand">
         <div class="container-app">
-          <a routerLink="/dashboard/instructor"
+          <a [routerLink]="isEditMode ? ['/courses', courseId, 'edit'] : '/dashboard/instructor'"
              class="inline-flex items-center gap-1.5 text-xs mb-4 transition-opacity hover:opacity-100"
              style="color: rgba(255,255,255,0.5);">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
-            Tableau de bord instructeur
+            {{ isEditMode ? 'Retour à l\'éditeur' : 'Tableau de bord instructeur' }}
           </a>
           <p class="text-xs font-bold mb-2 uppercase tracking-widest" style="color: rgba(255,255,255,0.4);">
             Espace instructeur
@@ -165,7 +165,8 @@ import { Category } from '../../../core/models';
 
               <!-- Actions -->
               <div class="flex gap-4 pt-4" style="border-top: 1px solid var(--border);">
-                <a routerLink="/dashboard/instructor" class="btn btn-secondary flex-1 text-center">
+                <a [routerLink]="isEditMode ? ['/courses', courseId, 'edit'] : '/dashboard/instructor'"
+                   class="btn btn-secondary flex-1 text-center">
                   Annuler
                 </a>
                 <button
@@ -273,7 +274,7 @@ export class CourseFormComponent implements OnInit {
     if (this.isEditMode && this.courseId) {
       this.courseService.updateCourse(this.courseId, formData).subscribe({
         next: () => {
-          this.router.navigate(['/dashboard/instructor']);
+          this.router.navigate(['/courses', this.courseId, 'edit']);
         },
         error: (err) => {
           this.isLoading = false;

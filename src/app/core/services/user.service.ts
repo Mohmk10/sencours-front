@@ -23,4 +23,8 @@ export class UserService {
     const params = new HttpParams().set('search', search).set('page', page).set('size', size);
     return this.http.get<PageResponse<User>>(`${this.apiUrl}/search`, { params });
   }
+
+  deleteUser(userId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${userId}`);
+  }
 }

@@ -16,5 +16,6 @@ export interface Lesson {
   duration?: number;
   orderIndex: number;
   isFree: boolean;
+  videoUrl?: string;
   sectionId: number;
 }
