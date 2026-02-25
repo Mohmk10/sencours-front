@@ -204,7 +204,7 @@ import { ConfirmModalComponent } from '../../shared/components/confirm-modal/con
                     (ngModelChange)="filterUsers()"
                     placeholder="Rechercher par nom ou email..."
                     class="input w-full"
-                    style="padding-left: 3rem;"
+                    style="padding-left: 3rem;">
                 </div>
               </div>
               <select
