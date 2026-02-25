@@ -115,7 +115,14 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                   <!-- CTA -->
                   <div class="p-6">
                     <div class="space-y-2.5">
-                      @if (!authService.isAuthenticated()) {
+                      @if (isOwner) {
+                        <a [routerLink]="['/courses', course.id, 'edit']" class="btn btn-primary w-full text-center">
+                          Gérer ce cours
+                        </a>
+                        <p class="text-xs text-center mt-2" style="color: var(--ink-4);">
+                          Vous êtes l'instructeur de ce cours
+                        </p>
+                      } @else if (!authService.isAuthenticated()) {
                         <a routerLink="/login" class="btn btn-primary w-full">
                           Se connecter pour s'inscrire
                         </a>
@@ -175,7 +182,9 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
             <span class="font-bold text-lg" style="color: var(--amber);">
               @if (course.price === 0) { Gratuit } @else { {{ course.price | number:'1.0-0' }} FCFA }
             </span>
-            @if (!authService.isAuthenticated()) {
+            @if (isOwner) {
+              <a [routerLink]="['/courses', course.id, 'edit']" class="btn btn-primary btn-sm">Gérer</a>
+            } @else if (!authService.isAuthenticated()) {
               <a routerLink="/login" class="btn btn-primary btn-sm">Se connecter</a>
             } @else if (isEnrolled) {
               <button (click)="goToLearning()" class="btn btn-primary btn-sm">Mon tableau de bord</button>
@@ -361,9 +370,9 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                    style="border: 1px solid var(--border); border-radius: var(--r-lg);">
                 <h3 class="font-bold mb-4" style="color: var(--ink);">Votre instructeur</h3>
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white flex-shrink-0"
+                  <div class="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
                        style="background: var(--violet);">
-                    {{ (course.instructorName || '?').charAt(0).toUpperCase() }}
+                    {{ getInstructorInitials() }}
                   </div>
                   <div>
                     <p class="font-semibold text-sm" style="color: var(--ink);">{{ course.instructorName }}</p>
@@ -424,6 +433,7 @@ export class CourseDetailComponent implements OnInit {
   sections: Section[] = [];
   reviews: Review[] = [];
   isLoading = true;
+  isOwner = false;
   isEnrolled = false;
   hasReviewed = false;
   enrollmentLoading = false;
@@ -448,9 +458,11 @@ export class CourseDetailComponent implements OnInit {
     this.courseService.getCourseById(id).subscribe({
       next: (course) => {
         this.course = course;
+        const currentUser = this.authService.getCurrentUser();
+        this.isOwner = currentUser?.id === course.instructorId;
         this.loadSections(id);
         this.loadReviews(id);
-        if (this.authService.isAuthenticated()) {
+        if (this.authService.isAuthenticated() && !this.isOwner) {
           this.checkEnrollment(id);
         }
         this.isLoading = false;
@@ -536,6 +548,15 @@ export class CourseDetailComponent implements OnInit {
   goToLearning() {
     this.showLearningNotice = true;
     setTimeout(() => this.showLearningNotice = false, 6000);
+  }
+
+  getInstructorInitials(): string {
+    if (!this.course?.instructorName) return '?';
+    const parts = this.course.instructorName.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0].substring(0, 2).toUpperCase();
   }
 
   submitReview() {
