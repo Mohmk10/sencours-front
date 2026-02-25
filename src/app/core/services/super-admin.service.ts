@@ -31,4 +31,10 @@ export class SuperAdminService {
   createInstructor(request: CreateAdminRequest): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/instructors`, request);
   }
+
+  resetDatabase(confirmation: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/reset-database`, {
+      body: { confirmation }
+    });
+  }
 }

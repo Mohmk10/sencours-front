@@ -1,13 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SuperAdminService } from '../../core/services/super-admin.service';
 import { User } from '../../core/models';
 
 @Component({
   selector: 'app-super-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
@@ -176,6 +176,63 @@ import { User } from '../../core/models';
           </div>
         </div>
 
+        <!-- Reset Database Section -->
+        <div class="card mt-8 border-2 border-[#C4302B]">
+          <div class="p-6 border-b border-[#E4E8EB] bg-[#FEECEB]">
+            <div class="flex items-center gap-3">
+              <svg class="w-6 h-6 text-[#C4302B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+              <div>
+                <h2 class="font-bold text-[#C4302B]">Réinitialisation complète</h2>
+                <p class="text-sm text-[#C4302B]">Cette action supprimera TOUTES les données sauf votre compte SuperAdmin</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6">
+            <p class="text-sm text-[#6A6F73] mb-4">
+              Pour confirmer, tapez <strong>RESET</strong> dans le champ ci-dessous :
+            </p>
+
+            <div class="flex gap-4">
+              <input
+                type="text"
+                [(ngModel)]="resetConfirmation"
+                class="input flex-1"
+                placeholder="Tapez RESET pour confirmer"
+                [class.border-[#C4302B]]="resetConfirmation && resetConfirmation !== 'RESET'">
+
+              <button
+                (click)="resetDatabase()"
+                [disabled]="resetConfirmation !== 'RESET' || isResetting"
+                class="btn bg-[#C4302B] text-white hover:bg-[#A32820] disabled:opacity-50 disabled:cursor-not-allowed">
+                @if (isResetting) {
+                  <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Réinitialisation...
+                } @else {
+                  Réinitialiser la base de données
+                }
+              </button>
+            </div>
+
+            @if (resetSuccess) {
+              <div class="alert alert-success mt-4">
+                Base de données réinitialisée avec succès !
+              </div>
+            }
+
+            @if (resetError) {
+              <div class="alert alert-error mt-4">
+                {{ resetError }}
+              </div>
+            }
+          </div>
+        </div>
+
       </div>
     </div>
   `
@@ -196,6 +253,11 @@ export class SuperAdminDashboardComponent implements OnInit {
   adminError = '';
   instructorSuccess = false;
   instructorError = '';
+
+  resetConfirmation = '';
+  isResetting = false;
+  resetSuccess = false;
+  resetError = '';
 
   constructor() {
     this.adminForm = this.fb.group({
@@ -277,6 +339,31 @@ export class SuperAdminDashboardComponent implements OnInit {
     this.superAdminService.deleteAdmin(admin.id).subscribe({
       next: () => this.loadAdmins(),
       error: (err) => alert(err.error?.message || 'Erreur lors de la suppression')
+    });
+  }
+
+  resetDatabase() {
+    if (this.resetConfirmation !== 'RESET') return;
+
+    if (!confirm('⚠️ ATTENTION ⚠️\n\nCette action va SUPPRIMER DÉFINITIVEMENT :\n- Tous les utilisateurs (sauf vous)\n- Toutes les catégories\n- Tous les cours\n- Toutes les sections et leçons\n- Toutes les inscriptions\n- Toutes les reviews\n\nÊtes-vous ABSOLUMENT sûr ?')) {
+      return;
+    }
+
+    this.isResetting = true;
+    this.resetSuccess = false;
+    this.resetError = '';
+
+    this.superAdminService.resetDatabase(this.resetConfirmation).subscribe({
+      next: (response) => {
+        this.isResetting = false;
+        this.resetSuccess = true;
+        this.resetConfirmation = '';
+        this.loadAdmins();
+      },
+      error: (err) => {
+        this.isResetting = false;
+        this.resetError = err.error?.message || 'Erreur lors de la réinitialisation';
+      }
     });
   }
 }
