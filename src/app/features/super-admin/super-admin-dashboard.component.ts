@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SuperAdminService } from '../../core/services/super-admin.service';
+import { UserService } from '../../core/services/user.service';
+import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/models';
 
 @Component({
@@ -110,55 +112,158 @@ import { User } from '../../core/models';
           </div>
         </div>
 
-        <!-- Admins list -->
-        <div class="card">
-          <div class="px-6 py-5 flex items-center justify-between" style="border-bottom: 1px solid var(--border);">
-            <h2 class="font-semibold" style="color: var(--ink);">Administrateurs existants</h2>
-            <button (click)="loadAdmins()" class="btn btn-ghost btn-sm">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-              </svg>
-              Actualiser
-            </button>
+        <!-- Section Gestion des Utilisateurs -->
+        <div class="card mt-8">
+          <div class="p-6 border-b border-[#E4E8EB]">
+            <h2 class="text-xl font-bold text-[#1C1D1F]">Gestion de tous les utilisateurs</h2>
+            <p class="text-sm text-[#6A6F73] mt-1">Gérez les comptes de tous les utilisateurs de la plateforme</p>
           </div>
 
-          @if (isLoadingAdmins) {
-            <div class="p-6 space-y-3">
-              @for (i of [1,2,3]; track i) {
-                <div class="flex items-center gap-3">
-                  <div class="skeleton w-10 h-10 rounded-full"></div>
-                  <div class="skeleton h-4 w-48"></div>
+          <div class="p-6">
+            <!-- Filtres -->
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+              <div class="flex-1">
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6A6F73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  </svg>
+                  <input
+                    type="text"
+                    [(ngModel)]="searchTerm"
+                    (ngModelChange)="filterUsers()"
+                    placeholder="Rechercher par nom ou email..."
+                    class="input pl-10 w-full">
                 </div>
-              }
+              </div>
+              <select
+                [(ngModel)]="roleFilter"
+                (ngModelChange)="filterUsers()"
+                class="input w-full md:w-48">
+                <option value="">Tous les rôles</option>
+                <option value="SUPER_ADMIN">Super Admin</option>
+                <option value="ADMIN">Admin</option>
+                <option value="INSTRUCTEUR">Instructeur</option>
+                <option value="ETUDIANT">Étudiant</option>
+              </select>
             </div>
-          } @else if (admins.length === 0) {
-            <div class="p-10 text-center text-sm" style="color: var(--ink-3);">
-              Aucun administrateur trouvé
-            </div>
-          } @else {
-            <div>
-              @for (admin of admins; track admin.id) {
-                <div class="px-6 py-4 flex items-center justify-between"
-                     style="border-bottom: 1px solid var(--border);" class="last:border-b-0">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0"
-                         style="background: var(--amber);">
-                      {{ admin.firstName?.charAt(0) }}{{ admin.lastName?.charAt(0) }}
+
+            @if (isLoadingUsers) {
+              <div class="space-y-3">
+                @for (i of [1,2,3,4,5]; track i) {
+                  <div class="flex items-center gap-4 p-3">
+                    <div class="skeleton w-10 h-10 rounded-full flex-shrink-0"></div>
+                    <div class="flex-1 space-y-2">
+                      <div class="skeleton h-4 w-1/3"></div>
+                      <div class="skeleton h-3 w-1/4"></div>
                     </div>
-                    <div>
-                      <p class="font-medium" style="color: var(--ink);">{{ admin.firstName }} {{ admin.lastName }}</p>
-                      <p class="text-sm" style="color: var(--ink-3);">{{ admin.email }}</p>
-                    </div>
+                    <div class="skeleton h-5 w-16 rounded-full"></div>
                   </div>
-                  <button (click)="deleteAdmin(admin)" class="btn btn-ghost btn-sm" style="color: #EF4444;">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                  </button>
+                }
+              </div>
+            } @else {
+              <!-- Tableau -->
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-[#E4E8EB]">
+                      <th class="text-left py-3 px-4 text-xs font-semibold text-[#6A6F73] uppercase tracking-wider">Utilisateur</th>
+                      <th class="text-left py-3 px-4 text-xs font-semibold text-[#6A6F73] uppercase tracking-wider">Email</th>
+                      <th class="text-left py-3 px-4 text-xs font-semibold text-[#6A6F73] uppercase tracking-wider">Rôle</th>
+                      <th class="text-left py-3 px-4 text-xs font-semibold text-[#6A6F73] uppercase tracking-wider">Statut</th>
+                      <th class="text-left py-3 px-4 text-xs font-semibold text-[#6A6F73] uppercase tracking-wider">Inscrit le</th>
+                      <th class="text-left py-3 px-4 text-xs font-semibold text-[#6A6F73] uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (user of filteredUsers; track user.id) {
+                      <tr class="border-b border-[#E4E8EB] hover:bg-[#F7F9FA] transition-colors">
+                        <!-- Avatar + Nom -->
+                        <td class="py-4 px-4">
+                          <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm"
+                                 [style.background-color]="getAvatarColor(user.role)">
+                              {{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}
+                            </div>
+                            <span class="font-medium text-[#1C1D1F]">{{ user.firstName }} {{ user.lastName }}</span>
+                          </div>
+                        </td>
+
+                        <!-- Email -->
+                        <td class="py-4 px-4 text-[#6A6F73]">{{ user.email }}</td>
+
+                        <!-- Rôle Badge -->
+                        <td class="py-4 px-4">
+                          <span class="px-2 py-1 rounded text-xs font-semibold"
+                                [ngClass]="getRoleBadgeClass(user.role)">
+                            {{ formatRole(user.role) }}
+                          </span>
+                        </td>
+
+                        <!-- Statut -->
+                        <td class="py-4 px-4">
+                          <span class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full"
+                                  [class.bg-green-500]="user.isActive"
+                                  [class.bg-red-500]="!user.isActive"></span>
+                            <span [class.text-green-600]="user.isActive"
+                                  [class.text-red-600]="!user.isActive">
+                              {{ user.isActive ? 'Actif' : 'Suspendu' }}
+                            </span>
+                          </span>
+                        </td>
+
+                        <!-- Date -->
+                        <td class="py-4 px-4 text-[#6A6F73]">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+
+                        <!-- Actions -->
+                        <td class="py-4 px-4">
+                          <div class="flex items-center gap-2">
+                            @if (user.id !== currentUserId) {
+                              <!-- Bouton Suspendre/Réactiver -->
+                              <button
+                                (click)="toggleUserStatus(user)"
+                                [title]="user.isActive ? 'Suspendre' : 'Réactiver'"
+                                class="p-2 rounded-lg transition-colors"
+                                [ngClass]="user.isActive ? 'text-orange-500 hover:bg-orange-50' : 'text-green-500 hover:bg-green-50'">
+                                @if (user.isActive) {
+                                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                  </svg>
+                                } @else {
+                                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                  </svg>
+                                }
+                              </button>
+
+                              <!-- Bouton Supprimer -->
+                              <button
+                                (click)="deleteUser(user)"
+                                title="Supprimer définitivement"
+                                class="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                              </button>
+                            } @else {
+                              <span class="text-xs text-[#6A6F73] italic">Vous</span>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              @if (filteredUsers.length === 0) {
+                <div class="text-center py-8 text-[#6A6F73]">
+                  Aucun utilisateur trouvé
                 </div>
               }
-            </div>
-          }
+            }
+          </div>
         </div>
 
         <!-- Warning -->
@@ -240,6 +345,8 @@ import { User } from '../../core/models';
 export class SuperAdminDashboardComponent implements OnInit {
   private fb = inject(FormBuilder);
   private superAdminService = inject(SuperAdminService);
+  private userService = inject(UserService);
+  private authService = inject(AuthService);
 
   adminForm: FormGroup;
   instructorForm: FormGroup;
@@ -259,6 +366,14 @@ export class SuperAdminDashboardComponent implements OnInit {
   resetSuccess = false;
   resetError = '';
 
+  // User table
+  allUsers: User[] = [];
+  filteredUsers: User[] = [];
+  searchTerm = '';
+  roleFilter = '';
+  currentUserId: number | null = null;
+  isLoadingUsers = true;
+
   constructor() {
     this.adminForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -276,7 +391,14 @@ export class SuperAdminDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadCurrentUser();
     this.loadAdmins();
+    this.loadAllUsers();
+  }
+
+  loadCurrentUser() {
+    const user = this.authService.getCurrentUser();
+    if (user) this.currentUserId = user.id;
   }
 
   loadAdmins() {
@@ -287,6 +409,59 @@ export class SuperAdminDashboardComponent implements OnInit {
         this.isLoadingAdmins = false;
       },
       error: () => this.isLoadingAdmins = false
+    });
+  }
+
+  loadAllUsers() {
+    this.isLoadingUsers = true;
+    this.userService.getAllUsers(0, 200).subscribe({
+      next: (res) => {
+        this.allUsers = res.content;
+        this.filterUsers();
+        this.isLoadingUsers = false;
+      },
+      error: () => this.isLoadingUsers = false
+    });
+  }
+
+  filterUsers() {
+    this.filteredUsers = this.allUsers.filter(user => {
+      const matchesSearch = !this.searchTerm ||
+        user.firstName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+      const matchesRole = !this.roleFilter || user.role === this.roleFilter;
+
+      return matchesSearch && matchesRole;
+    });
+  }
+
+  toggleUserStatus(user: User) {
+    const action = user.isActive ? 'suspendre' : 'réactiver';
+    if (!confirm(`Voulez-vous ${action} ${user.firstName} ${user.lastName} ?`)) return;
+
+    this.userService.toggleUserStatus(user.id).subscribe({
+      next: (updatedUser) => {
+        const index = this.allUsers.findIndex(u => u.id === user.id);
+        if (index !== -1) {
+          this.allUsers[index] = updatedUser;
+          this.filterUsers();
+        }
+      },
+      error: (err) => alert(err.error?.message || 'Erreur lors de la modification')
+    });
+  }
+
+  deleteUser(user: User) {
+    if (!confirm(`⚠️ ATTENTION ⚠️\n\nVoulez-vous vraiment SUPPRIMER DÉFINITIVEMENT ${user.firstName} ${user.lastName} ?\n\nCette action supprimera également tous ses cours, inscriptions et données associées.\n\nCette action est IRRÉVERSIBLE.`)) return;
+
+    this.userService.deleteUser(user.id).subscribe({
+      next: () => {
+        this.allUsers = this.allUsers.filter(u => u.id !== user.id);
+        this.filterUsers();
+      },
+      error: (err) => alert(err.error?.message || 'Erreur lors de la suppression')
     });
   }
 
@@ -303,6 +478,7 @@ export class SuperAdminDashboardComponent implements OnInit {
         this.adminSuccess = true;
         this.adminForm.reset();
         this.loadAdmins();
+        this.loadAllUsers();
         setTimeout(() => this.adminSuccess = false, 3000);
       },
       error: (err) => {
@@ -324,6 +500,7 @@ export class SuperAdminDashboardComponent implements OnInit {
         this.isCreatingInstructor = false;
         this.instructorSuccess = true;
         this.instructorForm.reset();
+        this.loadAllUsers();
         setTimeout(() => this.instructorSuccess = false, 3000);
       },
       error: (err) => {
@@ -359,11 +536,42 @@ export class SuperAdminDashboardComponent implements OnInit {
         this.resetSuccess = true;
         this.resetConfirmation = '';
         this.loadAdmins();
+        this.loadAllUsers();
       },
       error: (err) => {
         this.isResetting = false;
         this.resetError = err.error?.message || 'Erreur lors de la réinitialisation';
       }
     });
+  }
+
+  getAvatarColor(role: string): string {
+    const colors: Record<string, string> = {
+      'SUPER_ADMIN': '#1C1D1F',
+      'ADMIN': '#5624D0',
+      'INSTRUCTEUR': '#16A34A',
+      'ETUDIANT': '#2563EB'
+    };
+    return colors[role] || '#6A6F73';
+  }
+
+  getRoleBadgeClass(role: string): string {
+    const classes: Record<string, string> = {
+      'SUPER_ADMIN': 'bg-[#1C1D1F] text-white',
+      'ADMIN': 'bg-[#5624D0] text-white',
+      'INSTRUCTEUR': 'bg-green-100 text-green-800',
+      'ETUDIANT': 'bg-blue-100 text-blue-800'
+    };
+    return classes[role] || 'bg-gray-100 text-gray-800';
+  }
+
+  formatRole(role: string): string {
+    const labels: Record<string, string> = {
+      'SUPER_ADMIN': 'SUPER ADMIN',
+      'ADMIN': 'ADMIN',
+      'INSTRUCTEUR': 'INSTRUCTEUR',
+      'ETUDIANT': 'ÉTUDIANT'
+    };
+    return labels[role] || role;
   }
 }

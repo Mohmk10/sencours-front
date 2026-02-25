@@ -27,4 +27,8 @@ export class UserService {
   deleteUser(userId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${userId}`);
   }
+
+  toggleUserStatus(userId: number): Observable<User> {
+    return this.http.patch<User>(`${this.apiUrl}/${userId}/toggle-status`, {});
+  }
 }

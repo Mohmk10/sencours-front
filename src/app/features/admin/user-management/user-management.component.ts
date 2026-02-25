@@ -106,16 +106,26 @@ import { User, PageResponse } from '../../../core/models';
                   <td class="text-sm" style="color: var(--ink-3);">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
                   <td>
                     <div class="flex justify-end">
-                      <button
-                        (click)="deleteUser(user)"
-                        [disabled]="user.role === 'SUPER_ADMIN'"
-                        class="btn btn-ghost btn-sm"
-                        [style.color]="user.role === 'SUPER_ADMIN' ? 'var(--ink-4)' : '#EF4444'"
-                        [title]="user.role === 'SUPER_ADMIN' ? 'Impossible de supprimer un Super Admin' : 'Supprimer'">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                      </button>
+                      @if (canSuspend(user)) {
+                        <button
+                          (click)="toggleUserStatus(user)"
+                          [title]="user.isActive ? 'Suspendre' : 'Réactiver'"
+                          class="p-2 rounded-lg transition-colors"
+                          [ngClass]="user.isActive ? 'text-orange-500 hover:bg-orange-50' : 'text-green-500 hover:bg-green-50'">
+                          @if (user.isActive) {
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                            </svg>
+                          } @else {
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                          }
+                        </button>
+                      } @else {
+                        <span class="text-xs text-[#6A6F73] italic">-</span>
+                      }
                     </div>
                   </td>
                 </tr>
@@ -189,12 +199,22 @@ export class UserManagementComponent implements OnInit {
     this.loadUsers();
   }
 
-  deleteUser(user: User) {
-    if (user.role === 'SUPER_ADMIN') return;
-    if (!confirm(`Supprimer définitivement ${user.firstName} ${user.lastName} (${user.email}) ?`)) return;
-    this.userService.deleteUser(user.id).subscribe({
-      next: () => this.loadUsers(),
-      error: (err) => alert(err.error?.message || 'Impossible de supprimer cet utilisateur')
+  canSuspend(user: User): boolean {
+    return user.role === 'ETUDIANT' || user.role === 'INSTRUCTEUR';
+  }
+
+  toggleUserStatus(user: User) {
+    const action = user.isActive ? 'suspendre' : 'réactiver';
+    if (!confirm(`Voulez-vous ${action} ${user.firstName} ${user.lastName} ?`)) return;
+
+    this.userService.toggleUserStatus(user.id).subscribe({
+      next: (updatedUser) => {
+        const index = this.pageResponse?.content?.findIndex(u => u.id === user.id) ?? -1;
+        if (index !== -1 && this.pageResponse?.content) {
+          this.pageResponse.content[index] = updatedUser;
+        }
+      },
+      error: (err) => alert(err.error?.message || 'Erreur')
     });
   }
 
