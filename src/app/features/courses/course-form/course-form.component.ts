@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CourseService } from '../../../core/services/course.service';
 import { CategoryService } from '../../../core/services/category.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Category } from '../../../core/models';
 
 @Component({
@@ -197,6 +198,7 @@ export class CourseFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private courseService = inject(CourseService);
   private categoryService = inject(CategoryService);
+  private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -266,6 +268,12 @@ export class CourseFormComponent implements OnInit {
   onSubmit() {
     if (this.courseForm.invalid) return;
 
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
 
@@ -282,9 +290,14 @@ export class CourseFormComponent implements OnInit {
         }
       });
     } else {
-      this.courseService.createCourse(formData).subscribe({
-        next: () => {
-          this.router.navigate(['/dashboard/instructor']);
+      const createRequest = {
+        ...formData,
+        instructorId: currentUser.id,
+        thumbnailUrl: formData.thumbnailUrl?.trim() || undefined
+      };
+      this.courseService.createCourse(createRequest).subscribe({
+        next: (course) => {
+          this.router.navigate(['/courses', course.id, 'edit']);
         },
         error: (err) => {
           this.isLoading = false;

@@ -21,6 +21,7 @@ export interface CourseCreateRequest {
   price: number;
   thumbnailUrl?: string;
   categoryId: number;
+  instructorId: number;
 }
 
 export interface CourseUpdateRequest {
