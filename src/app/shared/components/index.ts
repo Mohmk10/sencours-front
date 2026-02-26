@@ -4,3 +4,4 @@ export * from './star-rating/star-rating.component';
 export * from './footer/footer.component';
 export * from './payment-modal/payment-modal.component';
 export * from './review-modal/review-modal.component';
+export * from './lesson-preview-modal/lesson-preview-modal.component';

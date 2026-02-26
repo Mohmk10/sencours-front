@@ -1,20 +1,21 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { CourseService } from '../../../core/services/course.service';
 import { EnrollmentService } from '../../../core/services/enrollment.service';
 import { ReviewService } from '../../../core/services/review.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Course, Section, Review, Enrollment } from '../../../core/models';
-import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
+import { Course, Section, Lesson, Review, Enrollment } from '../../../core/models';
+import { LessonService } from '../../../core/services/lesson.service';
+import { ProgressStateService } from '../../../core/services/progress-state.service';
 import { PaymentModalComponent } from '../../../shared/components/payment-modal/payment-modal.component';
 import { ReviewModalComponent } from '../../../shared/components/review-modal/review-modal.component';
+import { LessonPreviewModalComponent } from '../../../shared/components/lesson-preview-modal/lesson-preview-modal.component';
 
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ConfirmModalComponent, PaymentModalComponent, ReviewModalComponent],
+  imports: [CommonModule, RouterModule, PaymentModalComponent, ReviewModalComponent, LessonPreviewModalComponent],
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
@@ -139,25 +140,24 @@ import { ReviewModalComponent } from '../../../shared/components/review-modal/re
                           </svg>
                           Vous êtes inscrit à ce cours
                         </div>
-                        @if (showLearningNotice) {
-                          <div class="flex items-start gap-2.5 p-3 mb-3 text-xs"
-                               style="background: var(--amber-tint); color: var(--amber); border-radius: var(--r-md); border: 1px solid rgba(217,119,6,0.2);">
-                            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                            <span>Le lecteur de cours est en cours de développement. Retrouvez vos cours inscrits dans votre tableau de bord.</span>
+                        @if (enrollment && enrollment.totalLessons) {
+                          <div class="mb-3">
+                            <div class="flex items-center justify-between text-xs mb-1.5" style="color: var(--ink-3);">
+                              <span>Progression</span>
+                              <span class="font-medium" style="color: var(--violet);">{{ enrollment.progress || 0 }}%</span>
+                            </div>
+                            <div class="w-full h-2 overflow-hidden" style="background: var(--border); border-radius: var(--r-sm);">
+                              <div class="h-full transition-all" style="background: var(--violet); border-radius: var(--r-sm);"
+                                   [style.width.%]="enrollment.progress || 0"></div>
+                            </div>
+                            <p class="text-xs mt-1" style="color: var(--ink-4);">
+                              {{ enrollment.completedLessons || 0 }}/{{ enrollment.totalLessons }} leçons
+                            </p>
                           </div>
                         }
-                        <button (click)="goToLearning()" class="btn btn-primary w-full">
+                        <a [routerLink]="['/learn', course.id]" class="btn btn-primary w-full text-center">
                           Continuer l'apprentissage
-                        </button>
-                        <button (click)="openUnenrollModal()" [disabled]="enrollmentLoading"
-                                class="w-full py-2.5 text-sm font-semibold border transition-colors disabled:opacity-50"
-                                style="border-radius: var(--r-sm); border-color: #EF4444; color: #EF4444;"
-                                onmouseenter="this.style.background='#FEF2F2'"
-                                onmouseleave="this.style.background='transparent'">
-                          Se désinscrire
-                        </button>
+                        </a>
                       } @else {
                         @if (course.price === 0) {
                           <button (click)="enrollFree()" [disabled]="enrollmentLoading"
@@ -198,7 +198,7 @@ import { ReviewModalComponent } from '../../../shared/components/review-modal/re
             } @else if (!authService.isAuthenticated()) {
               <a routerLink="/login" class="btn btn-primary btn-sm">Se connecter</a>
             } @else if (isEnrolled) {
-              <button (click)="goToLearning()" class="btn btn-primary btn-sm">Mon tableau de bord</button>
+              <a [routerLink]="['/learn', course.id]" class="btn btn-primary btn-sm">Apprendre</a>
             } @else {
               @if (course.price === 0) {
                 <button (click)="enrollFree()" [disabled]="enrollmentLoading" class="btn btn-primary btn-sm">
@@ -257,10 +257,12 @@ import { ReviewModalComponent } from '../../../shared/components/review-modal/re
                             @if (section.lessons && section.lessons.length > 0) {
                               @for (lesson of section.lessons; track lesson.id) {
                                 <div class="flex items-center gap-3 py-2.5 px-2 rounded transition-colors"
+                                     [class.cursor-pointer]="lesson.isFree"
+                                     (click)="lesson.isFree ? openLessonPreview(lesson) : null"
                                      onmouseenter="this.style.background='var(--canvas)'"
                                      onmouseleave="this.style.background='transparent'">
                                   <svg class="w-4 h-4 flex-shrink-0" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    @if (lesson.type === 'VIDEO') {
+                                    @if (lesson.type === 'VIDEO' || lesson.type === 'VIDEO_UPLOAD') {
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     } @else {
@@ -269,7 +271,9 @@ import { ReviewModalComponent } from '../../../shared/components/review-modal/re
                                   </svg>
                                   <span class="flex-1 text-sm" style="color: var(--ink-2);">{{ lesson.title }}</span>
                                   @if (lesson.isFree) {
-                                    <span class="text-xs font-medium" style="color: var(--violet);">Aperçu gratuit</span>
+                                    <span class="text-xs font-medium cursor-pointer" style="color: var(--violet);"
+                                          onmouseenter="this.style.textDecoration='underline'"
+                                          onmouseleave="this.style.textDecoration='none'">Aperçu gratuit</span>
                                   }
                                   @if (lesson.duration) {
                                     <span class="text-xs" style="color: var(--ink-4);">{{ lesson.duration }} min</span>
@@ -440,17 +444,6 @@ import { ReviewModalComponent } from '../../../shared/components/review-modal/re
         </div>
       }
 
-      <!-- Modal Désinscription -->
-      <app-confirm-modal
-        [isOpen]="showUnenrollModal"
-        title="Se désinscrire"
-        message="Êtes-vous sûr de vouloir vous désinscrire de ce cours ?"
-        type="warning"
-        confirmText="Se désinscrire"
-        (confirmed)="confirmUnenroll()"
-        (cancelled)="showUnenrollModal = false">
-      </app-confirm-modal>
-
       <!-- Modal Paiement -->
       @if (course) {
         <app-payment-modal
@@ -472,6 +465,14 @@ import { ReviewModalComponent } from '../../../shared/components/review-modal/re
           (submitted)="onReviewSubmitted($event)">
         </app-review-modal>
       }
+
+      <!-- Modal Aperçu leçon -->
+      <app-lesson-preview-modal
+        [isOpen]="showPreviewModal"
+        [lesson]="previewLesson"
+        (closed)="closePreviewModal()"
+        (enrollClicked)="onPreviewEnrollClick()">
+      </app-lesson-preview-modal>
     </div>
   `
 })
@@ -481,6 +482,8 @@ export class CourseDetailComponent implements OnInit {
   private courseService = inject(CourseService);
   private enrollmentService = inject(EnrollmentService);
   private reviewService = inject(ReviewService);
+  private lessonService = inject(LessonService);
+  private progressState = inject(ProgressStateService);
   authService = inject(AuthService);
 
   course: Course | null = null;
@@ -493,10 +496,10 @@ export class CourseDetailComponent implements OnInit {
   enrollmentError = '';
   expandedSections: boolean[] = [];
 
-  showLearningNotice = false;
-  showUnenrollModal = false;
   showPaymentModal = false;
   showReviewModal = false;
+  showPreviewModal = false;
+  previewLesson: Lesson | null = null;
   myReview: Review | null = null;
   enrollment: Enrollment | null = null;
 
@@ -505,6 +508,14 @@ export class CourseDetailComponent implements OnInit {
     if (courseId) {
       this.loadCourse(courseId);
     }
+
+    this.progressState.progressUpdated$.subscribe(updatedCourseId => {
+      if (updatedCourseId && this.course?.id === updatedCourseId && this.isEnrolled) {
+        this.enrollmentService.getEnrollment(updatedCourseId).subscribe({
+          next: (enrollment) => this.enrollment = enrollment
+        });
+      }
+    });
   }
 
   loadCourse(id: number) {
@@ -560,8 +571,15 @@ export class CourseDetailComponent implements OnInit {
   }
 
   checkEnrollment(courseId: number) {
-    this.enrollmentService.isEnrolled(courseId).subscribe({
-      next: (enrolled) => this.isEnrolled = enrolled,
+    this.enrollmentService.checkEnrollment(courseId).subscribe({
+      next: (res) => {
+        this.isEnrolled = res.enrolled;
+        if (res.enrolled) {
+          this.enrollmentService.getEnrollment(courseId).subscribe({
+            next: (enrollment) => this.enrollment = enrollment
+          });
+        }
+      },
       error: (err) => console.error('Error checking enrollment', err)
     });
   }
@@ -605,30 +623,30 @@ export class CourseDetailComponent implements OnInit {
     }
   }
 
-  openUnenrollModal() {
-    this.showUnenrollModal = true;
+  openLessonPreview(lesson: Lesson) {
+    if (lesson.isFree) {
+      this.lessonService.getPreview(lesson.id).subscribe({
+        next: (fullLesson) => {
+          this.previewLesson = fullLesson;
+          this.showPreviewModal = true;
+        },
+        error: (err) => console.error('Error loading preview:', err)
+      });
+    }
   }
 
-  confirmUnenroll() {
-    if (!this.course) return;
-    this.showUnenrollModal = false;
-    this.enrollmentLoading = true;
-    this.enrollmentError = '';
-    this.enrollmentService.unenrollFromCourse(this.course.id).subscribe({
-      next: () => {
-        this.isEnrolled = false;
-        this.enrollmentLoading = false;
-      },
-      error: (err) => {
-        this.enrollmentLoading = false;
-        this.enrollmentError = err.error?.message || 'Erreur lors de la désinscription';
-      }
-    });
+  closePreviewModal() {
+    this.showPreviewModal = false;
+    this.previewLesson = null;
   }
 
-  goToLearning() {
-    this.showLearningNotice = true;
-    setTimeout(() => this.showLearningNotice = false, 6000);
+  onPreviewEnrollClick() {
+    this.closePreviewModal();
+    if (this.course && this.course.price === 0) {
+      this.enrollFree();
+    } else {
+      this.openPaymentModal();
+    }
   }
 
   getInstructorDisplayName(): string {

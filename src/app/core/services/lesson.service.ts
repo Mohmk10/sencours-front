@@ -58,4 +58,8 @@ export class LessonService {
   deleteLesson(lessonId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/lessons/${lessonId}`);
   }
+
+  getPreview(lessonId: number): Observable<Lesson> {
+    return this.http.get<Lesson>(`${this.apiUrl}/lessons/${lessonId}/preview`);
+  }
 }

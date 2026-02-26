@@ -44,6 +44,13 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['INSTRUCTEUR', 'ADMIN', 'SUPER_ADMIN'])]
   },
 
+  // Learning page
+  {
+    path: 'learn/:id',
+    loadComponent: () => import('./features/learn/learn.component').then(m => m.LearnComponent),
+    canActivate: [authGuard]
+  },
+
   // Student Dashboard
   {
     path: 'dashboard',

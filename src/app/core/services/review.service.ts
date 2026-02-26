@@ -11,23 +11,11 @@ export class ReviewService {
   private apiUrl = environment.apiUrl;
 
   getCourseReviews(courseId: number): Observable<Review[]> {
-    return this.http.get<Review[]>(`${this.apiUrl}/courses/${courseId}/reviews`);
-  }
-
-  createReview(courseId: number, review: ReviewRequest): Observable<Review> {
-    return this.http.post<Review>(`${this.apiUrl}/courses/${courseId}/reviews`, review);
+    return this.http.get<Review[]>(`${this.apiUrl}/reviews/courses/${courseId}`);
   }
 
   createOrUpdate(courseId: number, review: ReviewRequest): Observable<Review> {
     return this.http.post<Review>(`${this.apiUrl}/reviews/courses/${courseId}`, review);
-  }
-
-  updateReview(courseId: number, reviewId: number, review: ReviewRequest): Observable<Review> {
-    return this.http.put<Review>(`${this.apiUrl}/courses/${courseId}/reviews/${reviewId}`, review);
-  }
-
-  deleteReview(courseId: number, reviewId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/courses/${courseId}/reviews/${reviewId}`);
   }
 
   getMyReview(courseId: number): Observable<Review | null> {
@@ -36,7 +24,11 @@ export class ReviewService {
     );
   }
 
-  getCourseAverageRating(courseId: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/courses/${courseId}/reviews/average`);
+  getCourseAverageRating(courseId: number): Observable<{ averageRating: number }> {
+    return this.http.get<{ averageRating: number }>(`${this.apiUrl}/reviews/courses/${courseId}/average`);
+  }
+
+  deleteReview(reviewId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/reviews/${reviewId}`);
   }
 }

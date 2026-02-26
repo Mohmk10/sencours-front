@@ -99,7 +99,7 @@ import { Enrollment } from '../../../core/models';
         } @else {
           <div class="space-y-4">
             @for (enrollment of enrollments; track enrollment.id) {
-              <a [routerLink]="['/courses', enrollment.courseId]"
+              <a [routerLink]="['/learn', enrollment.courseId]"
                  class="enrollment-card bg-white flex overflow-hidden"
                  style="border: 1px solid var(--border); border-radius: var(--r-lg);">
 
@@ -119,11 +119,18 @@ import { Enrollment } from '../../../core/models';
 
                 <!-- Content -->
                 <div class="flex-1 px-5 py-4 min-w-0 flex flex-col justify-between">
-                  <div>
-                    <h3 class="font-semibold text-sm line-clamp-2 leading-snug mb-1" style="color: var(--ink);">
-                      {{ enrollment.courseTitle }}
-                    </h3>
-                    <p class="text-xs" style="color: var(--ink-3);">{{ enrollment.instructorName }}</p>
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                      <h3 class="font-semibold text-sm line-clamp-2 leading-snug mb-1" style="color: var(--ink);">
+                        {{ enrollment.courseTitle }}
+                      </h3>
+                      <p class="text-xs" style="color: var(--ink-3);">{{ enrollment.instructorName }}</p>
+                    </div>
+                    @if (enrollment.completedAt) {
+                      <span class="badge badge-success flex-shrink-0">Terminé</span>
+                    } @else if ((enrollment.progress || 0) > 0) {
+                      <span class="badge badge-warning flex-shrink-0">En cours</span>
+                    }
                   </div>
 
                   <!-- Progress bar -->
@@ -135,7 +142,7 @@ import { Enrollment } from '../../../core/models';
                     <div class="h-2 rounded-full overflow-hidden" style="background: var(--border);">
                       <div class="h-full rounded-full transition-all duration-300"
                            [style.width.%]="enrollment.progress || 0"
-                           [style.background]="(enrollment.progress || 0) === 100 ? 'var(--gradient-green)' : 'var(--gradient-brand)'">
+                           [style.background]="enrollment.completedAt ? 'var(--green)' : 'var(--violet)'">
                       </div>
                     </div>
                   </div>
@@ -177,11 +184,11 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   get completedCount(): number {
-    return this.enrollments.filter(e => (e.progress || 0) === 100).length;
+    return this.enrollments.filter(e => e.completedAt !== null && e.completedAt !== undefined).length;
   }
 
   get inProgressCount(): number {
-    return this.enrollments.filter(e => (e.progress || 0) > 0 && (e.progress || 0) < 100).length;
+    return this.enrollments.filter(e => !e.completedAt && (e.progress || 0) > 0).length;
   }
 
   ngOnInit() {

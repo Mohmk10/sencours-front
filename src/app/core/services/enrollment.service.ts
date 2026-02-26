@@ -9,10 +9,6 @@ export class EnrollmentService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/enrollments`;
 
-  enrollInCourse(courseId: number): Observable<Enrollment> {
-    return this.http.post<Enrollment>(`${this.apiUrl}/courses/${courseId}`, {});
-  }
-
   enrollFree(courseId: number): Observable<Enrollment> {
     return this.http.post<Enrollment>(`${this.apiUrl}/courses/${courseId}/free`, {});
   }
@@ -37,15 +33,7 @@ export class EnrollmentService {
     return this.http.get<Enrollment>(`${this.apiUrl}/courses/${courseId}`);
   }
 
-  isEnrolled(courseId: number): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/courses/${courseId}/check`);
-  }
-
-  getCourseProgress(courseId: number): Observable<Progress[]> {
-    return this.http.get<Progress[]>(`${environment.apiUrl}/progress/courses/${courseId}`);
-  }
-
-  markLessonComplete(lessonId: number): Observable<Progress> {
-    return this.http.post<Progress>(`${environment.apiUrl}/progress/lessons/${lessonId}/complete`, {});
+  checkEnrollment(courseId: number): Observable<{ enrolled: boolean }> {
+    return this.http.get<{ enrolled: boolean }>(`${this.apiUrl}/courses/${courseId}/check`);
   }
 }
