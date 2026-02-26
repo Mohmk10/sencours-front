@@ -51,6 +51,13 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
 
+  // Certificates
+  {
+    path: 'my-certificates',
+    loadComponent: () => import('./features/certificates/my-certificates/my-certificates.component').then(m => m.MyCertificatesComponent),
+    canActivate: [authGuard]
+  },
+
   // Student Dashboard
   {
     path: 'dashboard',

@@ -7,6 +7,7 @@ import { ProgressService } from '../../core/services/progress.service';
 import { AuthService } from '../../core/services/auth.service';
 import { EnrollmentService } from '../../core/services/enrollment.service';
 import { ProgressStateService } from '../../core/services/progress-state.service';
+import { CertificateService } from '../../core/services/certificate.service';
 import { Course, Section, Lesson, Progress } from '../../core/models';
 import { getEmbedUrl, isYouTubeUrl } from '../../shared/utils/video.utils';
 
@@ -318,6 +319,41 @@ import { getEmbedUrl, isYouTubeUrl } from '../../shared/utils/video.utils';
             }
           </div>
 
+          <!-- Certificate banner -->
+          @if (canDownloadCertificate) {
+            <div class="flex-shrink-0 px-5 py-4 flex items-center justify-between gap-4"
+                 style="background: var(--green); border-top: 1px solid rgba(0,0,0,0.1);">
+              <div class="flex items-center gap-3 min-w-0">
+                <svg class="w-7 h-7 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                </svg>
+                <div class="min-w-0">
+                  <p class="text-sm font-bold text-white">Cours termine avec succes !</p>
+                  <p class="text-xs" style="color: rgba(255,255,255,0.8);">Telechargez votre certificat de reussite</p>
+                </div>
+              </div>
+              <button
+                (click)="downloadCertificate()"
+                [disabled]="downloadingCertificate"
+                class="flex items-center gap-2 px-4 py-2 bg-white font-semibold text-sm flex-shrink-0 transition-colors"
+                style="color: var(--green); border-radius: var(--r-md);"
+                onmouseenter="this.style.background='var(--canvas)'"
+                onmouseleave="this.style.background='white'">
+                @if (downloadingCertificate) {
+                  <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                } @else {
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                  </svg>
+                }
+                Certificat
+              </button>
+            </div>
+          }
+
           <!-- Bottom navigation bar -->
           @if (currentLesson) {
             <div class="flex items-center justify-between px-5 py-3 bg-white flex-shrink-0"
@@ -375,6 +411,7 @@ export class LearnComponent implements OnInit {
   private progressService = inject(ProgressService);
   private enrollmentService = inject(EnrollmentService);
   private progressState = inject(ProgressStateService);
+  private certificateService = inject(CertificateService);
   private authService = inject(AuthService);
 
   course: Course | null = null;
@@ -384,6 +421,8 @@ export class LearnComponent implements OnInit {
   isLoading = true;
   sidebarOpen = true;
   markingComplete = false;
+  canDownloadCertificate = false;
+  downloadingCertificate = false;
 
   expandedSections: boolean[] = [];
   completedLessonIds = new Set<number>();
@@ -480,6 +519,8 @@ export class LearnComponent implements OnInit {
           }
         }
 
+        this.checkCertificateAvailability();
+
         // Auto-select first incomplete lesson
         if (this.completedLessonIds.size > 0 && this.allLessons.length > 0) {
           const firstIncomplete = this.allLessons.find(l => !this.completedLessonIds.has(l.id));
@@ -547,6 +588,8 @@ export class LearnComponent implements OnInit {
           });
         }
 
+        this.checkCertificateAvailability();
+
         // Auto-advance to next lesson
         if (this.hasNext) {
           setTimeout(() => this.goToNext(), 500);
@@ -579,6 +622,27 @@ export class LearnComponent implements OnInit {
   getSectionCompletedCount(section: Section): number {
     if (!section.lessons) return 0;
     return section.lessons.filter(l => this.completedLessonIds.has(l.id)).length;
+  }
+
+  checkCertificateAvailability() {
+    if (this.totalLessons > 0 && this.progressPercent >= 100) {
+      this.canDownloadCertificate = true;
+    }
+  }
+
+  downloadCertificate() {
+    if (!this.course) return;
+    this.downloadingCertificate = true;
+
+    this.certificateService.downloadCertificate(this.course.id).subscribe({
+      next: (blob) => {
+        this.certificateService.downloadBlob(blob, `certificat-sencours-${this.course!.id}.pdf`);
+        this.downloadingCertificate = false;
+      },
+      error: () => {
+        this.downloadingCertificate = false;
+      }
+    });
   }
 
   private expandSectionContainingLesson(lesson: Lesson) {
