@@ -129,7 +129,7 @@ import { Enrollment } from '../../../core/models';
                     </div>
                     @if (enrollment.completedAt) {
                       <span class="badge badge-success flex-shrink-0">Terminé</span>
-                    } @else if ((enrollment.progress || 0) > 0) {
+                    } @else if ((enrollment.progressPercentage || 0) > 0) {
                       <span class="badge badge-warning flex-shrink-0">En cours</span>
                     }
                   </div>
@@ -138,11 +138,11 @@ import { Enrollment } from '../../../core/models';
                   <div class="mt-4">
                     <div class="flex justify-between text-xs mb-2">
                       <span style="color: var(--ink-3);">Progression</span>
-                      <span class="font-semibold" style="color: var(--ink);">{{ enrollment.progress || 0 }}%</span>
+                      <span class="font-semibold" style="color: var(--ink);">{{ enrollment.progressPercentage || 0 }}%</span>
                     </div>
                     <div class="h-2 rounded-full overflow-hidden" style="background: var(--border);">
                       <div class="h-full rounded-full transition-all duration-300"
-                           [style.width.%]="enrollment.progress || 0"
+                           [style.width.%]="enrollment.progressPercentage || 0"
                            [style.background]="enrollment.completedAt ? 'var(--green)' : 'var(--violet)'">
                       </div>
                     </div>
@@ -190,7 +190,7 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   get inProgressCount(): number {
-    return this.enrollments.filter(e => !e.completedAt && (e.progress || 0) > 0).length;
+    return this.enrollments.filter(e => !e.completedAt && (e.progressPercentage || 0) > 0).length;
   }
 
   ngOnInit() {
@@ -200,7 +200,7 @@ export class StudentDashboardComponent implements OnInit {
       if (!update) return;
       const enrollment = this.enrollments.find(e => e.courseId === update.courseId);
       if (enrollment) {
-        enrollment.progress = update.percent;
+        enrollment.progressPercentage = update.percent;
         enrollment.completedLessons = update.completedLessons;
         enrollment.totalLessons = update.totalLessons;
         if (update.percent === 100) {

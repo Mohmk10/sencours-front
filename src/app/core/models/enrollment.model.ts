@@ -5,7 +5,7 @@ export interface Enrollment {
   courseTitle: string;
   courseThumbnail?: string;
   instructorName?: string;
-  progress: number;
+  progressPercentage: number;
   enrolledAt: string;
   completedAt?: string;
   paymentReference?: string;

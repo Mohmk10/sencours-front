@@ -144,11 +144,11 @@ import { LessonPreviewModalComponent } from '../../../shared/components/lesson-p
                           <div class="mb-3">
                             <div class="flex items-center justify-between text-xs mb-1.5" style="color: var(--ink-3);">
                               <span>Progression</span>
-                              <span class="font-medium" style="color: var(--violet);">{{ enrollment.progress || 0 }}%</span>
+                              <span class="font-medium" style="color: var(--violet);">{{ enrollment.progressPercentage || 0 }}%</span>
                             </div>
                             <div class="w-full h-2 overflow-hidden" style="background: var(--border); border-radius: var(--r-sm);">
                               <div class="h-full transition-all" style="background: var(--violet); border-radius: var(--r-sm);"
-                                   [style.width.%]="enrollment.progress || 0"></div>
+                                   [style.width.%]="enrollment.progressPercentage || 0"></div>
                             </div>
                             <p class="text-xs mt-1" style="color: var(--ink-4);">
                               {{ enrollment.completedLessons || 0 }}/{{ enrollment.totalLessons }} leçons
@@ -513,7 +513,7 @@ export class CourseDetailComponent implements OnInit {
       if (update && this.course?.id === update.courseId && this.isEnrolled && this.enrollment) {
         this.enrollment = {
           ...this.enrollment,
-          progress: update.percent,
+          progressPercentage: update.percent,
           completedLessons: update.completedLessons,
           totalLessons: update.totalLessons,
           completedAt: update.percent === 100 ? new Date().toISOString() : this.enrollment.completedAt
