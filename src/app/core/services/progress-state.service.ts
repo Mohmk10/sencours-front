@@ -1,12 +1,19 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+export interface ProgressUpdate {
+  courseId: number;
+  percent: number;
+  completedLessons: number;
+  totalLessons: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProgressStateService {
-  private progressUpdated = new BehaviorSubject<number | null>(null);
+  private progressUpdated = new BehaviorSubject<ProgressUpdate | null>(null);
   progressUpdated$ = this.progressUpdated.asObservable();
 
-  notifyProgressUpdate(courseId: number) {
-    this.progressUpdated.next(courseId);
+  notifyProgressUpdate(update: ProgressUpdate) {
+    this.progressUpdated.next(update);
   }
 }

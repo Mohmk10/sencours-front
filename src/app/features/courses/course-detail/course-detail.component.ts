@@ -509,11 +509,15 @@ export class CourseDetailComponent implements OnInit {
       this.loadCourse(courseId);
     }
 
-    this.progressState.progressUpdated$.subscribe(updatedCourseId => {
-      if (updatedCourseId && this.course?.id === updatedCourseId && this.isEnrolled) {
-        this.enrollmentService.getEnrollment(updatedCourseId).subscribe({
-          next: (enrollment) => this.enrollment = enrollment
-        });
+    this.progressState.progressUpdated$.subscribe(update => {
+      if (update && this.course?.id === update.courseId && this.isEnrolled && this.enrollment) {
+        this.enrollment = {
+          ...this.enrollment,
+          progress: update.percent,
+          completedLessons: update.completedLessons,
+          totalLessons: update.totalLessons,
+          completedAt: update.percent === 100 ? new Date().toISOString() : this.enrollment.completedAt
+        };
       }
     });
   }

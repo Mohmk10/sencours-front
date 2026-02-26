@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { EnrollmentService } from '../../../core/services/enrollment.service';
+import { ProgressStateService } from '../../../core/services/progress-state.service';
 import { Enrollment } from '../../../core/models';
 
 @Component({
@@ -175,6 +176,7 @@ import { Enrollment } from '../../../core/models';
 export class StudentDashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private enrollmentService = inject(EnrollmentService);
+  private progressState = inject(ProgressStateService);
 
   enrollments: Enrollment[] = [];
   isLoading = true;
@@ -193,6 +195,19 @@ export class StudentDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadEnrollments();
+
+    this.progressState.progressUpdated$.subscribe(update => {
+      if (!update) return;
+      const enrollment = this.enrollments.find(e => e.courseId === update.courseId);
+      if (enrollment) {
+        enrollment.progress = update.percent;
+        enrollment.completedLessons = update.completedLessons;
+        enrollment.totalLessons = update.totalLessons;
+        if (update.percent === 100) {
+          enrollment.completedAt = new Date().toISOString();
+        }
+      }
+    });
   }
 
   loadEnrollments() {

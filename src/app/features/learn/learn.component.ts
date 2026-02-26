@@ -537,9 +537,14 @@ export class LearnComponent implements OnInit {
         this.completedLessonIds.add(this.currentLesson!.id);
         this.markingComplete = false;
 
-        // Notify other components
+        // Notify other components with computed progress
         if (this.course) {
-          this.progressState.notifyProgressUpdate(this.course.id);
+          this.progressState.notifyProgressUpdate({
+            courseId: this.course.id,
+            percent: this.progressPercent,
+            completedLessons: this.completedLessonIds.size,
+            totalLessons: this.totalLessons
+          });
         }
 
         // Auto-advance to next lesson
