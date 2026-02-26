@@ -25,6 +25,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/courses/course-list/course-list.component').then(m => m.CourseListComponent)
   },
   {
+    path: 'courses/search',
+    loadComponent: () => import('./features/courses/search-results/search-results.component').then(m => m.SearchResultsComponent)
+  },
+  {
     path: 'courses/new',
     loadComponent: () => import('./features/courses/course-form/course-form.component').then(m => m.CourseFormComponent),
     canActivate: [authGuard, roleGuard(['INSTRUCTEUR', 'ADMIN', 'SUPER_ADMIN'])]

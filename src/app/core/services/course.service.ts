@@ -4,6 +4,18 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Course, CourseCreateRequest, CourseUpdateRequest, PageResponse } from '../models';
 
+export interface SearchParams {
+  q?: string;
+  categoryId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  free?: boolean;
+  sortBy?: 'title' | 'price' | 'rating' | 'newest';
+  sortDirection?: 'asc' | 'desc';
+  page?: number;
+  size?: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CourseService {
   private http = inject(HttpClient);
@@ -61,5 +73,32 @@ export class CourseService {
   // Pour récupérer les sections d'un cours
   getCourseSections(courseId: number): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/courses/${courseId}/sections`);
+  }
+
+  // Recherche avec filtres
+  search(params: SearchParams): Observable<PageResponse<Course>> {
+    let url = `${this.apiUrl}/search?page=${params.page || 0}&size=${params.size || 12}`;
+    if (params.q) url += `&q=${encodeURIComponent(params.q)}`;
+    if (params.categoryId) url += `&categoryId=${params.categoryId}`;
+    if (params.minPrice !== undefined) url += `&minPrice=${params.minPrice}`;
+    if (params.maxPrice !== undefined) url += `&maxPrice=${params.maxPrice}`;
+    if (params.free !== undefined) url += `&free=${params.free}`;
+    if (params.sortBy) url += `&sortBy=${params.sortBy}`;
+    if (params.sortDirection) url += `&sortDirection=${params.sortDirection}`;
+    return this.http.get<PageResponse<Course>>(url);
+  }
+
+  // Recherche rapide
+  quickSearch(query: string, page = 0, size = 12): Observable<PageResponse<Course>> {
+    return this.http.get<PageResponse<Course>>(
+      `${this.apiUrl}/search/quick?q=${encodeURIComponent(query)}&page=${page}&size=${size}`
+    );
+  }
+
+  // Suggestions (autocomplete)
+  getSuggestions(query: string): Observable<string[]> {
+    return this.http.get<string[]>(
+      `${this.apiUrl}/search/suggestions?q=${encodeURIComponent(query)}`
+    );
   }
 }
