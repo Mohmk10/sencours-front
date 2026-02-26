@@ -57,7 +57,7 @@ import { LessonPreviewModalComponent } from '../../../shared/components/lesson-p
 
                 <!-- Metadata row -->
                 <div class="flex items-center flex-wrap gap-4">
-                  @if ((course.totalEnrollments || 0) > 50) {
+                  @if ((course.enrollmentCount || 0) > 50) {
                     <span class="badge badge-bestseller">Bestseller</span>
                   }
 
@@ -76,7 +76,7 @@ import { LessonPreviewModalComponent } from '../../../shared/components/lesson-p
                           </svg>
                         }
                       </div>
-                      <span class="text-xs" style="color: var(--ink-4);">({{ course.totalEnrollments || 0 }} étudiants)</span>
+                      <span class="text-xs" style="color: var(--ink-4);">({{ course.enrollmentCount || 0 }} étudiants)</span>
                     </div>
                   } @else {
                     <span class="badge badge-success">Nouveau</span>
@@ -420,7 +420,7 @@ import { LessonPreviewModalComponent } from '../../../shared/components/lesson-p
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
-                    <span>{{ course.totalEnrollments || 0 }} étudiants inscrits</span>
+                    <span>{{ course.enrollmentCount || 0 }} étudiant{{ (course.enrollmentCount || 0) > 1 ? 's' : '' }} inscrit{{ (course.enrollmentCount || 0) > 1 ? 's' : '' }}</span>
                   </div>
                 </div>
               </div>

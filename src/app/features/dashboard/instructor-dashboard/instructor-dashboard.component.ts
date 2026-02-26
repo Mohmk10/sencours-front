@@ -150,7 +150,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                           </span>
                         }
                       </td>
-                      <td style="color: var(--ink-2);">{{ course.totalEnrollments || 0 }}</td>
+                      <td style="color: var(--ink-2);">{{ course.enrollmentCount || 0 }}</td>
                       <td>
                         @if (course.averageRating) {
                           <div class="flex items-center gap-1">
@@ -226,7 +226,7 @@ export class InstructorDashboardComponent implements OnInit {
   }
 
   get totalStudents(): number {
-    return this.pageResponse?.content?.reduce((sum, c) => sum + (c.totalEnrollments || 0), 0) || 0;
+    return this.pageResponse?.content?.reduce((sum, c) => sum + (c.enrollmentCount || 0), 0) || 0;
   }
 
   ngOnInit() {

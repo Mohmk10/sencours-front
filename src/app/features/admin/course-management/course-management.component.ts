@@ -101,7 +101,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                       <span style="color: var(--amber);">{{ course.price | number:'1.0-0' }} FCFA</span>
                     }
                   </td>
-                  <td style="color: var(--ink-2);">{{ course.totalEnrollments || 0 }}</td>
+                  <td style="color: var(--ink-2);">{{ course.enrollmentCount || 0 }}</td>
                   <td>
                     <div class="flex items-center justify-end gap-0.5">
                       <a [routerLink]="['/courses', course.id]" class="btn btn-ghost btn-sm" title="Voir">

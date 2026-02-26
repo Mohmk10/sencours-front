@@ -1,3 +1,5 @@
+import { Section } from './section.model';
+
 export interface Course {
   id: number;
   title: string;
@@ -11,8 +13,10 @@ export interface Course {
   instructorLastName?: string;
   categoryId: number;
   categoryName: string;
-  averageRating?: number;
-  totalEnrollments?: number;
+  averageRating: number;
+  enrollmentCount: number;
+  reviewCount: number;
+  sections?: Section[];
   totalLessons?: number;
   totalDuration?: number;
   createdAt: string;

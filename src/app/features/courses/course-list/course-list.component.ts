@@ -195,7 +195,7 @@ import { Course, Category, PageResponse } from '../../../core/models';
                         </svg>
                       }
                     </div>
-                    <span class="text-xs" style="color: var(--ink-4);">({{ course.totalEnrollments || 0 }})</span>
+                    <span class="text-xs" style="color: var(--ink-4);">({{ course.enrollmentCount || 0 }})</span>
                   </div>
 
                   <!-- Price -->
