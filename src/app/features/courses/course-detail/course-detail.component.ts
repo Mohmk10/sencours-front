@@ -6,14 +6,15 @@ import { CourseService } from '../../../core/services/course.service';
 import { EnrollmentService } from '../../../core/services/enrollment.service';
 import { ReviewService } from '../../../core/services/review.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Course, Section, Review } from '../../../core/models';
-import { StarRatingComponent } from '../../../shared/components';
+import { Course, Section, Review, Enrollment } from '../../../core/models';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
+import { PaymentModalComponent } from '../../../shared/components/payment-modal/payment-modal.component';
+import { ReviewModalComponent } from '../../../shared/components/review-modal/review-modal.component';
 
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, StarRatingComponent, ConfirmModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ConfirmModalComponent, PaymentModalComponent, ReviewModalComponent],
   template: `
     <div class="min-h-screen" style="background: var(--canvas);">
 
@@ -158,10 +159,16 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                           Se désinscrire
                         </button>
                       } @else {
-                        <button (click)="enroll()" [disabled]="enrollmentLoading"
-                                class="btn btn-amber w-full">
-                          @if (enrollmentLoading) { Inscription... } @else { S'inscrire maintenant }
-                        </button>
+                        @if (course.price === 0) {
+                          <button (click)="enrollFree()" [disabled]="enrollmentLoading"
+                                  class="btn btn-amber w-full">
+                            @if (enrollmentLoading) { Inscription... } @else { S'inscrire gratuitement }
+                          </button>
+                        } @else {
+                          <button (click)="openPaymentModal()" class="btn btn-amber w-full">
+                            S'inscrire — {{ course.price | number:'1.0-0' }} FCFA
+                          </button>
+                        }
                       }
                     </div>
 
@@ -193,9 +200,15 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
             } @else if (isEnrolled) {
               <button (click)="goToLearning()" class="btn btn-primary btn-sm">Mon tableau de bord</button>
             } @else {
-              <button (click)="enroll()" [disabled]="enrollmentLoading" class="btn btn-primary btn-sm">
-                @if (enrollmentLoading) { ... } @else { S'inscrire }
-              </button>
+              @if (course.price === 0) {
+                <button (click)="enrollFree()" [disabled]="enrollmentLoading" class="btn btn-primary btn-sm">
+                  @if (enrollmentLoading) { ... } @else { S'inscrire }
+                </button>
+              } @else {
+                <button (click)="openPaymentModal()" class="btn btn-amber btn-sm">
+                  S'inscrire
+                </button>
+              }
             }
           </div>
         </div>
@@ -279,52 +292,57 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                 <div class="px-6 py-5 flex items-center justify-between" style="border-bottom: 1px solid var(--border);">
                   <div>
                     <h2 class="text-lg font-bold" style="color: var(--ink);">Avis des étudiants</h2>
-                    <div class="flex items-center gap-2 mt-1">
-                      <span class="text-3xl font-bold" style="color: var(--ink);">
-                        {{ (course.averageRating || 0) | number:'1.1-1' }}
-                      </span>
-                      <div class="flex gap-0.5">
-                        @for (star of [1,2,3,4,5]; track star) {
-                          <svg class="w-4 h-4"
-                               [style.color]="star <= (course.averageRating || 0) ? 'var(--amber-mid)' : 'var(--border-2)'"
-                               fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                          </svg>
-                        }
+                    @if (reviews.length > 0) {
+                      <div class="flex items-center gap-2 mt-1">
+                        <span class="text-3xl font-bold" style="color: var(--ink);">
+                          {{ (course.averageRating || 0) | number:'1.1-1' }}
+                        </span>
+                        <div>
+                          <div class="flex gap-0.5">
+                            @for (star of [1,2,3,4,5]; track star) {
+                              <svg class="w-4 h-4"
+                                   [style.color]="star <= (course.averageRating || 0) ? 'var(--amber-mid)' : 'var(--border-2)'"
+                                   fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                              </svg>
+                            }
+                          </div>
+                          <p class="text-xs mt-0.5" style="color: var(--ink-4);">{{ reviews.length }} avis</p>
+                        </div>
                       </div>
-                    </div>
+                    }
                   </div>
-                  @if (isEnrolled && !hasReviewed) {
-                    <button (click)="showReviewForm = !showReviewForm" class="btn btn-secondary btn-sm">
-                      Laisser un avis
+                  @if (isEnrolled && !myReview) {
+                    <button (click)="openReviewModal()" class="btn btn-secondary btn-sm">
+                      Donner mon avis
                     </button>
                   }
                 </div>
 
-                <!-- Review form -->
-                @if (showReviewForm && isEnrolled) {
-                  <div class="px-6 py-5" style="background: var(--canvas); border-bottom: 1px solid var(--border);">
-                    <h3 class="font-semibold text-sm mb-4" style="color: var(--ink);">Votre avis</h3>
-                    <div class="mb-4">
-                      <label class="label">Note</label>
-                      <app-star-rating [rating]="newReview.rating" [interactive]="true" [showValue]="false"
-                                       (ratingChange)="newReview.rating = $event" />
-                    </div>
-                    <div class="mb-4">
-                      <label class="label">Commentaire (optionnel)</label>
-                      <textarea [(ngModel)]="newReview.comment" rows="3"
-                                class="input resize-none"
-                                placeholder="Partagez votre expérience..."></textarea>
-                    </div>
-                    <div class="flex gap-2">
-                      <button (click)="submitReview()" [disabled]="newReview.rating === 0 || reviewLoading"
-                              class="btn btn-primary btn-sm">
-                        Publier l'avis
-                      </button>
-                      <button (click)="showReviewForm = false" class="btn btn-ghost btn-sm">
-                        Annuler
+                <!-- Mon avis -->
+                @if (myReview) {
+                  <div class="px-6 py-4" style="background: var(--violet-xlight); border-bottom: 1px solid var(--border);">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-sm font-medium" style="color: var(--violet);">Votre avis</span>
+                      <button (click)="openReviewModal()" class="text-sm transition-colors"
+                              style="color: var(--violet);"
+                              onmouseenter="this.style.textDecoration='underline'"
+                              onmouseleave="this.style.textDecoration='none'">
+                        Modifier
                       </button>
                     </div>
+                    <div class="flex gap-0.5 mb-1">
+                      @for (star of [1,2,3,4,5]; track star) {
+                        <svg class="w-3.5 h-3.5"
+                             [style.color]="star <= myReview.rating ? 'var(--amber-mid)' : 'var(--border-2)'"
+                             fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      }
+                    </div>
+                    @if (myReview.comment) {
+                      <p class="text-sm" style="color: var(--ink-2);">{{ myReview.comment }}</p>
+                    }
                   </div>
                 }
 
@@ -332,35 +350,45 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                 <div class="px-6 py-4">
                   @if (reviews.length === 0) {
                     <div class="py-8 text-center">
-                      <p class="text-sm" style="color: var(--ink-3);">Aucun avis pour le moment. Soyez le premier !</p>
+                      <p class="text-sm" style="color: var(--ink-3);">Aucun avis pour le moment.</p>
+                      @if (isEnrolled && !myReview) {
+                        <button (click)="openReviewModal()" class="text-sm mt-2 transition-colors"
+                                style="color: var(--violet);"
+                                onmouseenter="this.style.textDecoration='underline'"
+                                onmouseleave="this.style.textDecoration='none'">
+                          Soyez le premier à donner votre avis !
+                        </button>
+                      }
                     </div>
                   } @else {
                     <div class="space-y-5">
                       @for (review of reviews; track review.id) {
-                        <div class="flex gap-3 pb-5 last:border-b-0" style="border-bottom: 1px solid var(--border);">
-                          <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                               style="background: var(--violet);">
-                            {{ review.userName.charAt(0).toUpperCase() }}
-                          </div>
-                          <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-1.5">
-                              <span class="font-semibold text-sm" style="color: var(--ink);">{{ review.userName }}</span>
-                              <div class="flex gap-0.5">
-                                @for (star of [1,2,3,4,5]; track star) {
-                                  <svg class="w-3 h-3"
-                                       [style.color]="star <= review.rating ? 'var(--amber-mid)' : 'var(--border-2)'"
-                                       fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                  </svg>
-                                }
-                              </div>
-                              <span class="text-xs" style="color: var(--ink-4);">{{ review.createdAt | date:'dd/MM/yyyy' }}</span>
+                        @if (review.id !== myReview?.id) {
+                          <div class="flex gap-3 pb-5 last:border-b-0" style="border-bottom: 1px solid var(--border);">
+                            <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+                                 style="background: var(--violet);">
+                              {{ (review.userName || '?').charAt(0).toUpperCase() }}
                             </div>
-                            @if (review.comment) {
-                              <p class="text-sm leading-relaxed" style="color: var(--ink-2);">{{ review.comment }}</p>
-                            }
+                            <div class="flex-1">
+                              <div class="flex items-center gap-2 mb-1.5">
+                                <span class="font-semibold text-sm" style="color: var(--ink);">{{ review.userName }}</span>
+                                <div class="flex gap-0.5">
+                                  @for (star of [1,2,3,4,5]; track star) {
+                                    <svg class="w-3 h-3"
+                                         [style.color]="star <= review.rating ? 'var(--amber-mid)' : 'var(--border-2)'"
+                                         fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                  }
+                                </div>
+                                <span class="text-xs" style="color: var(--ink-4);">{{ review.createdAt | date:'dd/MM/yyyy' }}</span>
+                              </div>
+                              @if (review.comment) {
+                                <p class="text-sm leading-relaxed" style="color: var(--ink-2);">{{ review.comment }}</p>
+                              }
+                            </div>
                           </div>
-                        </div>
+                        }
                       }
                     </div>
                   }
@@ -422,6 +450,28 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
         (confirmed)="confirmUnenroll()"
         (cancelled)="showUnenrollModal = false">
       </app-confirm-modal>
+
+      <!-- Modal Paiement -->
+      @if (course) {
+        <app-payment-modal
+          [isOpen]="showPaymentModal"
+          [courseId]="course.id"
+          [courseTitle]="course.title"
+          [price]="course.price"
+          (closed)="showPaymentModal = false"
+          (enrolled)="onPaymentSuccess($event)">
+        </app-payment-modal>
+
+        <!-- Modal Avis -->
+        <app-review-modal
+          [isOpen]="showReviewModal"
+          [courseId]="course.id"
+          [courseTitle]="course.title"
+          [existingReview]="myReview"
+          (closed)="showReviewModal = false"
+          (submitted)="onReviewSubmitted($event)">
+        </app-review-modal>
+      }
     </div>
   `
 })
@@ -439,16 +489,16 @@ export class CourseDetailComponent implements OnInit {
   isLoading = true;
   isOwner = false;
   isEnrolled = false;
-  hasReviewed = false;
   enrollmentLoading = false;
   enrollmentError = '';
-  reviewLoading = false;
-  showReviewForm = false;
   expandedSections: boolean[] = [];
 
-  newReview = { rating: 0, comment: '' };
   showLearningNotice = false;
   showUnenrollModal = false;
+  showPaymentModal = false;
+  showReviewModal = false;
+  myReview: Review | null = null;
+  enrollment: Enrollment | null = null;
 
   ngOnInit() {
     const courseId = Number(this.route.snapshot.paramMap.get('id'));
@@ -494,11 +544,19 @@ export class CourseDetailComponent implements OnInit {
         this.reviews = reviews;
         const currentUser = this.authService.getCurrentUser();
         if (currentUser) {
-          this.hasReviewed = reviews.some(r => r.userId === currentUser.id);
+          this.myReview = reviews.find(r => r.userId === currentUser.id) || null;
         }
       },
       error: (err) => console.error('Error loading reviews', err)
     });
+
+    if (this.authService.isAuthenticated()) {
+      this.reviewService.getMyReview(courseId).subscribe({
+        next: (review) => {
+          if (review) this.myReview = review;
+        }
+      });
+    }
   }
 
   checkEnrollment(courseId: number) {
@@ -512,20 +570,39 @@ export class CourseDetailComponent implements OnInit {
     this.expandedSections[index] = !this.expandedSections[index];
   }
 
-  enroll() {
+  enrollFree() {
     if (!this.course) return;
     this.enrollmentLoading = true;
     this.enrollmentError = '';
-    this.enrollmentService.enrollInCourse(this.course.id).subscribe({
-      next: () => {
+    this.enrollmentService.enrollFree(this.course.id).subscribe({
+      next: (enrollment) => {
         this.isEnrolled = true;
+        this.enrollment = enrollment;
         this.enrollmentLoading = false;
       },
       error: (err) => {
         this.enrollmentLoading = false;
-        this.enrollmentError = err.error?.message || 'Erreur lors de l\'inscription';
+        this.enrollmentError = err.error?.message || "Erreur lors de l'inscription";
       }
     });
+  }
+
+  openPaymentModal() {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.showPaymentModal = true;
+  }
+
+  onPaymentSuccess(reference: string) {
+    this.showPaymentModal = false;
+    this.isEnrolled = true;
+    if (this.course) {
+      this.enrollmentService.getEnrollment(this.course.id).subscribe({
+        next: (enrollment) => this.enrollment = enrollment
+      });
+    }
   }
 
   openUnenrollModal() {
@@ -574,21 +651,15 @@ export class CourseDetailComponent implements OnInit {
     return name.substring(0, 2).toUpperCase();
   }
 
-  submitReview() {
-    if (!this.course || this.newReview.rating === 0) return;
-    this.reviewLoading = true;
-    this.reviewService.createReview(this.course.id, this.newReview).subscribe({
-      next: (review) => {
-        this.reviews.unshift(review);
-        this.hasReviewed = true;
-        this.showReviewForm = false;
-        this.newReview = { rating: 0, comment: '' };
-        this.reviewLoading = false;
-      },
-      error: (err) => {
-        console.error('Error submitting review', err);
-        this.reviewLoading = false;
-      }
-    });
+  openReviewModal() {
+    this.showReviewModal = true;
+  }
+
+  onReviewSubmitted(review: Review) {
+    this.myReview = review;
+    this.showReviewModal = false;
+    if (this.course) {
+      this.loadReviews(this.course.id);
+    }
   }
 }
