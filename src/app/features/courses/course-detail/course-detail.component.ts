@@ -60,24 +60,28 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                   }
 
                   <!-- Rating -->
-                  <div class="flex items-center gap-1.5">
-                    <span class="font-bold text-sm" style="color: var(--amber-mid);">
-                      {{ (course.averageRating || 0) | number:'1.1-1' }}
-                    </span>
-                    <div class="flex gap-0.5">
-                      @for (star of [1,2,3,4,5]; track star) {
-                        <svg class="w-3.5 h-3.5"
-                             [style.color]="star <= (course.averageRating || 0) ? 'var(--amber-mid)' : 'var(--border-2)'"
-                             fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                        </svg>
-                      }
+                  @if (course.averageRating && course.averageRating > 0) {
+                    <div class="flex items-center gap-1.5">
+                      <span class="font-bold text-sm" style="color: var(--amber-mid);">
+                        {{ course.averageRating | number:'1.1-1' }}
+                      </span>
+                      <div class="flex gap-0.5">
+                        @for (star of [1,2,3,4,5]; track star) {
+                          <svg class="w-3.5 h-3.5"
+                               [style.color]="star <= (course.averageRating || 0) ? 'var(--amber-mid)' : 'var(--border-2)'"
+                               fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        }
+                      </div>
+                      <span class="text-xs" style="color: var(--ink-4);">({{ course.totalEnrollments || 0 }} étudiants)</span>
                     </div>
-                    <span class="text-xs" style="color: var(--ink-4);">({{ course.totalEnrollments || 0 }} étudiants)</span>
-                  </div>
+                  } @else {
+                    <span class="badge badge-success">Nouveau</span>
+                  }
 
                   <span class="text-sm" style="color: var(--ink-3);">
-                    Par <span class="font-semibold" style="color: var(--violet);">{{ course.instructorName }}</span>
+                    Créé par <span class="font-semibold" style="color: var(--violet);">{{ getInstructorDisplayName() }}</span>
                   </span>
                 </div>
               </div>
@@ -375,7 +379,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                     {{ getInstructorInitials() }}
                   </div>
                   <div>
-                    <p class="font-semibold text-sm" style="color: var(--ink);">{{ course.instructorName }}</p>
+                    <p class="font-semibold text-sm" style="color: var(--ink);">{{ getInstructorDisplayName() }}</p>
                     <p class="text-xs" style="color: var(--ink-3);">Instructeur certifié</p>
                   </div>
                 </div>
@@ -550,13 +554,24 @@ export class CourseDetailComponent implements OnInit {
     setTimeout(() => this.showLearningNotice = false, 6000);
   }
 
+  getInstructorDisplayName(): string {
+    if (!this.course) return 'Instructeur';
+    if (this.course.instructorName) return this.course.instructorName;
+    if (this.course.instructorFirstName && this.course.instructorLastName) {
+      return `${this.course.instructorFirstName} ${this.course.instructorLastName}`;
+    }
+    if (this.course.instructorFirstName) return this.course.instructorFirstName;
+    return 'Instructeur certifié';
+  }
+
   getInstructorInitials(): string {
-    if (!this.course?.instructorName) return '?';
-    const parts = this.course.instructorName.split(' ');
+    const name = this.getInstructorDisplayName();
+    if (name === 'Instructeur' || name === 'Instructeur certifié') return '?';
+    const parts = name.split(' ');
     if (parts.length >= 2) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     }
-    return parts[0].substring(0, 2).toUpperCase();
+    return name.substring(0, 2).toUpperCase();
   }
 
   submitReview() {

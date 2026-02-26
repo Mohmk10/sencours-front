@@ -82,7 +82,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                       <p class="text-xs mt-0.5" style="color: var(--ink-3);">{{ course.categoryName }}</p>
                     </div>
                   </td>
-                  <td style="color: var(--ink-3);">{{ course.instructorName }}</td>
+                  <td style="color: var(--ink-3);">{{ course.instructorName || ((course.instructorFirstName || '') + ' ' + (course.instructorLastName || '')).trim() || 'Instructeur' }}</td>
                   <td>
                     <select
                       [value]="course.status"

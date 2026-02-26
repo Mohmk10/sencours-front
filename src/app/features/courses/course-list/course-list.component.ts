@@ -177,9 +177,9 @@ import { Course, Category, PageResponse } from '../../../core/models';
                   <div class="flex items-center gap-2 mb-2">
                     <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
                          style="background: var(--violet); font-size: 9px;">
-                      {{ (course.instructorName || '?').charAt(0).toUpperCase() }}
+                      {{ (course.instructorName || course.instructorFirstName || '?').charAt(0).toUpperCase() }}
                     </div>
-                    <span class="text-xs truncate" style="color: var(--ink-3);">{{ course.instructorName }}</span>
+                    <span class="text-xs truncate" style="color: var(--ink-3);">{{ course.instructorName || ((course.instructorFirstName || '') + ' ' + (course.instructorLastName || '')).trim() || 'Instructeur' }}</span>
                   </div>
 
                   <!-- Rating -->
