@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CourseService } from '../../../core/services/course.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { FileUploadService } from '../../../core/services/file-upload.service';
 import { Category } from '../../../core/models';
 
 @Component({
@@ -139,16 +140,63 @@ import { Category } from '../../../core/models';
                 </div>
               </div>
 
-              <!-- URL vignette -->
+              <!-- Vignette du cours -->
               <div>
-                <label class="label">URL de la vignette <span class="font-normal" style="color: var(--ink-4);">(optionnel)</span></label>
-                <input
-                  type="url"
-                  formControlName="thumbnailUrl"
-                  class="input"
-                  placeholder="https://exemple.com/image.jpg">
-                <p class="mt-1 text-xs" style="color: var(--ink-4);">
-                  Image de couverture affichée sur la carte du cours. Recommandé : 1280×720px.
+                <label class="label">Vignette du cours <span class="font-normal" style="color: var(--ink-4);">(optionnel)</span></label>
+
+                @if (!thumbnailPreview && !isUploadingThumbnail) {
+                  <!-- Drop zone -->
+                  <label class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed cursor-pointer transition-colors hover:border-violet-500 hover:bg-violet-50"
+                         style="border-color: var(--border-2); border-radius: var(--r-lg);"
+                         (dragover)="$event.preventDefault(); $event.stopPropagation()"
+                         (drop)="onThumbnailDrop($event)">
+                    <svg class="w-10 h-10 mb-2" style="color: var(--ink-4);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <p class="text-sm font-medium" style="color: var(--ink-2);">Cliquez ou glissez une image</p>
+                    <p class="text-xs mt-1" style="color: var(--ink-4);">JPG, PNG, WebP — Recommandé : 1280×720px</p>
+                    <input type="file" class="hidden" accept="image/*" (change)="onThumbnailSelected($event)">
+                  </label>
+                }
+
+                @if (isUploadingThumbnail) {
+                  <!-- Upload en cours -->
+                  <div class="p-4" style="border: 1px solid var(--border); border-radius: var(--r-md);">
+                    <div class="flex items-center gap-3 mb-2">
+                      <svg class="animate-spin w-5 h-5" style="color: var(--violet);" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span class="text-sm" style="color: var(--ink);">Upload en cours...</span>
+                    </div>
+                    <div class="w-full h-2 rounded-full" style="background: var(--border);">
+                      <div class="h-2 rounded-full transition-all" style="background: var(--violet);" [style.width.%]="thumbnailUploadProgress"></div>
+                    </div>
+                    <p class="text-xs mt-1" style="color: var(--ink-4);">{{ thumbnailUploadProgress }}%</p>
+                  </div>
+                }
+
+                @if (thumbnailPreview && !isUploadingThumbnail) {
+                  <!-- Preview avec overlay -->
+                  <div class="relative group w-full aspect-video overflow-hidden"
+                       style="border: 1px solid var(--border); border-radius: var(--r-lg);">
+                    <img [src]="thumbnailPreview" alt="Vignette" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                      <label class="btn btn-sm cursor-pointer"
+                             style="background: white; color: var(--ink);">
+                        Changer
+                        <input type="file" class="hidden" accept="image/*" (change)="onThumbnailSelected($event)">
+                      </label>
+                      <button type="button" (click)="removeThumbnail()" class="btn btn-sm"
+                              style="background: #EF4444; color: white;">
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                }
+
+                <p class="mt-1.5 text-xs" style="color: var(--ink-4);">
+                  Image de couverture affichée sur la carte du cours.
                 </p>
               </div>
 
@@ -172,7 +220,7 @@ import { Category } from '../../../core/models';
                 </a>
                 <button
                   type="submit"
-                  [disabled]="courseForm.invalid || isLoading || categoriesLoading"
+                  [disabled]="courseForm.invalid || isLoading || categoriesLoading || isUploadingThumbnail"
                   class="btn btn-primary flex-1">
                   @if (isLoading) {
                     <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -199,6 +247,7 @@ export class CourseFormComponent implements OnInit {
   private courseService = inject(CourseService);
   private categoryService = inject(CategoryService);
   private authService = inject(AuthService);
+  private fileUploadService = inject(FileUploadService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -209,6 +258,11 @@ export class CourseFormComponent implements OnInit {
   isEditMode = false;
   courseId: number | null = null;
   errorMessage = '';
+
+  // Thumbnail upload
+  thumbnailPreview: string | null = null;
+  isUploadingThumbnail = false;
+  thumbnailUploadProgress = 0;
 
   constructor() {
     this.courseForm = this.fb.group({
@@ -257,6 +311,9 @@ export class CourseFormComponent implements OnInit {
           thumbnailUrl: course.thumbnailUrl || '',
           status: course.status
         });
+        if (course.thumbnailUrl) {
+          this.thumbnailPreview = course.thumbnailUrl;
+        }
       },
       error: (err) => {
         console.error('Error loading course', err);
@@ -305,5 +362,66 @@ export class CourseFormComponent implements OnInit {
         }
       });
     }
+  }
+
+  // ---- Thumbnail upload ----
+
+  onThumbnailSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.uploadThumbnail(input.files[0]);
+    }
+  }
+
+  onThumbnailDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0 && files[0].type.startsWith('image/')) {
+      this.uploadThumbnail(files[0]);
+    }
+  }
+
+  private uploadThumbnail(file: File) {
+    this.isUploadingThumbnail = true;
+    this.thumbnailUploadProgress = 0;
+
+    // Show local preview immediately
+    const reader = new FileReader();
+    reader.onload = () => this.thumbnailPreview = reader.result as string;
+    reader.readAsDataURL(file);
+
+    this.fileUploadService.uploadFile(file, 'image').subscribe({
+      next: (result) => {
+        this.thumbnailUploadProgress = result.progress;
+        if (result.response) {
+          this.courseForm.patchValue({ thumbnailUrl: result.response.url });
+          this.thumbnailPreview = result.response.url;
+          this.isUploadingThumbnail = false;
+        }
+      },
+      error: () => {
+        this.isUploadingThumbnail = false;
+        this.thumbnailPreview = null;
+        this.errorMessage = "Erreur lors de l'upload de la vignette";
+      }
+    });
+  }
+
+  removeThumbnail() {
+    const currentUrl = this.courseForm.get('thumbnailUrl')?.value;
+    if (currentUrl) {
+      this.fileUploadService.deleteFile(currentUrl).subscribe({
+        next: () => this.clearThumbnail(),
+        error: () => this.clearThumbnail()
+      });
+    } else {
+      this.clearThumbnail();
+    }
+  }
+
+  private clearThumbnail() {
+    this.courseForm.patchValue({ thumbnailUrl: '' });
+    this.thumbnailPreview = null;
   }
 }
