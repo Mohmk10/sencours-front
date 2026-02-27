@@ -260,7 +260,7 @@ export class PaymentModalComponent {
 
   paymentMethods: PaymentMethodOption[] = [
     { id: 'ORANGE_MONEY', name: 'Orange Money', logo: 'assets/images/orange-money.png', color: '#FF6600', description: 'Paiement via votre compte Orange Money' },
-    { id: 'WAVE', name: 'Wave', logo: 'assets/images/wave.jpg', color: '#1DC2FF', description: 'Paiement instantane avec Wave' },
+    { id: 'WAVE', name: 'Wave', logo: 'assets/images/wave.jpg', color: '#1DC2FF', description: 'Paiement instantané avec Wave' },
     { id: 'YAS', name: 'Yas (ex Free Money)', logo: 'assets/images/yas.jpg', color: '#00A651', description: 'Paiement via Yas' },
     { id: 'CARD', name: 'Carte bancaire', icon: '💳', color: '#1A1F71', description: 'Visa, Mastercard, etc.' }
   ];
