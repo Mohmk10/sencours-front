@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.sencours.com/api/v1'
+  apiUrl: 'https://sencours-api.onrender.com/api/v1'
 };
