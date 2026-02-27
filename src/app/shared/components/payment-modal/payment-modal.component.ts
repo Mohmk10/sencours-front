@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { EnrollmentService } from '../../../core/services/enrollment.service';
 import { PaymentResponse } from '../../../core/models';
 
-type PaymentMethod = 'ORANGE_MONEY' | 'WAVE' | 'FREE_MONEY' | 'CARD';
+type PaymentMethod = 'ORANGE_MONEY' | 'WAVE' | 'YAS' | 'CARD';
 
 interface PaymentMethodOption {
   id: PaymentMethod;
   name: string;
-  icon: string;
+  logo?: string;
+  icon?: string;
   color: string;
   description: string;
 }
@@ -63,9 +64,14 @@ interface PaymentMethodOption {
                       [style.border]="selectedMethod === method.id ? '2px solid var(--violet)' : '1px solid var(--border)'"
                       [style.background]="selectedMethod === method.id ? 'var(--violet-xlight)' : 'white'"
                       style="border-radius: var(--r-lg);">
-                      <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-                           [style.background]="method.color + '18'">
-                        {{ method.icon }}
+                      <div class="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0"
+                           [style.background]="method.logo ? 'white' : method.color + '18'"
+                           [style.border]="method.logo ? '1px solid var(--border)' : 'none'">
+                        @if (method.logo) {
+                          <img [src]="method.logo" [alt]="method.name" class="w-9 h-9 object-contain">
+                        } @else {
+                          <span class="text-2xl">{{ method.icon }}</span>
+                        }
                       </div>
                       <div class="flex-1">
                         <p class="font-semibold" style="color: var(--ink);">{{ method.name }}</p>
@@ -103,9 +109,14 @@ interface PaymentMethodOption {
                 </button>
 
                 <div class="flex items-center gap-4 p-4 mb-6" style="background: var(--canvas); border-radius: var(--r-lg);">
-                  <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-                       [style.background]="getSelectedMethodColor() + '18'">
-                    {{ getSelectedMethodIcon() }}
+                  <div class="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0"
+                       [style.background]="getSelectedMethodLogo() ? 'white' : getSelectedMethodColor() + '18'"
+                       [style.border]="getSelectedMethodLogo() ? '1px solid var(--border)' : 'none'">
+                    @if (getSelectedMethodLogo()) {
+                      <img [src]="getSelectedMethodLogo()" [alt]="getSelectedMethodName()" class="w-9 h-9 object-contain">
+                    } @else {
+                      <span class="text-2xl">{{ getSelectedMethodIcon() }}</span>
+                    }
                   </div>
                   <div>
                     <p class="font-semibold" style="color: var(--ink);">{{ getSelectedMethodName() }}</p>
@@ -158,8 +169,12 @@ interface PaymentMethodOption {
                 <div class="w-20 h-20 mx-auto mb-6 relative">
                   <div class="absolute inset-0 rounded-full" style="border: 4px solid var(--border);"></div>
                   <div class="absolute inset-0 rounded-full animate-spin" style="border: 4px solid var(--violet); border-top-color: transparent;"></div>
-                  <div class="absolute inset-2 rounded-full flex items-center justify-center text-2xl" style="background: var(--violet-xlight);">
-                    {{ getSelectedMethodIcon() }}
+                  <div class="absolute inset-2 rounded-full flex items-center justify-center overflow-hidden" style="background: var(--violet-xlight);">
+                    @if (getSelectedMethodLogo()) {
+                      <img [src]="getSelectedMethodLogo()" [alt]="getSelectedMethodName()" class="w-8 h-8 object-contain">
+                    } @else {
+                      <span class="text-2xl">{{ getSelectedMethodIcon() }}</span>
+                    }
                   </div>
                 </div>
                 <h3 class="text-xl font-bold mb-2" style="color: var(--ink);">Paiement en cours</h3>
@@ -244,9 +259,9 @@ export class PaymentModalComponent {
   errorMessage = '';
 
   paymentMethods: PaymentMethodOption[] = [
-    { id: 'ORANGE_MONEY', name: 'Orange Money', icon: '🟠', color: '#FF6600', description: 'Paiement via votre compte Orange Money' },
-    { id: 'WAVE', name: 'Wave', icon: '🌊', color: '#1DC2FF', description: 'Paiement instantané avec Wave' },
-    { id: 'FREE_MONEY', name: 'Free Money', icon: '💚', color: '#00A651', description: 'Paiement via Free Money' },
+    { id: 'ORANGE_MONEY', name: 'Orange Money', logo: 'assets/images/orange-money.png', color: '#FF6600', description: 'Paiement via votre compte Orange Money' },
+    { id: 'WAVE', name: 'Wave', logo: 'assets/images/wave.jpg', color: '#1DC2FF', description: 'Paiement instantane avec Wave' },
+    { id: 'YAS', name: 'Yas (ex Free Money)', logo: 'assets/images/yas.jpg', color: '#00A651', description: 'Paiement via Yas' },
     { id: 'CARD', name: 'Carte bancaire', icon: '💳', color: '#1A1F71', description: 'Visa, Mastercard, etc.' }
   ];
 
@@ -264,6 +279,10 @@ export class PaymentModalComponent {
 
   getSelectedMethodIcon(): string {
     return this.paymentMethods.find(m => m.id === this.selectedMethod)?.icon || '';
+  }
+
+  getSelectedMethodLogo(): string | undefined {
+    return this.paymentMethods.find(m => m.id === this.selectedMethod)?.logo;
   }
 
   getSelectedMethodColor(): string {
