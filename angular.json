@@ -27,6 +27,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "og-image.png",
+                "input": "src/assets",
+                "output": "/"
               }
             ],
             "styles": [
